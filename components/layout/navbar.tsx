@@ -1,19 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Heart, Search, ShoppingBag, User } from "lucide-react";
 
 import { Container } from "@/components/common/container";
 import { Logo } from "@/components/icons/logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
+import { SearchOverlay } from "@/components/search/search-overlay";
 import { siteConfig } from "@/constants/site";
 import { useCartStore } from "@/stores/cart-store";
 
 export function Navbar() {
+  const [searchOpen, setSearchOpen] = useState(false);
+
   const itemCount = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.quantity, 0)
   );
-  return (
+
+  const header = (
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white">
       <Container>
         <nav
@@ -55,6 +60,7 @@ export function Navbar() {
             <button
               type="button"
               aria-label="Search"
+              onClick={() => setSearchOpen(true)}
               className="hidden transition hover:opacity-60 lg:flex"
             >
               <Search size={18} strokeWidth={1.8} />
@@ -93,5 +99,12 @@ export function Navbar() {
         </nav>
       </Container>
     </header>
+  );
+
+  return (
+    <>
+      {header}
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+    </>
   );
 }
