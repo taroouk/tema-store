@@ -54,8 +54,7 @@ export function CinematicVideo() {
             poster="/images/hero.jpg"
             className="h-full w-full object-cover"
           >
-            {/* Placeholder source — replace with the final cinematic film. */}
-            <source src="" type="video/mp4" />
+            {/* Placeholder — add the final cinematic film source when available. */}
           </video>
 
           {/* Play affordance (placeholder only, no real source yet) */}
