@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import type { Product } from "@/types/product";
 import { useCartStore } from "@/stores/cart-store";
+import { SizeGuide } from "@/components/product/size-guide";
 
 interface ProductInfoProps {
   product: Product;
@@ -136,9 +137,13 @@ export function ProductInfo({
       {/* Sizes */}
 
       <div className="mt-10">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em]">
-          Size
-        </p>
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em]">
+            Size
+          </p>
+
+          <SizeGuide category={product.category} />
+        </div>
 
         <div className="flex flex-wrap gap-3">
           {product.sizes.map((size) => (

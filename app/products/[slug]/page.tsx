@@ -6,6 +6,7 @@ import { ProductGallery } from "@/components/product/details/product-gallery";
 import { ProductInfo } from "@/components/product/details/product-info";
 import { ProductAccordion } from "@/components/product/details/product-accordion";
 import { RelatedProducts } from "@/components/product/details/related-products";
+import { Reviews } from "@/components/product/reviews";
 
 import { allProducts } from "@/constants/all-products";
 
@@ -38,6 +39,8 @@ export default async function ProductPage({
         </section>
 
         <ProductAccordion product={product} />
+
+        <Reviews />
       </Container>
 
       <RelatedProducts />
