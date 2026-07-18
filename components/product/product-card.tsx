@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Heart, Plus } from "lucide-react";
 
 import type { Product } from "@/types/product";
+import { useWishlistStore } from "@/stores/wishlist-store";
 
 interface ProductCardProps {
   product: Product;
@@ -13,6 +14,9 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const primaryImage = product.images[0];
   const hoverImage = product.images[1];
+
+  const wished = useWishlistStore((state) => state.items.includes(product.id));
+  const toggle = useWishlistStore((state) => state.toggle);
 
   return (
     <article className="group">
@@ -43,10 +47,19 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
 
           <button
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white opacity-0 shadow-md transition-all duration-300 group-hover:opacity-100"
-            aria-label="Wishlist"
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              toggle(product.id);
+            }}
+            aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
+            aria-pressed={wished}
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-all duration-300 group-hover:opacity-100"
           >
-            <Heart size={18} />
+            <Heart
+              size={18}
+              className={wished ? "fill-black text-black" : "text-black"}
+            />
           </button>
         </div>
 

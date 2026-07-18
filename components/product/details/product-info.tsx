@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import type { Product } from "@/types/product";
 import { useCartStore } from "@/stores/cart-store";
+import { useWishlistStore } from "@/stores/wishlist-store";
 import { SizeGuide } from "@/components/product/size-guide";
 
 interface ProductInfoProps {
@@ -26,6 +27,11 @@ export function ProductInfo({
   const [quantity, setQuantity] = useState(1);
 
   const addItem = useCartStore((state) => state.addItem);
+
+  const wished = useWishlistStore((state) =>
+    state.items.includes(product.id)
+  );
+  const toggle = useWishlistStore((state) => state.toggle);
 
   const inStock = product.stock > 0;
 
@@ -209,8 +215,19 @@ export function ProductInfo({
           {inStock ? "Add To Cart" : "Out Of Stock"}
         </button>
 
-        <button className="flex h-14 w-14 items-center justify-center rounded-full border border-neutral-300 transition hover:border-black">
-          <Heart size={20} />
+        <button
+          type="button"
+          onClick={() => toggle(product.id)}
+          aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
+          aria-pressed={wished}
+          className={`flex h-14 w-14 items-center justify-center rounded-full border transition hover:border-black ${
+            wished ? "border-black" : "border-neutral-300"
+          }`}
+        >
+          <Heart
+            size={20}
+            className={wished ? "fill-black text-black" : "text-black"}
+          />
         </button>
       </div>
 

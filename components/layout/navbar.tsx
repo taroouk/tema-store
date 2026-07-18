@@ -10,6 +10,7 @@ import { MobileMenu } from "@/components/layout/mobile-menu";
 import { SearchOverlay } from "@/components/search/search-overlay";
 import { siteConfig } from "@/constants/site";
 import { useCartStore } from "@/stores/cart-store";
+import { useWishlistStore } from "@/stores/wishlist-store";
 
 export function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -17,6 +18,8 @@ export function Navbar() {
   const itemCount = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.quantity, 0)
   );
+
+  const wishlistCount = useWishlistStore((state) => state.items.length);
 
   const header = (
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white">
@@ -66,20 +69,26 @@ export function Navbar() {
               <Search size={18} strokeWidth={1.8} />
             </button>
 
+            <Link
+              href="/wishlist"
+              aria-label="Wishlist"
+              className="relative hidden transition hover:opacity-60 lg:flex"
+            >
+              <Heart size={18} strokeWidth={1.8} />
+
+              {wishlistCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[10px] text-white">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+
             <button
               type="button"
               aria-label="Account"
               className="hidden transition hover:opacity-60 lg:flex"
             >
               <User size={18} strokeWidth={1.8} />
-            </button>
-
-            <button
-              type="button"
-              aria-label="Wishlist"
-              className="hidden transition hover:opacity-60 lg:flex"
-            >
-              <Heart size={18} strokeWidth={1.8} />
             </button>
 
             <button

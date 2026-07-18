@@ -1,0 +1,41 @@
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+interface WishlistStore {
+  items: string[];
+
+  toggle: (productId: string) => void;
+
+  remove: (productId: string) => void;
+
+  has: (productId: string) => boolean;
+
+  clear: () => void;
+}
+
+export const useWishlistStore = create<WishlistStore>()(
+  persist(
+    (set, get) => ({
+      items: [],
+
+      toggle: (productId) =>
+        set((state) => ({
+          items: state.items.includes(productId)
+            ? state.items.filter((id) => id !== productId)
+            : [...state.items, productId],
+        })),
+
+      remove: (productId) =>
+        set((state) => ({
+          items: state.items.filter((id) => id !== productId),
+        })),
+
+      has: (productId) => get().items.includes(productId),
+
+      clear: () => set({ items: [] }),
+    }),
+    {
+      name: "tema:wishlist",
+    }
+  )
+);
