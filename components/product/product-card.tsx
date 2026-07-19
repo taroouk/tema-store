@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { Heart, Plus } from "lucide-react";
+import { toast } from "sonner";
 
 import type { Product } from "@/types/product";
+import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { SmartImage } from "@/components/ux/smart-image";
 
@@ -15,8 +17,22 @@ export function ProductCard({ product }: ProductCardProps) {
   const primaryImage = product.images[0];
   const hoverImage = product.images[1];
 
+  const addItem = useCartStore((state) => state.addItem);
+
   const wished = useWishlistStore((state) => state.items.includes(product.id));
   const toggle = useWishlistStore((state) => state.toggle);
+
+  const handleAddToCart = (event: React.MouseEvent) => {
+    event.preventDefault();
+
+    if (product.stock <= 0) return;
+
+    addItem(product.id, product.colors[0].id, product.sizes[0], 1);
+
+    toast.success("Added to cart", {
+      description: `${product.name} — ${product.colors[0].name}, ${product.sizes[0]}`,
+    });
+  };
 
   return (
     <article className="group">
@@ -95,7 +111,10 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
 
             <button
-              className="flex h-9 w-9 items-center justify-center rounded-full border transition hover:bg-black hover:text-white"
+              type="button"
+              onClick={handleAddToCart}
+              disabled={product.stock <= 0}
+              className="flex h-9 w-9 items-center justify-center rounded-full border transition hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Add to cart"
             >
               <Plus size={16} />

@@ -91,8 +91,8 @@ export function Navbar() {
               <User size={18} strokeWidth={1.8} />
             </button>
 
-            <button
-              type="button"
+            <Link
+              href="/cart"
               aria-label="Shopping Bag"
               className="relative hidden transition hover:opacity-60 lg:flex"
             >
@@ -103,7 +103,7 @@ export function Navbar() {
                   {itemCount}
                 </span>
               )}
-            </button>
+            </Link>
           </div>
         </nav>
       </Container>

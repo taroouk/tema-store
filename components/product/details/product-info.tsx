@@ -3,6 +3,7 @@
 import { Heart, Minus, Plus, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import type { Product } from "@/types/product";
 import { useCartStore } from "@/stores/cart-store";
@@ -27,6 +28,7 @@ export function ProductInfo({
   const [quantity, setQuantity] = useState(1);
 
   const addItem = useCartStore((state) => state.addItem);
+  const router = useRouter();
 
   const wished = useWishlistStore((state) =>
     state.items.includes(product.id)
@@ -47,6 +49,12 @@ export function ProductInfo({
 
     toast.success("Added to cart", {
       description: `${product.name} — ${selectedColor.name}, ${selectedSize}`,
+      action: {
+        label: "View Cart",
+        onClick: () => {
+          router.push("/cart");
+        },
+      },
     });
   };
 
