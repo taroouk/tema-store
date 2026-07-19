@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { siteConfig } from "@/constants/site";
 import { Navbar } from "@/components/layout/navbar";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
+import { PageTransition } from "@/components/ux/page-transition";
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
 
@@ -62,7 +63,7 @@ export default function RootLayout({
  <AnnouncementBar />
 <Navbar />
 
-{children}
+<PageTransition>{children}</PageTransition>
 
 <Footer />
 </body>

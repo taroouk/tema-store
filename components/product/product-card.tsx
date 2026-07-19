@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Heart, Plus } from "lucide-react";
 
 import type { Product } from "@/types/product";
 import { useWishlistStore } from "@/stores/wishlist-store";
+import { SmartImage } from "@/components/ux/smart-image";
 
 interface ProductCardProps {
   product: Product;
@@ -22,20 +22,22 @@ export function ProductCard({ product }: ProductCardProps) {
     <article className="group">
       <Link href={`/products/${product.slug}`}>
         <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-neutral-100">
-          <Image
+          <SmartImage
             src={primaryImage.src}
             alt={primaryImage.alt}
             fill
+            wrapperClassName="absolute inset-0"
             className={`object-cover transition-all duration-700 ${
               hoverImage ? "group-hover:opacity-0" : "group-hover:scale-105"
             }`}
           />
 
           {hoverImage && (
-            <Image
+            <SmartImage
               src={hoverImage.src}
               alt={hoverImage.alt}
               fill
+              wrapperClassName="absolute inset-0"
               className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
             />
           )}

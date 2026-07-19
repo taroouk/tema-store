@@ -118,3 +118,109 @@ button {
     padding-inline: 3rem;
   }
 }
+
+/* ========================================
+   Premium UX Polish
+======================================== */
+
+/* Smooth scrolling refinements */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Fade-in on scroll (.ux-reveal) */
+.ux-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.ux-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ux-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Image skeleton + shimmer */
+.ux-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+
+.ux-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: ux-shimmer 1.4s infinite;
+}
+
+@keyframes ux-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.ux-img {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.ux-img.is-loaded {
+  opacity: 1;
+}
+
+/* Loading screen shimmer */
+.ux-loading-bar {
+  position: relative;
+  overflow: hidden;
+  background-color: #ececec;
+}
+
+.ux-loading-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.12) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  animation: ux-shimmer 1.3s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ux-skeleton::after,
+  .ux-loading-bar::after {
+    animation: none;
+  }
+
+  .ux-img {
+    opacity: 1;
+    transition: none;
+  }
+}

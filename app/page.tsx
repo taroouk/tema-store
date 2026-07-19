@@ -8,20 +8,39 @@ import { BrandStory } from "@/components/home/brand-story";
 import { CinematicVideo } from "@/components/home/cinematic-video";
 import { WhyChooseUs } from "@/components/home/why-choose-us";
 import { InstagramGallery } from "@/components/home/instagram-gallery";
+import { Reveal } from "@/components/ux/reveal";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <Categories />
-      <NewArrivals />
-      <EditorialBanner />
-      <BestSellers />
-      <BrandStory />
-      <CinematicVideo />
-      <WhyChooseUs />
-      <InstagramGallery />
-      <Newsletter />
+      <Reveal>
+        <Categories />
+      </Reveal>
+      <Reveal>
+        <NewArrivals />
+      </Reveal>
+      <Reveal>
+        <EditorialBanner />
+      </Reveal>
+      <Reveal>
+        <BestSellers />
+      </Reveal>
+      <Reveal>
+        <BrandStory />
+      </Reveal>
+      <Reveal>
+        <CinematicVideo />
+      </Reveal>
+      <Reveal>
+        <WhyChooseUs />
+      </Reveal>
+      <Reveal>
+        <InstagramGallery />
+      </Reveal>
+      <Reveal>
+        <Newsletter />
+      </Reveal>
     </>
   );
 }
