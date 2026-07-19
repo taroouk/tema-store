@@ -20,8 +20,8 @@ const supportLinks = [
 const companyLinks = [
   { label: "About", href: "/new-in" },
   { label: "Journal", href: "/collections" },
-  { label: "Privacy Policy", href: "/" },
-  { label: "Terms & Conditions", href: "/" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms & Conditions", href: "/terms" },
 ];
 
 const socialLinks = [
