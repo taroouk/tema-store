@@ -11,17 +11,17 @@ const shopLinks = [
 ];
 
 const supportLinks = [
-  { label: "Contact Us", href: "/contact" },
-  { label: "Shipping", href: "/shipping" },
-  { label: "Returns", href: "/returns" },
-  { label: "FAQs", href: "/faq" },
+  { label: "Contact Us", href: "/checkout" },
+  { label: "Shipping", href: "/collections" },
+  { label: "Returns", href: "/wishlist" },
+  { label: "FAQs", href: "/" },
 ];
 
 const companyLinks = [
-  { label: "About", href: "/about" },
-  { label: "Journal", href: "/journal" },
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms & Conditions", href: "/terms" },
+  { label: "About", href: "/new-in" },
+  { label: "Journal", href: "/collections" },
+  { label: "Privacy Policy", href: "/" },
+  { label: "Terms & Conditions", href: "/" },
 ];
 
 const socialLinks = [

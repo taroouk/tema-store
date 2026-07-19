@@ -66,7 +66,7 @@ export function CartItem({
           <div className="flex items-center rounded-full border">
             <button
               onClick={() =>
-                decrease(product.id)
+                decrease(item.productId, item.colorId, item.size)
               }
               className="flex h-11 w-11 items-center justify-center"
             >
@@ -79,7 +79,7 @@ export function CartItem({
 
             <button
               onClick={() =>
-                increase(product.id)
+                increase(item.productId, item.colorId, item.size)
               }
               className="flex h-11 w-11 items-center justify-center"
             >
@@ -89,7 +89,7 @@ export function CartItem({
 
           <button
             onClick={() =>
-              remove(product.id)
+              remove(item.productId, item.colorId, item.size)
             }
             className="text-neutral-500 transition hover:text-red-500"
           >

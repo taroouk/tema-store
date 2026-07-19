@@ -17,30 +17,30 @@ interface SearchOverlayProps {
 
 export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
   const [query, setQuery] = useState("");
-  const [recent, setRecent] = useState<string[]>([]);
+  const [recent, setRecent] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+
+    try {
+      const stored = window.localStorage.getItem(RECENT_KEY);
+      return stored ? (JSON.parse(stored) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    if (open) {
-      const stored = window.localStorage.getItem(RECENT_KEY);
-      if (stored) {
-        try {
-          setRecent(JSON.parse(stored));
-        } catch {
-          setRecent([]);
-        }
-      }
+    if (!open) return;
 
-      const id = window.setTimeout(() => inputRef.current?.focus(), 50);
-      document.body.style.overflow = "hidden";
+    const id = window.setTimeout(() => inputRef.current?.focus(), 50);
+    document.body.style.overflow = "hidden";
 
-      return () => {
-        window.clearTimeout(id);
-        document.body.style.overflow = "";
-      };
-    }
+    return () => {
+      window.clearTimeout(id);
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   useEffect(() => {

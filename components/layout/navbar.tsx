@@ -64,7 +64,7 @@ export function Navbar() {
               type="button"
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
-              className="hidden transition hover:opacity-60 lg:flex"
+              className="transition hover:opacity-60"
             >
               <Search size={18} strokeWidth={1.8} />
             </button>
@@ -72,7 +72,7 @@ export function Navbar() {
             <Link
               href="/wishlist"
               aria-label="Wishlist"
-              className="relative hidden transition hover:opacity-60 lg:flex"
+              className="relative transition hover:opacity-60"
             >
               <Heart size={18} strokeWidth={1.8} />
 

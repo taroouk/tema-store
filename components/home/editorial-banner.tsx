@@ -43,7 +43,7 @@ export function EditorialBanner() {
               </p>
 
               <Link
-                href="/collections/summer-2026"
+                href="/collections/summer"
                 className="mt-10 inline-flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.18em] transition-all hover:gap-5"
               >
                 Discover Collection

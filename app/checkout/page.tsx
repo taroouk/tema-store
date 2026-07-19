@@ -245,7 +245,7 @@ export default function CheckoutPage() {
                         <div className="flex items-center rounded-full border">
                           <button
                             type="button"
-                            onClick={() => decrease(item.productId)}
+                            onClick={() => decrease(item.productId, item.colorId, item.size)}
                             className="flex h-8 w-8 items-center justify-center"
                             aria-label="Decrease quantity"
                           >
@@ -256,7 +256,7 @@ export default function CheckoutPage() {
 
                           <button
                             type="button"
-                            onClick={() => increase(item.productId)}
+                            onClick={() => increase(item.productId, item.colorId, item.size)}
                             className="flex h-8 w-8 items-center justify-center"
                             aria-label="Increase quantity"
                           >

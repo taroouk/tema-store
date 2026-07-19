@@ -20,11 +20,23 @@ interface CartStore {
     quantity: number
   ) => void;
 
-  removeItem: (productId: string) => void;
+  removeItem: (
+    productId: string,
+    colorId: string,
+    size: string
+  ) => void;
 
-  increase: (productId: string) => void;
+  increase: (
+    productId: string,
+    colorId: string,
+    size: string
+  ) => void;
 
-  decrease: (productId: string) => void;
+  decrease: (
+    productId: string,
+    colorId: string,
+    size: string
+  ) => void;
 
   clear: () => void;
 }
@@ -67,17 +79,24 @@ export const useCartStore = create<CartStore>((set) => ({
       };
     }),
 
-  removeItem: (productId) =>
+  removeItem: (productId, colorId, size) =>
     set((state) => ({
       items: state.items.filter(
-        (item) => item.productId !== productId
+        (item) =>
+          !(
+            item.productId === productId &&
+            item.colorId === colorId &&
+            item.size === size
+          )
       ),
     })),
 
-  increase: (productId) =>
+  increase: (productId, colorId, size) =>
     set((state) => ({
       items: state.items.map((item) =>
-        item.productId === productId
+        item.productId === productId &&
+        item.colorId === colorId &&
+        item.size === size
           ? {
               ...item,
               quantity: item.quantity + 1,
@@ -86,10 +105,12 @@ export const useCartStore = create<CartStore>((set) => ({
       ),
     })),
 
-  decrease: (productId) =>
+  decrease: (productId, colorId, size) =>
     set((state) => ({
       items: state.items.map((item) =>
-        item.productId === productId
+        item.productId === productId &&
+        item.colorId === colorId &&
+        item.size === size
           ? {
               ...item,
               quantity: Math.max(1, item.quantity - 1),
