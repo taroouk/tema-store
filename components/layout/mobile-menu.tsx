@@ -77,6 +77,22 @@ export function MobileMenu() {
                     {item.title}
                   </Link>
                 ))}
+
+                <Link
+                  href="/cart"
+                  onClick={() => setOpen(false)}
+                  className="border-b py-4 text-lg font-medium transition hover:opacity-60"
+                >
+                  Cart
+                </Link>
+
+                <Link
+                  href="/account"
+                  onClick={() => setOpen(false)}
+                  className="border-b py-4 text-lg font-medium transition hover:opacity-60"
+                >
+                  Account
+                </Link>
               </nav>
             </motion.aside>
           </>

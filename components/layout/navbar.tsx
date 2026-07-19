@@ -94,7 +94,7 @@ export function Navbar() {
             <Link
               href="/cart"
               aria-label="Shopping Bag"
-              className="relative hidden transition hover:opacity-60 lg:flex"
+              className="relative transition hover:opacity-60"
             >
               <ShoppingBag size={18} strokeWidth={1.8} />
 
