@@ -7,11 +7,12 @@ import { ProductGallery } from "@/components/product/details/product-gallery";
 import { ProductInfo } from "@/components/product/details/product-info";
 import { ProductAccordion } from "@/components/product/details/product-accordion";
 import { RelatedProducts } from "@/components/product/details/related-products";
-import { Reviews } from "@/components/product/reviews";
 import { JsonLd } from "@/components/seo/json-ld";
 
-import { allProducts } from "@/constants/all-products";
+import { getProductBySlug } from "@/lib/catalog";
 import { siteConfig } from "@/constants/site";
+
+const absolute = (src: string) => (/^https?:\/\//.test(src) ? src : `${siteConfig.url}${src}`);
 
 interface ProductPageProps {
   params: Promise<{
@@ -24,26 +25,24 @@ export async function generateMetadata({
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  const product = allProducts.find((item) => item.slug === slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return {};
   }
 
   const url = `${siteConfig.url}/products/${product.slug}`;
-  const image = product.images[0]?.src
-    ? `${siteConfig.url}${product.images[0].src}`
-    : siteConfig.ogImage;
+  const image = product.images[0]?.src ? absolute(product.images[0].src) : absolute(siteConfig.ogImage);
 
   return {
-    title: product.name,
-    description: product.description,
+    title: product.metaTitle || product.name,
+    description: product.metaDescription || `${product.description} Shop ${product.name} at ${siteConfig.name}.`,
     alternates: {
       canonical: `/products/${product.slug}`,
     },
     openGraph: {
-      title: `${product.name} | ${siteConfig.name}`,
-      description: product.description,
+      title: `${product.metaTitle || product.name} | ${siteConfig.name}`,
+      description: product.metaDescription || product.description,
       url,
       siteName: siteConfig.name,
       type: "website",
@@ -51,8 +50,8 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${product.name} | ${siteConfig.name}`,
-      description: product.description,
+      title: `${product.metaTitle || product.name} | ${siteConfig.name}`,
+      description: product.metaDescription || product.description,
       images: [image],
     },
   };
@@ -63,28 +62,29 @@ export default async function ProductPage({
 }: ProductPageProps) {
   const { slug } = await params;
 
-  const product = allProducts.find(
-    (item) => item.slug === slug
-  );
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
   const url = `${siteConfig.url}/products/${product.slug}`;
-  const image = product.images[0]?.src
-    ? `${siteConfig.url}${product.images[0].src}`
-    : siteConfig.ogImage;
+  const image = product.images[0]?.src ? absolute(product.images[0].src) : absolute(siteConfig.ogImage);
 
   const categoryLabel =
     product.category.charAt(0).toUpperCase() + product.category.slice(1);
+
+  const validUntil = new Date();
+  validUntil.setFullYear(validUntil.getFullYear() + 1);
 
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: product.description,
-    image,
+    image: product.images.length ? product.images.map((i) => absolute(i.src)) : [image],
+    ...(product.sku ? { sku: product.sku, mpn: product.sku } : {}),
+    ...(product.material ? { material: product.material.split("\n")[0] } : {}),
     url,
     brand: {
       "@type": "Brand",
@@ -94,6 +94,9 @@ export default async function ProductPage({
       "@type": "Offer",
       price: product.price,
       priceCurrency: "EGP",
+      priceValidUntil: validUntil.toISOString().slice(0, 10),
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@type": "Organization", name: siteConfig.name },
       availability:
         product.stock > 0
           ? "https://schema.org/InStock"
@@ -129,10 +132,9 @@ export default async function ProductPage({
 
         <ProductAccordion product={product} />
 
-        <Reviews />
       </Container>
 
-      <RelatedProducts />
+      <RelatedProducts product={product} />
     </>
   );
 }

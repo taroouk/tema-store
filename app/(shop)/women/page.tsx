@@ -1,21 +1,28 @@
-import { women } from "@/constants/women";
+import type { Metadata } from "next";
 
-import { ProductGrid } from "@/components/product/product-grid";
-import { FiltersSidebar } from "@/components/shop/filters-sidebar";
-import { ShopHeader } from "@/components/shop/shop-header";
-import { ShopLayout } from "@/components/shop/shop-layout";
+import { ShopCatalog } from "@/components/shop/shop-catalog";
+import { getProductsByCategory } from "@/lib/catalog";
 
-export default function WomenPage() {
+export const metadata: Metadata = {
+  title: "Women",
+  description: "Discover premium oversized essentials designed for everyday luxury.",
+  alternates: { canonical: "/women" },
+};
+
+export default async function WomenPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const products = await getProductsByCategory("women");
+
   return (
-    <>
-      <ShopHeader
-        title="Women"
-        description="Discover premium oversized essentials designed for everyday luxury."
-      />
-
-      <ShopLayout sidebar={<FiltersSidebar />}>
-        <ProductGrid products={women} />
-      </ShopLayout>
-    </>
+    <ShopCatalog
+      title="Women"
+      description="Discover premium oversized essentials designed for everyday luxury."
+      basePath="/women"
+      products={products}
+      searchParams={searchParams}
+    />
   );
 }

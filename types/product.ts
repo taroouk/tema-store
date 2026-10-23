@@ -16,6 +16,12 @@ export interface ProductColor {
   value: string;
 }
 
+export interface VariantStock {
+  colorId: string;
+  size: string;
+  stock: number;
+}
+
 export interface Product {
   id: string;
 
@@ -38,6 +44,18 @@ export interface Product {
   sizes: string[];
 
   stock: number;
+
+  /** Per color/size availability (omitted for static catalog data). */
+  variants?: VariantStock[];
+
+  material?: string;
+  careInstructions?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  sku?: string;
+
+  /** ISO timestamp of the last edit (used for the sitemap). */
+  updatedAt?: string;
 
   featured?: boolean;
 

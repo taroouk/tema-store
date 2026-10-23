@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Tag, Check } from "lucide-react";
@@ -10,37 +11,45 @@ import { Container } from "@/components/common/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/stores/cart-store";
-import { getCartTotals, FREE_SHIPPING_THRESHOLD } from "@/lib/cart-totals";
+import { useCatalog, usePayments, usePricing } from "@/components/catalog/catalog-provider";
+import { getCartTotals } from "@/lib/cart-totals";
+import { couponDiscount, enabledPaymentMethods, getShippingMethods, shippingFee, type PaymentMethodId, type ShippingMethodId } from "@/lib/pricing";
+import { GOVERNORATES } from "@/lib/egypt";
+import { PaymentInstructions } from "@/components/checkout/payment-instructions";
+import { placeOrder as placeOrderAction, validateCoupon } from "./actions";
 
-const SHIPPING_METHODS = [
-  { id: "standard", label: "Standard Delivery", detail: "2–4 business days", price: 80 },
-  { id: "express", label: "Express Delivery", detail: "Next day", price: 150 },
-];
-
-const PAYMENT_METHODS = [
-  { id: "card", label: "Credit / Debit Card" },
-  { id: "cod", label: "Cash On Delivery" },
-];
-
-const COUPONS: Record<string, number> = {
-  TEMA10: 0.1,
-  WELCOME15: 0.15,
+const PAYMENT_LABELS: Record<PaymentMethodId, { label: string; hint: string }> = {
+  cod: { label: "Cash On Delivery", hint: "Pay in cash when your order arrives" },
+  instapay: { label: "InstaPay", hint: "Instant bank transfer, confirmed by our team" },
+  wallet: { label: "Mobile Wallet", hint: "Vodafone Cash, Orange Cash and others" },
 };
 
 export default function CheckoutPage() {
   const items = useCartStore((state) => state.items);
   const increase = useCartStore((state) => state.increase);
   const decrease = useCartStore((state) => state.decrease);
+  const clearCart = useCartStore((state) => state.clear);
+  const catalog = useCatalog();
+  const pricing = usePricing();
+  const shippingMethods = getShippingMethods(pricing);
+  const [pending, startTransition] = useTransition();
+  const [redirecting, setRedirecting] = useState(false);
+  const router = useRouter();
+  const payments = usePayments();
+  const availableMethods = enabledPaymentMethods(payments);
 
-  const [shippingMethod, setShippingMethod] = useState("standard");
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [shippingMethod, setShippingMethod] = useState<ShippingMethodId>("standard");
+  const [selectedMethod, setPaymentMethod] = useState<PaymentMethodId>("cod");
+  // Fall back to the first offered method if the chosen one was switched off in settings.
+  const paymentMethod = availableMethods.includes(selectedMethod) ? selectedMethod : (availableMethods[0] ?? "cod");
   const [coupon, setCoupon] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
-    rate: number;
+    type: "PERCENT" | "FIXED";
+    value: number;
   } | null>(null);
 
-  const { items: detailed, subtotal, count } = getCartTotals(items);
+  const { items: detailed, subtotal, count } = getCartTotals(items, catalog, pricing);
 
   if (items.length === 0) {
     return (
@@ -60,7 +69,7 @@ export default function CheckoutPage() {
 
             <Link
               href="/men"
-              className="mt-10 rounded-full bg-black px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-neutral-800"
+              className="mt-10 rounded-full bg-foreground px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-background transition hover:bg-neutral-800"
             >
               Continue Shopping
             </Link>
@@ -70,33 +79,57 @@ export default function CheckoutPage() {
     );
   }
 
-  const shippingCost =
-    subtotal >= FREE_SHIPPING_THRESHOLD && shippingMethod === "standard"
-      ? 0
-      : SHIPPING_METHODS.find((m) => m.id === shippingMethod)?.price ?? 0;
+  const shippingCost = shippingFee(subtotal, shippingMethod, pricing);
 
-  const discount = appliedCoupon ? subtotal * appliedCoupon.rate : 0;
+  const discount = appliedCoupon ? couponDiscount(subtotal, appliedCoupon) : 0;
 
   const total = subtotal - discount + shippingCost;
 
-  const applyCoupon = () => {
-    const code = coupon.trim().toUpperCase();
+  const applyCoupon = async () => {
+    if (!coupon.trim()) return;
 
-    if (!code) return;
+    const result = await validateCoupon(coupon, subtotal);
 
-    const rate = COUPONS[code];
-
-    if (rate) {
-      setAppliedCoupon({ code, rate });
-      toast.success("Coupon applied", { description: `${code} — ${rate * 100}% off` });
+    if (result?.ok) {
+      setAppliedCoupon(result);
+      toast.success("Coupon applied", { description: result.code });
     } else {
-      toast.error("Invalid coupon code");
+      toast.error(result?.error ?? "Too many attempts, try again later");
     }
   };
 
-  const placeOrder = () => {
-    toast.success("Order placed", {
-      description: "Thank you for your purchase. This is a demo checkout.",
+  const submitOrder = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const field = (name: string) => String(form.get(name) ?? "");
+
+    startTransition(async () => {
+      const result = await placeOrderAction({
+        email: field("email"),
+        phone: field("phone"),
+        firstName: field("firstName"),
+        lastName: field("lastName"),
+        governorate: field("governorate"),
+        city: field("city"),
+        postal: field("postal"),
+        address: field("address"),
+        notes: field("notes"),
+        website: field("website"),
+        shippingMethod,
+        paymentMethod,
+        paymentSender: field("paymentSender"),
+        paymentReference: field("paymentReference"),
+        coupon: appliedCoupon?.code,
+        items: items.map(({ productId, colorId, size, quantity }) => ({ productId, colorId, size, quantity })),
+      });
+
+      if (result.ok) {
+        clearCart();
+        setRedirecting(true);
+        router.push(result.confirmUrl);
+      } else {
+        toast.error(result.error);
+      }
     });
   };
 
@@ -116,7 +149,8 @@ export default function CheckoutPage() {
           </h1>
         </div>
 
-        <div className="grid gap-16 lg:grid-cols-[1fr_400px]">
+        <form onSubmit={submitOrder} className="grid gap-16 lg:grid-cols-[1fr_400px]">
+          <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
           {/* Left: form */}
 
           <div className="space-y-12">
@@ -126,8 +160,8 @@ export default function CheckoutPage() {
               <h2 className="mb-6 text-xl font-semibold">Contact Information</h2>
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <Input label="Email" name="email" type="email" placeholder="you@example.com" />
-                <Input label="Phone" name="phone" type="tel" placeholder="+20 ..." />
+                <Input label="Email" name="email" required type="email" autoComplete="email" placeholder="you@example.com" />
+                <Input label="Phone" name="phone" required type="tel" inputMode="tel" autoComplete="tel" placeholder="01012345678" />
               </div>
             </div>
 
@@ -137,12 +171,29 @@ export default function CheckoutPage() {
               <h2 className="mb-6 text-xl font-semibold">Shipping Address</h2>
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <Input label="First Name" name="firstName" placeholder="First name" />
-                <Input label="Last Name" name="lastName" placeholder="Last name" />
-                <Input label="Country" name="country" placeholder="Egypt" className="sm:col-span-2" />
-                <Input label="City" name="city" placeholder="Cairo" />
-                <Input label="Postal Code" name="postal" placeholder="11511" />
-                <Input label="Address" name="address" placeholder="Street, building, apartment" className="sm:col-span-2" />
+                <Input label="First Name" name="firstName" required autoComplete="given-name" placeholder="First name" />
+                <Input label="Last Name" name="lastName" required autoComplete="family-name" placeholder="Last name" />
+                <div className="flex flex-col gap-2 sm:col-span-2">
+                  <label htmlFor="governorate" className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+                    Governorate (we deliver across Egypt)
+                  </label>
+                  <select
+                    id="governorate"
+                    name="governorate"
+                    required
+                    defaultValue=""
+                    autoComplete="address-level1"
+                    className="h-12 rounded-xl border border-neutral-300 bg-surface px-4 text-sm focus:border-foreground focus:outline-none"
+                  >
+                    <option value="" disabled>Select your governorate</option>
+                    {GOVERNORATES.map((g) => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+                <Input label="City / Area" name="city" required autoComplete="address-level2" placeholder="e.g. Nasr City" />
+                <Input label="Postal Code (optional)" name="postal" autoComplete="postal-code" inputMode="numeric" placeholder="11511" />
+                <Input label="Address" name="address" required autoComplete="street-address" placeholder="Street, building, apartment" className="sm:col-span-2" />
               </div>
             </div>
 
@@ -152,14 +203,14 @@ export default function CheckoutPage() {
               <h2 className="mb-6 text-xl font-semibold">Shipping Method</h2>
 
               <div className="space-y-3">
-                {SHIPPING_METHODS.map((method) => (
+                {shippingMethods.map((method) => (
                   <button
                     key={method.id}
                     type="button"
                     onClick={() => setShippingMethod(method.id)}
                     className={`flex w-full items-center justify-between rounded-2xl border p-5 text-left transition ${
                       shippingMethod === method.id
-                        ? "border-black"
+                        ? "border-foreground"
                         : "border-neutral-300 hover:border-neutral-400"
                     }`}
                   >
@@ -169,7 +220,7 @@ export default function CheckoutPage() {
                     </div>
 
                     <span className="text-sm font-medium">
-                      {method.price === 0 ? "Free" : `EGP ${method.price}`}
+                      {method.id === "standard" && subtotal >= pricing.freeShippingThreshold ? "Free" : `EGP ${method.price}`}
                     </span>
                   </button>
                 ))}
@@ -182,39 +233,34 @@ export default function CheckoutPage() {
               <h2 className="mb-6 text-xl font-semibold">Payment Method</h2>
 
               <div className="space-y-3">
-                {PAYMENT_METHODS.map((method) => (
+                {availableMethods.map((id) => (
                   <button
-                    key={method.id}
+                    key={id}
                     type="button"
-                    onClick={() => setPaymentMethod(method.id)}
+                    onClick={() => setPaymentMethod(id)}
+                    aria-pressed={paymentMethod === id}
                     className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition ${
-                      paymentMethod === method.id
-                        ? "border-black"
-                        : "border-neutral-300 hover:border-neutral-400"
+                      paymentMethod === id ? "border-foreground" : "border-neutral-300 hover:border-neutral-400"
                     }`}
                   >
-                    <span
-                      className={`flex h-5 w-5 items-center justify-center rounded-full border ${
-                        paymentMethod === method.id
-                          ? "border-black"
-                          : "border-neutral-300"
-                      }`}
-                    >
-                      {paymentMethod === method.id && (
-                        <span className="h-2.5 w-2.5 rounded-full bg-black" />
-                      )}
+                    <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${paymentMethod === id ? "border-foreground" : "border-neutral-300"}`}>
+                      {paymentMethod === id && <span className="h-2.5 w-2.5 rounded-full bg-foreground" />}
                     </span>
-
-                    <span className="font-medium">{method.label}</span>
+                    <span>
+                      <span className="block font-medium">{PAYMENT_LABELS[id].label}</span>
+                      <span className="block text-sm text-neutral-500">{PAYMENT_LABELS[id].hint}</span>
+                    </span>
                   </button>
                 ))}
               </div>
 
-              {paymentMethod === "card" && (
-                <div className="mt-5 grid gap-5 sm:grid-cols-2">
-                  <Input label="Card Number" name="card" placeholder="0000 0000 0000 0000" className="sm:col-span-2" />
-                  <Input label="Expiry" name="expiry" placeholder="MM / YY" />
-                  <Input label="CVC" name="cvc" placeholder="123" />
+              {paymentMethod !== "cod" && (
+                <div className="mt-6 space-y-5">
+                  <PaymentInstructions method={paymentMethod} config={payments} total={total} />
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <Input label="Sent from (phone or InstaPay address)" name="paymentSender" required minLength={4} autoComplete="off" placeholder="01xxxxxxxxx" />
+                    <Input label="Transfer reference number" name="paymentReference" required minLength={4} autoComplete="off" placeholder="From your confirmation" />
+                  </div>
                 </div>
               )}
             </div>
@@ -230,7 +276,7 @@ export default function CheckoutPage() {
                 {detailed.map((item) => (
                   <div key={`${item.productId}-${item.size}-${item.colorId}`} className="flex gap-4">
                     <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
-                      <Image src={item.image} alt={item.name} fill className="object-cover" />
+                      <Image src={item.image} alt={item.name} fill sizes="64px" className="object-cover" />
                     </div>
 
                     <div className="flex flex-1 flex-col justify-between">
@@ -279,14 +325,14 @@ export default function CheckoutPage() {
                 {appliedCoupon ? (
                   <div className="flex items-center justify-between rounded-xl bg-neutral-50 px-4 py-3">
                     <span className="flex items-center gap-2 text-sm font-medium">
-                      <Check size={16} className="text-black" />
-                      {appliedCoupon.code} — {appliedCoupon.rate * 100}% off
+                      <Check size={16} className="text-foreground" />
+                      {appliedCoupon.code} — {appliedCoupon.type === "PERCENT" ? `${appliedCoupon.value}%` : `EGP ${appliedCoupon.value}`} off
                     </span>
 
                     <button
                       type="button"
                       onClick={() => setAppliedCoupon(null)}
-                      className="text-xs uppercase tracking-[0.18em] text-neutral-500 hover:text-black"
+                      className="text-xs uppercase tracking-[0.18em] text-neutral-500 hover:text-foreground"
                     >
                       Remove
                     </button>
@@ -298,6 +344,12 @@ export default function CheckoutPage() {
                       placeholder="Coupon code"
                       value={coupon}
                       onChange={(e) => setCoupon(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          void applyCoupon();
+                        }
+                      }}
                       className="h-11"
                     />
 
@@ -340,21 +392,18 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <Button
-                type="button"
-                size="lg"
-                className="mt-6 w-full"
-                onClick={placeOrder}
-              >
-                Place Order
+              <Button type="submit" size="lg" className="mt-6 w-full" disabled={pending || redirecting}>
+                {pending || redirecting ? "Placing order…" : paymentMethod === "cod" ? "Place Order" : "Confirm Order & Payment"}
               </Button>
 
               <p className="mt-4 text-center text-xs text-neutral-400">
-                This is a demo checkout. No payment is processed.
+                {paymentMethod === "cod"
+                  ? "Pay in cash when your order arrives."
+                  : "Your order is prepared as soon as we confirm your transfer."}
               </p>
             </div>
           </aside>
-        </div>
+        </form>
       </section>
     </Container>
   );

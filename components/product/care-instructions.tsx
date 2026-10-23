@@ -1,15 +1,20 @@
 import { InfoSection } from "@/components/product/info-section";
 
-export function CareInstructions() {
+/** Care steps come from the product itself (Admin → Products → Care instructions), one per line. */
+export function CareInstructions({ care }: { care: string }) {
+  const lines = care.split(/\n+/).map((l) => l.trim()).filter(Boolean);
+
   return (
     <InfoSection title="Care Instructions">
-      <ul className="list-disc space-y-1 pl-5">
-        <li>Machine wash cold with like colors</li>
-        <li>Use mild detergent, do not bleach</li>
-        <li>Tumble dry low or lay flat to dry</li>
-        <li>Iron on low heat if needed</li>
-        <li>Do not dry clean</li>
-      </ul>
+      {lines.length === 1 ? (
+        <p>{lines[0]}</p>
+      ) : (
+        <ul className="list-disc space-y-1 pl-5">
+          {lines.map((l) => (
+            <li key={l}>{l}</li>
+          ))}
+        </ul>
+      )}
     </InfoSection>
   );
 }

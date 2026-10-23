@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { newArrivals } from "@/constants/products";
+import { getProductsByBadge } from "@/lib/catalog";
 import { Container } from "@/components/common/container";
 import { Section } from "@/components/common/section";
 import { ProductGrid } from "@/components/product/product-grid";
 import { Features } from "@/components/home/features";
 
-export function NewArrivals() {
+export async function NewArrivals() {
+  const newArrivals = await getProductsByBadge("NEW", 8);
+
   return (
     <Section className="pt-4 pb-20">
       <Container>
@@ -22,7 +24,7 @@ export function NewArrivals() {
             </h2>
 
             <p className="mt-3 max-w-lg text-neutral-600">
-              Discover the latest pieces from TEMA. Designed with premium
+              Discover the latest pieces from Tema Label. Designed with premium
               materials and timeless silhouettes.
             </p>
           </div>

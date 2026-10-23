@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Class-based dark mode (toggled on <html> by lib/theme.ts) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+}
+
 /* ========================================
    Design Tokens
 ======================================== */
@@ -8,6 +17,7 @@
   /* Colors */
   --background: #ffffff;
   --foreground: #0f0f0f;
+  --surface: #ffffff;
 
   --primary: #111111;
   --primary-foreground: #ffffff;
@@ -38,84 +48,153 @@
 }
 
 /* ========================================
+   Dark theme
+   Tailwind v4 reads its palette from CSS variables, so remapping the neutral scale (and
+   the status colours) restyles every existing utility. Pure white/black are left alone
+   on purpose: they are used for text/overlays on photography.
+======================================== */
+
+.dark {
+  color-scheme: dark;
+
+  --background: #0b0b0c;
+  --foreground: #f4f4f5;
+  --surface: #151517;
+
+  --primary: #f4f4f5;
+  --primary-foreground: #0b0b0c;
+  --secondary: #1c1c1f;
+  --secondary-foreground: #f4f4f5;
+  --muted: #151517;
+  --muted-foreground: #a1a1aa;
+  --border: #2a2a2e;
+
+  --color-neutral-50: #111113;
+  --color-neutral-100: #1b1b1e;
+  --color-neutral-200: #2a2a2e;
+  --color-neutral-300: #3b3b40;
+  --color-neutral-400: #70707a;
+  --color-neutral-500: #9d9da6;
+  --color-neutral-600: #b6b6be;
+  --color-neutral-700: #d0d0d6;
+  --color-neutral-800: #e6e6ea;
+  --color-neutral-900: #f4f4f5;
+  --color-neutral-950: #ffffff;
+
+  --color-green-50: #0f2a1b;
+  --color-green-100: #12301f;
+  --color-green-200: #1f5233;
+  --color-green-600: #4ade80;
+  --color-green-700: #86efac;
+  --color-green-800: #86efac;
+  --color-amber-50: #2a2008;
+  --color-amber-100: #3a2c0b;
+  --color-amber-200: #5c4510;
+  --color-amber-800: #fcd34d;
+  --color-red-50: #2a1214;
+  --color-red-100: #3b1416;
+  --color-red-200: #5b1f23;
+  --color-red-300: #7f2a2f;
+  --color-red-500: #f87171;
+  --color-red-600: #f87171;
+  --color-red-700: #fca5a5;
+  --color-red-800: #fca5a5;
+  --color-blue-100: #12263f;
+  --color-blue-800: #93c5fd;
+}
+
+.dark .ux-skeleton { background-color: #1b1b1e; }
+.dark .ux-skeleton::after {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0) 100%);
+}
+.dark .ux-loading-bar { background-color: #1b1b1e; }
+.dark .ux-loading-bar::after {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+}
+
+/* ========================================
    Base
 ======================================== */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-* {
-  border-color: var(--border);
-}
+  * {
+    border-color: var(--border);
+  }
 
-html {
-  scroll-behavior: smooth;
-}
+  html {
+    scroll-behavior: smooth;
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+  body {
+    background: var(--background);
+    color: var(--foreground);
 
-  font-family: var(--font-body), sans-serif;
+    font-family: var(--font-body), sans-serif;
 
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-button {
-  cursor: pointer;
-}
+  button {
+    cursor: pointer;
+  }
 
-::selection {
-  background: var(--primary);
-  color: white;
+  ::selection {
+    background: var(--primary);
+    color: white;
+  }
 }
 
 /* ========================================
    Utilities
 ======================================== */
 
-.container {
-  width: 100%;
-  max-width: var(--container);
-  margin-inline: auto;
-  padding-inline: 1.25rem;
-}
-
-@media (min-width: 768px) {
+@layer components {
   .container {
-    padding-inline: 2rem;
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: 1.25rem;
   }
-}
 
-@media (min-width: 1280px) {
-  .container {
-    padding-inline: 3rem;
+  @media (min-width: 768px) {
+    .container {
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .container {
+      padding-inline: 3rem;
+    }
   }
 }
 
@@ -134,93 +213,138 @@ html {
   }
 }
 
-/* Fade-in on scroll (.ux-reveal) */
-.ux-reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: opacity, transform;
-}
-
-.ux-reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
+@layer components {
+  /* Fade-in on scroll (.ux-reveal) */
   .ux-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, transform;
+  }
+
+  .ux-reveal.is-visible {
     opacity: 1;
-    transform: none;
-    transition: none;
+    transform: translateY(0);
   }
-}
 
-/* Image skeleton + shimmer */
-.ux-skeleton {
-  position: relative;
-  overflow: hidden;
-  background-color: #f1f1f1;
-}
-
-.ux-skeleton::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: ux-shimmer 1.4s infinite;
-}
-
-@keyframes ux-shimmer {
-  100% {
-    transform: translateX(100%);
+  @media (prefers-reduced-motion: reduce) {
+    .ux-reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
   }
-}
 
-.ux-img {
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
+  /* Image skeleton + shimmer */
+  .ux-skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: #f1f1f1;
+  }
 
-.ux-img.is-loaded {
-  opacity: 1;
-}
+  .ux-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: ux-shimmer 1.4s infinite;
+  }
 
-/* Loading screen shimmer */
-.ux-loading-bar {
-  position: relative;
-  overflow: hidden;
-  background-color: #ececec;
-}
-
-.ux-loading-bar::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.12) 50%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  animation: ux-shimmer 1.3s infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ux-skeleton::after,
-  .ux-loading-bar::after {
-    animation: none;
+  @keyframes ux-shimmer {
+    100% {
+      transform: translateX(100%);
+    }
   }
 
   .ux-img {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .ux-img.is-loaded {
     opacity: 1;
-    transition: none;
+  }
+
+  /* Loading screen shimmer */
+  .ux-loading-bar {
+    position: relative;
+    overflow: hidden;
+    background-color: #ececec;
+  }
+
+  .ux-loading-bar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.12) 50%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    animation: ux-shimmer 1.3s infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ux-skeleton::after,
+    .ux-loading-bar::after {
+      animation: none;
+    }
+
+    .ux-img {
+      opacity: 1;
+      transition: none;
+    }
   }
 }
+
+/* Once the image has loaded, the skeleton must not paint over sibling layers (e.g. hover image stacks) */
+.ux-skeleton.is-loaded,
+.dark .ux-skeleton.is-loaded {
+  background-color: transparent;
+}
+.ux-skeleton.is-loaded::after {
+  display: none;
+}
+
+/* Page-level motion (CSS-only so SSR content is never hidden behind JS) */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.animate-page-in {
+  animation: page-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+/* Without JavaScript nothing may stay hidden waiting for an observer */
+@media (scripting: none) {
+  .ux-reveal { opacity: 1; transform: none; }
+  .ux-img { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-page-in { animation: none; }
+}
+
+/* Keyboard focus: visible, on-brand, theme aware */
+:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+html { scroll-padding-top: 6rem; }

@@ -19,7 +19,7 @@ export function EmptyCart() {
 
       <Link
         href="/men"
-        className="mt-10 rounded-full bg-black px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-neutral-800"
+        className="mt-10 rounded-full bg-foreground px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-background transition hover:bg-neutral-800"
       >
         Continue Shopping
       </Link>

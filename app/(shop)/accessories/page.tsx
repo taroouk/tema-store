@@ -1,21 +1,28 @@
-import { accessories } from "@/constants/accessories";
+import type { Metadata } from "next";
 
-import { ProductGrid } from "@/components/product/product-grid";
-import { FiltersSidebar } from "@/components/shop/filters-sidebar";
-import { ShopHeader } from "@/components/shop/shop-header";
-import { ShopLayout } from "@/components/shop/shop-layout";
+import { ShopCatalog } from "@/components/shop/shop-catalog";
+import { getProductsByCategory } from "@/lib/catalog";
 
-export default function AccessoriesPage() {
+export const metadata: Metadata = {
+  title: "Accessories",
+  description: "Complete your look with premium everyday essentials.",
+  alternates: { canonical: "/accessories" },
+};
+
+export default async function AccessoriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const products = await getProductsByCategory("accessories");
+
   return (
-    <>
-      <ShopHeader
-        title="Accessories"
-        description="Complete your look with premium everyday essentials."
-      />
-
-      <ShopLayout sidebar={<FiltersSidebar />}>
-        <ProductGrid products={accessories} />
-      </ShopLayout>
-    </>
+    <ShopCatalog
+      title="Accessories"
+      description="Complete your look with premium everyday essentials."
+      basePath="/accessories"
+      products={products}
+      searchParams={searchParams}
+    />
   );
 }

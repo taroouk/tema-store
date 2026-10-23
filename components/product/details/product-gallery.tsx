@@ -50,7 +50,7 @@ export function ProductGallery({ product }: ProductGalleryProps) {
             className={cn(
               "relative aspect-[3/4] overflow-hidden rounded-xl border transition-all",
               selectedImage.id === image.id
-                ? "border-black"
+                ? "border-foreground"
                 : "border-neutral-200 hover:border-neutral-400"
             )}
           >
@@ -58,6 +58,7 @@ export function ProductGallery({ product }: ProductGalleryProps) {
               src={image.src}
               alt={image.alt}
               fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover"
             />
           </button>

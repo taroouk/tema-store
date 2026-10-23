@@ -15,7 +15,7 @@ const headingVariants = cva(
         xl: "text-5xl md:text-6xl lg:text-7xl",
       },
       color: {
-        default: "text-black",
+        default: "text-foreground",
         muted: "text-neutral-500",
         white: "text-white",
       },

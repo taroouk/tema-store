@@ -20,7 +20,7 @@ export function SmartImage({
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <div className={cn("ux-skeleton", !loaded && "ux-skeleton", wrapperClassName)}>
+    <div className={cn("ux-skeleton", loaded && "is-loaded", wrapperClassName)}>
       <Image
         {...props}
         alt={alt}

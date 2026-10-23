@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
@@ -27,23 +28,20 @@ export function ProductAccordion({ product }: ProductAccordionProps) {
       title: "Shipping & Delivery",
       content: <ShippingInfo />,
     },
-    {
-      id: "fabric",
-      title: "Fabric & Material",
-      content: <FabricDetails />,
-    },
-    {
-      id: "care",
-      title: "Care Instructions",
-      content: <CareInstructions />,
-    },
+    ...(product.material
+      ? [{ id: "fabric", title: "Fabric & Material", content: <FabricDetails material={product.material} /> }]
+      : []),
+    ...(product.careInstructions
+      ? [{ id: "care", title: "Care Instructions", content: <CareInstructions care={product.careInstructions} /> }]
+      : []),
     {
       id: "returns",
       title: "Returns & Exchanges",
       content: (
         <p className="leading-8 text-neutral-600">
           Returns and exchanges are accepted within 14 days provided the
-          product remains unworn and in its original condition.
+          product remains unworn and in its original condition. See our{" "}
+          <Link href="/returns" className="font-medium text-foreground underline underline-offset-4">Returns page</Link> for details.
         </p>
       ),
     },

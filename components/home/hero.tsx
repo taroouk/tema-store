@@ -12,8 +12,9 @@ export function Hero() {
       {/* Background Image */}
       <Image
         src="/images/hero.jpg"
-        alt="TEMA Summer Collection"
+        alt="Tema Label Summer Collection"
         fill
+        sizes="100vw"
         priority
         className="object-cover object-center"
       />

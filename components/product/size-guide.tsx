@@ -57,7 +57,7 @@ export function SizeGuide({ category = "men" }: SizeGuideProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-sm font-medium uppercase tracking-[0.18em] text-neutral-500 underline-offset-4 transition hover:text-black hover:underline"
+        className="text-sm font-medium uppercase tracking-[0.18em] text-neutral-500 underline-offset-4 transition hover:text-foreground hover:underline"
       >
         Size Guide
       </button>
@@ -74,7 +74,7 @@ export function SizeGuide({ category = "men" }: SizeGuideProps) {
             onClick={() => setOpen(false)}
           />
 
-          <div className="relative z-10 w-full max-w-lg rounded-3xl bg-white p-8 shadow-xl">
+          <div className="relative z-10 w-full max-w-lg rounded-3xl bg-surface p-8 shadow-xl">
             <div className="flex items-start justify-between">
               <div>
                 <h2
@@ -94,7 +94,7 @@ export function SizeGuide({ category = "men" }: SizeGuideProps) {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 transition hover:border-black"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 transition hover:border-foreground"
               >
                 <X size={18} />
               </button>
@@ -114,7 +114,7 @@ export function SizeGuide({ category = "men" }: SizeGuideProps) {
                   {rows.map((row, index) => (
                     <tr
                       key={row.size}
-                      className={index % 2 === 0 ? "bg-white" : "bg-neutral-50/50"}
+                      className={index % 2 === 0 ? "bg-surface" : "bg-neutral-50/50"}
                     >
                       <td className="px-5 py-3 font-medium">{row.size}</td>
                       <td className="px-5 py-3 text-neutral-600">{row.chest}</td>

@@ -3,17 +3,18 @@ import { Mail, MapPin, Phone } from "lucide-react";
 
 import { Container } from "@/components/common/container";
 import { Section } from "@/components/common/section";
-import { Button } from "@/components/ui/button";
+import { ContactForm } from "@/components/forms/contact-form";
 import { siteConfig } from "@/constants/site";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Get in touch with the TEMA team — contact details, store hours, and support.",
+    "Get in touch with the Tema Label team — contact details, store hours, and support.",
   alternates: { canonical: "/contact" },
   openGraph: {
-    title: "Contact | TEMA",
-    description: "Get in touch with the TEMA team.",
+    title: "Contact | Tema Label",
+    description: "Get in touch with the Tema Label team.",
     url: `${siteConfig.url}/contact`,
     siteName: siteConfig.name,
     type: "website",
@@ -21,14 +22,14 @@ export const metadata: Metadata = {
   },
 };
 
-const socials = [
-  { label: "Instagram", href: "https://instagram.com" },
-  { label: "TikTok", href: "https://tiktok.com" },
-  { label: "Pinterest", href: "https://pinterest.com" },
-  { label: "Facebook", href: "https://facebook.com" },
-];
+const SOCIAL_LABELS = { instagram: "Instagram", tiktok: "TikTok", facebook: "Facebook", x: "X", pinterest: "Pinterest" } as const;
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getSettings();
+  const socials = Object.entries(settings.links)
+    .filter(([, href]) => href)
+    .map(([key, href]) => ({ label: SOCIAL_LABELS[key as keyof typeof SOCIAL_LABELS], href }));
+
   return (
     <Section className="py-16">
       <Container>
@@ -60,7 +61,9 @@ export default function ContactPage() {
                 <h2 className="text-sm font-semibold uppercase tracking-[0.18em]">
                   Email
                 </h2>
-                <p className="mt-2 text-neutral-600">support@tema.com</p>
+                <p className="mt-2 text-neutral-600">
+                  {settings.supportEmail ? <a href={`mailto:${settings.supportEmail}`} className="hover:underline">{settings.supportEmail}</a> : "Use the form and we will reply by email."}
+                </p>
               </div>
             </div>
 
@@ -70,7 +73,7 @@ export default function ContactPage() {
                 <h2 className="text-sm font-semibold uppercase tracking-[0.18em]">
                   Phone
                 </h2>
-                <p className="mt-2 text-neutral-600">+20 100 000 0000</p>
+                <p className="mt-2 text-neutral-600">{settings.supportPhone || "Available soon"}</p>
               </div>
             </div>
 
@@ -81,31 +84,34 @@ export default function ContactPage() {
                   Studio
                 </h2>
                 <p className="mt-2 text-neutral-600">
-                  TEMA Studio, Cairo, Egypt
+                  {settings.businessAddress || "Egypt"}
                 </p>
               </div>
             </div>
 
-            <div>
-              <h2 className="text-sm font-semibold uppercase tracking-[0.18em]">
-                Store Hours
-              </h2>
-              <ul className="mt-3 space-y-2 text-neutral-600">
-                <li className="flex justify-between">
-                  <span>Monday – Friday</span>
-                  <span>10:00 – 20:00</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>Saturday</span>
-                  <span>12:00 – 22:00</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>Sunday</span>
-                  <span>Closed</span>
-                </li>
-              </ul>
-            </div>
+            {settings.storeHours && (
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-[0.18em]">Store Hours</h2>
+                <ul className="mt-3 space-y-2 text-neutral-600">
+                  {settings.storeHours
+                    .split("\n")
+                    .map((l) => l.trim())
+                    .filter(Boolean)
+                    .map((line) => {
+                      const i = line.indexOf(": ");
+                      const [day, hours] = i > 0 ? [line.slice(0, i), line.slice(i + 2).trim()] : [line, ""];
+                      return (
+                        <li key={line} className="flex justify-between gap-4">
+                          <span>{day}</span>
+                          <span>{hours}</span>
+                        </li>
+                      );
+                    })}
+                </ul>
+              </div>
+            )}
 
+            {socials.length > 0 && (
             <div>
               <h2 className="text-sm font-semibold uppercase tracking-[0.18em]">
                 Social
@@ -117,88 +123,17 @@ export default function ContactPage() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm uppercase tracking-[0.18em] text-neutral-500 transition hover:text-black"
+                    className="text-sm uppercase tracking-[0.18em] text-neutral-500 transition hover:text-foreground"
                   >
                     {social.label}
                   </a>
                 ))}
               </div>
             </div>
+            )}
           </div>
 
-          {/* Form (UI only) */}
-
-          <form
-            className="space-y-5 rounded-3xl border border-neutral-200 p-8"
-          >
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="firstName"
-                  className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500"
-                >
-                  First Name
-                </label>
-                <input
-                  id="firstName"
-                  name="firstName"
-                  className="h-12 rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-black"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="lastName"
-                  className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500"
-                >
-                  Last Name
-                </label>
-                <input
-                  id="lastName"
-                  name="lastName"
-                  className="h-12 rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-black"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="email"
-                className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                className="h-12 rounded-xl border border-neutral-300 px-4 text-sm outline-none focus:border-black"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="message"
-                className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500"
-              >
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={5}
-                className="rounded-xl border border-neutral-300 px-4 py-3 text-sm outline-none focus:border-black"
-              />
-            </div>
-
-            <Button type="submit" size="lg" className="w-full">
-              Send Message
-            </Button>
-
-            <p className="text-center text-xs text-neutral-400">
-              This is a demo form. No message is sent.
-            </p>
-          </form>
+          <ContactForm />
         </div>
       </Container>
     </Section>

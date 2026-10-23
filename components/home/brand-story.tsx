@@ -12,9 +12,10 @@ export function BrandStory() {
 
           <div className="relative aspect-[4/5] overflow-hidden rounded-[32px] bg-neutral-100">
             <Image
-              src="/images/editorial/editorial.PNG"
-              alt="TEMA Brand Story"
+              src="/images/editorial/editorial.webp"
+              alt="Tema Label Brand Story"
               fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover"
             />
           </div>
@@ -37,7 +38,7 @@ export function BrandStory() {
 
             <div className="mt-8 space-y-6 text-neutral-600">
               <p className="leading-8">
-                TEMA was born from a simple belief: that everyday clothing
+                Tema Label was born from a simple belief: that everyday clothing
                 deserves the same care as couture. We design quiet, considered
                 pieces meant to be worn for years, not seasons.
               </p>

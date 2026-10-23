@@ -1,25 +1,11 @@
-"use client";
-
-import { motion } from "framer-motion";
-import { usePathname } from "next/navigation";
-
 import type { ReactNode } from "react";
 
-interface PageTransitionProps {
-  children: ReactNode;
-}
-
-export function PageTransition({ children }: PageTransitionProps) {
-  const pathname = usePathname();
-
-  return (
-    <motion.div
-      key={pathname}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-    >
+/**
+ * Soft fade-in for page content. Pure CSS (see .animate-page-in), so the server-rendered HTML is
+ * visible immediately — no waiting for JavaScript to hydrate before anything shows.
+ */
+export function PageTransition({ children }: { children: ReactNode }) {
+  return <main id="main-content" tabIndex={-1} className="animate-page-in outline-none">
       {children}
-    </motion.div>
-  );
+    </main>;
 }

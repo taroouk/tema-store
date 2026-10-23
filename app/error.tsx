@@ -37,14 +37,14 @@ export default function Error({ error, reset }: ErrorProps) {
           <button
             type="button"
             onClick={reset}
-            className="rounded-full bg-black px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-neutral-800"
+            className="rounded-full bg-foreground px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-background transition hover:bg-neutral-800"
           >
             Try Again
           </button>
 
           <Link
             href="/"
-            className="rounded-full border border-neutral-300 px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-neutral-100"
+            className="rounded-full border border-neutral-300 px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-foreground transition hover:bg-neutral-100"
           >
             Back To Home
           </Link>

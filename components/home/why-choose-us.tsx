@@ -3,7 +3,7 @@ import {
   RefreshCcw,
   ShieldCheck,
   Truck,
-  MapPin,
+  Wallet,
 } from "lucide-react";
 
 import { Container } from "@/components/common/container";
@@ -12,28 +12,28 @@ import { Section } from "@/components/common/section";
 const reasons = [
   {
     icon: BadgeCheck,
-    title: "Premium Cotton",
-    description: "100% premium combed cotton for everyday comfort.",
+    title: "Timeless Design",
+    description: "Minimal pieces made to be worn on repeat.",
   },
   {
-    icon: MapPin,
-    title: "Made in Egypt",
-    description: "Designed and crafted by local artisans.",
+    icon: Wallet,
+    title: "Pay Your Way",
+    description: "Cash on delivery, InstaPay or mobile wallet.",
   },
   {
     icon: Truck,
-    title: "Fast Delivery",
-    description: "Shipped within 2–4 business days.",
+    title: "Delivery Across Egypt",
+    description: "Delivered to your door in 2–4 business days.",
   },
   {
     icon: RefreshCcw,
     title: "Easy Exchange",
-    description: "14 days hassle-free returns and exchanges.",
+    description: "14 days to exchange a piece that isn't right.",
   },
   {
     icon: ShieldCheck,
-    title: "Premium Guarantee",
-    description: "Quality you can wear with confidence.",
+    title: "Secure Shopping",
+    description: "Encrypted checkout — we never ask for card details.",
   },
 ];
 
@@ -43,7 +43,7 @@ export function WhyChooseUs() {
       <Container>
         <div className="mb-12 text-center">
           <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
-            Why TEMA
+            Why Tema Label
           </span>
 
           <h2
@@ -61,7 +61,7 @@ export function WhyChooseUs() {
             return (
               <div
                 key={reason.title}
-                className="flex flex-col items-center gap-4 bg-white p-8 text-center"
+                className="flex flex-col items-center gap-4 bg-surface p-8 text-center"
               >
                 <Icon
                   size={30}

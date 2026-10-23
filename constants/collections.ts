@@ -28,7 +28,7 @@ export const collections: Collection[] = [
     slug: "essentials",
     title: "Essentials Collection",
     description:
-      "The building blocks of a refined wardrobe. Structured fits and signature TEMA detailing.",
+      "The building blocks of a refined wardrobe. Structured fits and signature Tema Label detailing.",
     coverImage: "/images/products/product-5.png",
     productSlugs: [
       "et-back-print-tee",

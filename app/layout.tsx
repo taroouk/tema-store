@@ -1,17 +1,29 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Footer } from "@/components/layout/footer";
 import { bodyFont, headingFont } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/constants/site";
-import { Navbar } from "@/components/layout/navbar";
-import { AnnouncementBar } from "@/components/layout/announcement-bar";
-import { PageTransition } from "@/components/ux/page-transition";
-export const metadata: Metadata = {
+import { ThemeSync } from "@/components/theme/theme-sync";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
+import { CatalogProvider } from "@/components/catalog/catalog-provider";
+import { getProducts } from "@/lib/catalog";
+import { getSettings } from "@/lib/settings";
+import { Footer } from "@/components/layout/footer";
+import { SiteChrome } from "@/components/layout/site-chrome";
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+
+  return {
   metadataBase: new URL(siteConfig.url),
+  applicationName: siteConfig.name,
+  keywords: [siteConfig.name, ...siteConfig.alternateNames, "oversized t-shirts Egypt", "premium essentials"],
+  verification: {
+    google: settings.googleVerification || undefined,
+    other: settings.bingVerification ? { "msvalidate.01": settings.bingVerification } : undefined,
+  },
 
   title: {
-    default: siteConfig.name,
+    default: `${siteConfig.name} — Premium Everyday Essentials`,
     template: `%s | ${siteConfig.name}`,
   },
 
@@ -22,7 +34,7 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
-    locale: "en_US",
+    locale: "en_EG",
     type: "website",
     images: [
       {
@@ -44,15 +56,22 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-};
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [products, settings] = await Promise.all([getProducts(), getSettings()]);
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Applies the saved/OS theme before first paint to avoid a flash */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
 <body
   className={cn(
     bodyFont.variable,
@@ -60,12 +79,10 @@ export default function RootLayout({
     "bg-background text-foreground antialiased"
   )}
 >
- <AnnouncementBar />
-<Navbar />
-
-<PageTransition>{children}</PageTransition>
-
-<Footer />
+<ThemeSync />
+<CatalogProvider products={products} pricing={settings} announcement={settings.announcement} payments={settings.payments}>
+  <SiteChrome footer={<Footer />}>{children}</SiteChrome>
+</CatalogProvider>
 </body>
     </html>
   );

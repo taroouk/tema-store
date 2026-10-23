@@ -61,9 +61,10 @@ export function EditorialBanner() {
               className="relative aspect-[3/4] lg:aspect-[4/5]"
             >
               <Image
-                src="/images/editorial/editorial.PNG"
-                alt="TEMA Editorial Campaign"
+                src="/images/editorial/editorial.webp"
+                alt="Tema Label Editorial Campaign"
                 fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover"
               />
             </motion.div>

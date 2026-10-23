@@ -4,9 +4,12 @@ import { ArrowRight } from "lucide-react";
 import { ProductGrid } from "@/components/product/product-grid";
 import { Container } from "@/components/common/container";
 
-import { newArrivals } from "@/constants/products";
+import { getRelatedProducts } from "@/lib/catalog";
+import type { Product } from "@/types/product";
 
-export function RelatedProducts() {
+export async function RelatedProducts({ product }: { product: Product }) {
+  const related = await getRelatedProducts(product, 4);
+
   return (
     <section className="border-t border-neutral-200 py-24">
       <Container>
@@ -36,7 +39,7 @@ export function RelatedProducts() {
           </Link>
         </div>
 
-        <ProductGrid products={newArrivals.slice(0, 4)} />
+        <ProductGrid products={related} />
       </Container>
     </section>
   );

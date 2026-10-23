@@ -1,23 +1,28 @@
-import { allProducts } from "@/constants/all-products";
+import type { Metadata } from "next";
 
-import { ProductGrid } from "@/components/product/product-grid";
-import { FiltersSidebar } from "@/components/shop/filters-sidebar";
-import { ShopHeader } from "@/components/shop/shop-header";
-import { ShopLayout } from "@/components/shop/shop-layout";
+import { ShopCatalog } from "@/components/shop/shop-catalog";
+import { getProductsByBadge } from "@/lib/catalog";
 
-const newIn = allProducts.filter((product) => product.badge === "NEW");
+export const metadata: Metadata = {
+  title: "New In",
+  description: "The latest drops from Tema Label. Fresh arrivals, timeless design.",
+  alternates: { canonical: "/new-in" },
+};
 
-export default function NewInPage() {
+export default async function NewInPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const products = await getProductsByBadge("NEW");
+
   return (
-    <>
-      <ShopHeader
-        title="New In"
-        description="The latest drops from TEMA. Fresh arrivals, timeless design."
-      />
-
-      <ShopLayout sidebar={<FiltersSidebar />}>
-        <ProductGrid products={newIn} />
-      </ShopLayout>
-    </>
+    <ShopCatalog
+      title="New In"
+      description="The latest drops from Tema Label. Fresh arrivals, timeless design."
+      basePath="/new-in"
+      products={products}
+      searchParams={searchParams}
+    />
   );
 }

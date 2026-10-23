@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Minus, Plus, Trash2 } from "lucide-react";
 
 import { useCartStore } from "@/stores/cart-store";
-import { allProducts } from "@/constants/all-products";
+import { useCatalog } from "@/components/catalog/catalog-provider";
 
 interface CartItemProps {
   item: {
@@ -15,11 +15,10 @@ interface CartItemProps {
   };
 }
 
-const products = allProducts;
-
 export function CartItem({
   item,
 }: CartItemProps) {
+  const products = useCatalog();
   const product = products.find(
     (product) => product.id === item.productId
   );
@@ -39,6 +38,7 @@ export function CartItem({
           src={product.images[0].src}
           alt={product.images[0].alt}
           fill
+          sizes="128px"
           className="object-cover"
         />
       </div>

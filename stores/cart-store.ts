@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface CartItem {
   productId: string;
@@ -41,7 +42,9 @@ interface CartStore {
   clear: () => void;
 }
 
-export const useCartStore = create<CartStore>((set) => ({
+export const useCartStore = create<CartStore>()(
+  persist(
+    (set) => ({
   items: [],
 
   addItem: (productId, colorId, size, quantity) =>
@@ -123,4 +126,7 @@ export const useCartStore = create<CartStore>((set) => ({
     set({
       items: [],
     }),
-}));
+}),
+    { name: "tema-cart", version: 1, skipHydration: true }
+  )
+);

@@ -1,6 +1,11 @@
+"use client";
+
+import { usePricing } from "@/components/catalog/catalog-provider";
 import { InfoSection } from "@/components/product/info-section";
 
 export function ShippingInfo() {
+  const { freeShippingThreshold, expressShippingFee } = usePricing();
+
   return (
     <InfoSection title="Shipping & Delivery">
       <p>
@@ -8,12 +13,9 @@ export function ShippingInfo() {
         business days across Egypt.
       </p>
       <p>
-        Free standard shipping on all orders above EGP 1,500. Express
-        delivery is available at checkout for an additional fee.
-      </p>
-      <p>
-        International shipping is available to selected countries. Duties
-        and taxes are calculated at checkout where applicable.
+        Free standard shipping on all orders above EGP{" "}
+        {freeShippingThreshold.toLocaleString("en-US")}. Express delivery is
+        available at checkout for EGP {expressShippingFee.toLocaleString("en-US")}.
       </p>
     </InfoSection>
   );

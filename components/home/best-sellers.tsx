@@ -4,9 +4,11 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/common/container";
 import { Section } from "@/components/common/section";
 import { ProductGrid } from "@/components/product/product-grid";
-import { bestSellers } from "@/constants/best-sellers";
+import { getProductsByBadge } from "@/lib/catalog";
 
-export function BestSellers() {
+export async function BestSellers() {
+  const bestSellers = await getProductsByBadge("BEST SELLER", 8);
+
   return (
     <Section className="py-24">
       <Container>
@@ -27,12 +29,12 @@ export function BestSellers() {
             </h2>
 
             <p className="mt-3 max-w-lg text-neutral-600">
-              Our most loved essentials, chosen by the TEMA community.
+              Our most loved essentials, chosen by the Tema Label community.
             </p>
           </div>
 
           <Link
-            href="/best-sellers"
+            href="/men"
             className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] transition-all hover:gap-3"
           >
             View All

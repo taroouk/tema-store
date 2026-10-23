@@ -1,0 +1,33 @@
+/*
+ * Admin dark theme. Tailwind v4 reads its palette from CSS variables, so remapping the
+ * neutral scale (and the badge colours) inside .dark .admin-root restyles every existing utility.
+ */
+.admin-root {
+  font-family: var(--font-body), system-ui, sans-serif;
+  letter-spacing: normal;
+}
+
+.dark .admin-root {
+  /* Admin surfaces are "white" cards on a neutral page; in dark mode they become elevated panels. */
+  --color-white: #1a1b20;
+  --color-neutral-50: #121316;
+  --color-neutral-100: #23252b;
+  --color-neutral-200: #2e3037;
+  --color-neutral-300: #40434d;
+}
+
+.admin-root ::selection {
+  background: var(--color-neutral-900);
+  color: var(--color-white);
+}
+
+@media print {
+  .admin-root aside,
+  .admin-root header,
+  .admin-root .no-print {
+    display: none !important;
+  }
+  .admin-root main {
+    padding: 0 !important;
+  }
+}

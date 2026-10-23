@@ -5,10 +5,11 @@ import { X } from "lucide-react";
 
 import { Container } from "@/components/common/container";
 import { ProductCard } from "@/components/product/product-card";
-import { allProducts } from "@/constants/all-products";
+import { useCatalog } from "@/components/catalog/catalog-provider";
 import { useWishlistStore } from "@/stores/wishlist-store";
 
 export default function WishlistPage() {
+  const allProducts = useCatalog();
   const items = useWishlistStore((state) => state.items);
   const remove = useWishlistStore((state) => state.remove);
   const clear = useWishlistStore((state) => state.clear);
@@ -60,7 +61,7 @@ export default function WishlistPage() {
 
             <Link
               href="/men"
-              className="mt-10 rounded-full bg-black px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-neutral-800"
+              className="mt-10 rounded-full bg-foreground px-8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-background transition hover:bg-neutral-800"
             >
               Continue Shopping
             </Link>
@@ -75,7 +76,7 @@ export default function WishlistPage() {
                   type="button"
                   onClick={() => remove(product.id)}
                   aria-label="Remove from wishlist"
-                  className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition hover:bg-neutral-100"
+                  className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-surface shadow-md transition hover:bg-neutral-100"
                 >
                   <X size={18} />
                 </button>

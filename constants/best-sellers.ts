@@ -100,7 +100,7 @@ export const bestSellers: Product[] = [
     name: "Essential Back Print",
 
     description:
-      "Oversized premium fit featuring signature TEMA artwork.",
+      "Oversized premium fit featuring signature Tema Label artwork.",
 
     price: 649,
 

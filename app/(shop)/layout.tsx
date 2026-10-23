@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: {
     default: "Shop",
-    template: `%s | TEMA`,
+    template: `%s | Tema Label`,
   },
 };
 

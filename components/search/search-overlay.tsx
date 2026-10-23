@@ -1,10 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { X, Search as SearchIcon, Clock } from "lucide-react";
 
 import { ProductCard } from "@/components/product/product-card";
-import { allProducts } from "@/constants/all-products";
+import { useCatalog } from "@/components/catalog/catalog-provider";
 import { cn } from "@/lib/utils";
 
 const RECENT_KEY = "tema:recent-searches";
@@ -16,6 +17,8 @@ interface SearchOverlayProps {
 }
 
 export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
+  const router = useRouter();
+  const allProducts = useCatalog();
   const [query, setQuery] = useState("");
   const [recent, setRecent] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
@@ -73,7 +76,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
         colors.includes(q)
       );
     });
-  }, [query]);
+  }, [query, allProducts]);
 
   const saveRecent = (value: string) => {
     const trimmed = value.trim();
@@ -94,7 +97,11 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    saveRecent(query);
+    const q = query.trim();
+    if (!q) return;
+    saveRecent(q);
+    onClose();
+    router.push(`/search?q=${encodeURIComponent(q)}`);
   };
 
   const clearRecent = () => {
@@ -129,7 +136,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
 
       <div
         className={cn(
-          "absolute inset-x-0 top-0 max-h-[90vh] overflow-y-auto bg-white transition-all duration-300",
+          "absolute inset-x-0 top-0 max-h-[90vh] overflow-y-auto bg-surface transition-all duration-300",
           open ? "translate-y-0" : "-translate-y-full"
         )}
       >
@@ -143,7 +150,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 transition hover:border-black"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 transition hover:border-foreground"
               tabIndex={open ? 0 : -1}
             >
               <X size={18} />
@@ -181,7 +188,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                     <button
                       type="button"
                       onClick={clearRecent}
-                      className="text-xs uppercase tracking-[0.18em] text-neutral-400 transition hover:text-black"
+                      className="text-xs uppercase tracking-[0.18em] text-neutral-400 transition hover:text-foreground"
                       tabIndex={open ? 0 : -1}
                     >
                       Clear
@@ -194,7 +201,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                         key={term}
                         type="button"
                         onClick={() => setQuery(term)}
-                        className="rounded-full border border-neutral-200 px-4 py-2 text-sm transition hover:border-black"
+                        className="rounded-full border border-neutral-200 px-4 py-2 text-sm transition hover:border-foreground"
                         tabIndex={open ? 0 : -1}
                       >
                         {term}

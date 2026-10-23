@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { Container } from "@/components/common/container";
-import { ShopHeader } from "@/components/shop/shop-header";
-import { CollectionProducts } from "@/components/collections/collection-products";
+import { ShopCatalog } from "@/components/shop/shop-catalog";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
-  collections,
   getCollectionBySlug,
   getCollectionProducts,
-} from "@/constants/collections";
+  getCollections,
+} from "@/lib/catalog";
 import { siteConfig } from "@/constants/site";
 
 interface CollectionPageProps {
   params: Promise<{
     slug: string;
   }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const collections = await getCollections();
   return collections.map((collection) => ({
     slug: collection.slug,
   }));
@@ -29,7 +29,7 @@ export async function generateMetadata({
 }: CollectionPageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  const collection = getCollectionBySlug(slug);
+  const collection = await getCollectionBySlug(slug);
 
   if (!collection) {
     return {};
@@ -60,16 +60,17 @@ export async function generateMetadata({
 
 export default async function CollectionPage({
   params,
+  searchParams,
 }: CollectionPageProps) {
   const { slug } = await params;
 
-  const collection = getCollectionBySlug(slug);
+  const collection = await getCollectionBySlug(slug);
 
   if (!collection) {
     notFound();
   }
 
-  const products = getCollectionProducts(collection.productSlugs);
+  const products = await getCollectionProducts(collection.productSlugs);
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -103,14 +104,13 @@ export default async function CollectionPage({
   return (
     <>
       <JsonLd data={[breadcrumbJsonLd, organizationJsonLd]} />
-      <ShopHeader
+      <ShopCatalog
         title={collection.title}
         description={collection.description}
+        basePath={`/collections/${collection.slug}`}
+        products={products}
+        searchParams={searchParams}
       />
-
-      <Container>
-        <CollectionProducts products={products} />
-      </Container>
     </>
   );
 }

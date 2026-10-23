@@ -21,14 +21,14 @@ export function ShopHeader({
           <div className="mb-5 flex items-center gap-2 text-sm text-neutral-500">
             <Link
               href="/"
-              className="transition hover:text-black"
+              className="transition hover:text-foreground"
             >
               Home
             </Link>
 
             <ChevronRight size={14} />
 
-            <span className="text-black">
+            <span className="text-foreground">
               {title}
             </span>
           </div>

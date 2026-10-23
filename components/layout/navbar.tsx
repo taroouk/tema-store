@@ -8,8 +8,10 @@ import { Container } from "@/components/common/container";
 import { Logo } from "@/components/icons/logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { SearchOverlay } from "@/components/search/search-overlay";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { siteConfig } from "@/constants/site";
 import { useCartStore } from "@/stores/cart-store";
+import { useUiStore } from "@/stores/ui-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 
 export function Navbar() {
@@ -19,10 +21,11 @@ export function Navbar() {
     state.items.reduce((total, item) => total + item.quantity, 0)
   );
 
+  const openCart = useUiStore((state) => state.openCart);
   const wishlistCount = useWishlistStore((state) => state.items.length);
 
   const header = (
-    <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white">
+    <header className="sticky top-0 z-50 border-b border-neutral-200 bg-surface/85 backdrop-blur-xl">
       <Container>
         <nav
           className="grid h-20 grid-cols-3 items-center"
@@ -32,12 +35,12 @@ export function Navbar() {
           <div className="flex items-center gap-6">
             <MobileMenu />
 
-            <ul className="hidden items-center gap-6 lg:flex">
+            <ul className="hidden items-center gap-7 lg:flex">
               {siteConfig.navigation.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-xs font-medium uppercase tracking-[0.18em] transition-colors hover:text-neutral-500"
+                    className="whitespace-nowrap text-xs font-medium uppercase tracking-[0.18em] transition-colors hover:text-neutral-500"
                   >
                     {item.title}
                   </Link>
@@ -77,33 +80,37 @@ export function Navbar() {
               <Heart size={18} strokeWidth={1.8} />
 
               {wishlistCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[10px] text-white">
+                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[10px] text-background">
                   {wishlistCount}
                 </span>
               )}
             </Link>
 
-            <button
-              type="button"
-              aria-label="Account"
+            <ThemeToggle />
+
+            <Link
+              href="/track"
+              aria-label="Track your order"
+              title="Track your order"
               className="hidden transition hover:opacity-60 lg:flex"
             >
               <User size={18} strokeWidth={1.8} />
-            </button>
+            </Link>
 
-            <Link
-              href="/cart"
-              aria-label="Shopping Bag"
+            <button
+              type="button"
+              onClick={openCart}
+              aria-label="Open shopping bag"
               className="relative transition hover:opacity-60"
             >
               <ShoppingBag size={18} strokeWidth={1.8} />
 
               {itemCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[10px] text-white">
+                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[10px] text-background">
                   {itemCount}
                 </span>
               )}
-            </Link>
+            </button>
           </div>
         </nav>
       </Container>

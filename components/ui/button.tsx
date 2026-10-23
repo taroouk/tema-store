@@ -11,7 +11,7 @@ const buttonVariants = cva(
     "text-sm font-medium",
     "transition-all duration-200",
     "focus-visible:outline-none",
-    "focus-visible:ring-2 focus-visible:ring-black/20",
+    "focus-visible:ring-2 focus-visible:ring-foreground/20",
     "disabled:pointer-events-none disabled:opacity-50",
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   ],
@@ -19,11 +19,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-black text-white hover:bg-neutral-800 active:scale-[0.98]",
+          "bg-foreground text-background hover:bg-neutral-800 active:scale-[0.98]",
         secondary:
-          "bg-neutral-100 text-black hover:bg-neutral-200 active:scale-[0.98]",
+          "bg-neutral-100 text-foreground hover:bg-neutral-200 active:scale-[0.98]",
         outline:
-          "border border-neutral-300 bg-white hover:bg-neutral-100 active:scale-[0.98]",
+          "border border-neutral-300 bg-surface hover:bg-neutral-100 active:scale-[0.98]",
         ghost:
           "hover:bg-neutral-100 active:scale-[0.98]",
       },

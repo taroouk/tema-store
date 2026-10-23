@@ -43,7 +43,7 @@ export function MobileMenu() {
             />
 
             <motion.aside
-              className="fixed right-0 top-0 z-50 flex h-screen w-[320px] max-w-[90vw] flex-col bg-white shadow-2xl lg:hidden"
+              className="fixed right-0 top-0 z-50 flex h-screen w-[320px] max-w-[90vw] flex-col bg-surface shadow-2xl lg:hidden"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -87,11 +87,11 @@ export function MobileMenu() {
                 </Link>
 
                 <Link
-                  href="/account"
+                  href="/track"
                   onClick={() => setOpen(false)}
                   className="border-b py-4 text-lg font-medium transition hover:opacity-60"
                 >
-                  Account
+                  Track Order
                 </Link>
               </nav>
             </motion.aside>

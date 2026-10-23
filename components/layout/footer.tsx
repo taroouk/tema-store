@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Container } from "@/components/common/container";
 import { Logo } from "@/components/icons/logo";
+import { getSettings } from "@/lib/settings";
 
 const shopLinks = [
   { label: "Men", href: "/men" },
@@ -11,41 +12,41 @@ const shopLinks = [
 ];
 
 const supportLinks = [
-  { label: "Contact Us", href: "/checkout" },
-  { label: "Shipping", href: "/collections" },
-  { label: "Returns", href: "/wishlist" },
-  { label: "FAQs", href: "/" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Track Order", href: "/track" },
+  { label: "Shipping", href: "/shipping" },
+  { label: "Returns", href: "/returns" },
+  { label: "FAQs", href: "/faq" },
 ];
 
 const companyLinks = [
-  { label: "About", href: "/new-in" },
-  { label: "Journal", href: "/collections" },
+  { label: "About", href: "/about" },
+  { label: "Collections", href: "/collections" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms & Conditions", href: "/terms" },
 ];
 
-const socialLinks = [
-  {
-    href: "https://instagram.com",
-    label: "Instagram",
-  },
-  {
-    href: "https://tiktok.com",
-    label: "TikTok",
-  },
-  {
-    href: "https://pinterest.com",
-    label: "Pinterest",
-  },
-  {
-    href: "https://facebook.com",
-    label: "Facebook",
-  },
-];
+const socialLabels = {
+  instagram: "Instagram",
+  tiktok: "TikTok",
+  pinterest: "Pinterest",
+  facebook: "Facebook",
+  x: "X",
+} as const;
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSettings();
+  const socialLinks = Object.entries(settings.links)
+    .filter(([, href]) => href)
+    .map(([key, href]) => ({ href, label: socialLabels[key as keyof typeof socialLabels] }));
+  const legal = [
+    settings.commercialRegister && `Commercial Register: ${settings.commercialRegister}`,
+    settings.taxCardNumber && `Tax Card: ${settings.taxCardNumber}`,
+    settings.businessAddress,
+  ].filter(Boolean);
+
   return (
-    <footer className="border-t border-neutral-200 bg-white">
+    <footer className="border-t border-neutral-200 bg-surface">
       <Container>
         <div className="grid gap-16 py-20 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           {/* Brand */}
@@ -57,7 +58,7 @@ export function Footer() {
             />
 
             <p className="mt-6 max-w-sm leading-7 text-neutral-600">
-              TEMA creates timeless everyday essentials with premium
+              Tema Label — the official Tema store — creates timeless everyday essentials with premium
               craftsmanship, clean aesthetics and modern simplicity.
             </p>
 
@@ -68,7 +69,7 @@ export function Footer() {
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm uppercase tracking-[0.18em] text-neutral-500 transition hover:text-black"
+                  className="text-sm uppercase tracking-[0.18em] text-neutral-500 transition hover:text-foreground"
                 >
                   {item.label}
                 </Link>
@@ -87,7 +88,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-neutral-600 transition hover:text-black"
+                    className="text-neutral-600 transition hover:text-foreground"
                   >
                     {item.label}
                   </Link>
@@ -107,7 +108,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-neutral-600 transition hover:text-black"
+                    className="text-neutral-600 transition hover:text-foreground"
                   >
                     {item.label}
                   </Link>
@@ -127,7 +128,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-neutral-600 transition hover:text-black"
+                    className="text-neutral-600 transition hover:text-foreground"
                   >
                     {item.label}
                   </Link>
@@ -138,9 +139,10 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-neutral-200 py-8 text-sm text-neutral-500 md:flex-row">
-          <p>© 2026 TEMA. All rights reserved.</p>
-
-          <p>Designed & Developed by TEMA.</p>
+          <div className="text-center md:text-left">
+            <p>© {new Date().getFullYear()} Tema Label. All rights reserved.</p>
+            {legal.length > 0 && <p className="mt-1 text-xs text-neutral-400">{legal.join(" · ")}</p>}
+          </div>
         </div>
       </Container>
     </footer>

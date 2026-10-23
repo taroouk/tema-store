@@ -1,4 +1,4 @@
-import { allProducts } from "@/constants/all-products";
+import type { Product } from "@/types/product";
 import type { CartItem } from "@/stores/cart-store";
 
 export interface CartTotals {
@@ -14,10 +14,9 @@ export interface CartTotals {
   count: number;
 }
 
-export const FREE_SHIPPING_THRESHOLD = 1500;
-export const FLAT_SHIPPING = 80;
+import { shippingFee, type PricingSettings } from "@/lib/pricing";
 
-export function getCartTotals(items: CartItem[]): CartTotals {
+export function getCartTotals(items: CartItem[], allProducts: Product[], pricing: PricingSettings): CartTotals {
   const detailed = items
     .map((item) => {
       const product = allProducts.find((p) => p.id === item.productId);
@@ -45,7 +44,7 @@ export function getCartTotals(items: CartItem[]): CartTotals {
 
   const count = detailed.reduce((total, item) => total + item.quantity, 0);
 
-  const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING;
+  const shipping = subtotal === 0 ? 0 : shippingFee(subtotal, "standard", pricing);
 
   return {
     items: detailed,

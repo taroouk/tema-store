@@ -8,8 +8,8 @@ import {
 const features = [
   {
     icon: BadgeCheck,
-    title: "Premium Quality",
-    description: "100% Premium Cotton",
+    title: "Everyday Quality",
+    description: "Made for daily wear",
   },
   {
     icon: Truck,
@@ -23,14 +23,14 @@ const features = [
   },
   {
     icon: ShieldCheck,
-    title: "Secure Payment",
-    description: "100% Secure Checkout",
+    title: "Pay Your Way",
+    description: "COD · InstaPay · Wallet",
   },
 ];
 
 export function Features() {
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white">
+    <div className="rounded-2xl border border-neutral-200 bg-surface">
       <div className="grid grid-cols-2 lg:grid-cols-4">
         {features.map((feature, index) => {
           const Icon = feature.icon;

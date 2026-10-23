@@ -9,12 +9,12 @@ import { siteConfig } from "@/constants/site";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "TEMA is a premium fashion house creating timeless everyday essentials with modern minimal design and premium craftsmanship.",
+    "Tema Label is a premium fashion house creating timeless everyday essentials with modern minimal design and premium craftsmanship.",
   alternates: { canonical: "/about" },
   openGraph: {
-    title: "About | TEMA",
+    title: "About | Tema Label",
     description:
-      "TEMA is a premium fashion house creating timeless everyday essentials with modern minimal design.",
+      "Tema Label is a premium fashion house creating timeless everyday essentials with modern minimal design.",
     url: `${siteConfig.url}/about`,
     siteName: siteConfig.name,
     type: "website",
@@ -63,7 +63,7 @@ export default function AboutPage() {
             </h1>
 
             <p className="mt-6 text-lg leading-8 text-neutral-600">
-              TEMA was born from a simple belief: that everyday clothing
+              Tema Label was born from a simple belief: that everyday clothing
               deserves the same care as couture. We design quiet, considered
               pieces meant to be worn for years, not seasons.
             </p>
@@ -75,9 +75,10 @@ export default function AboutPage() {
         <Container>
           <div className="relative aspect-[16/9] overflow-hidden rounded-[32px] bg-neutral-100">
             <Image
-              src="/images/editorial/editorial.PNG"
-              alt="TEMA editorial"
+              src="/images/editorial/editorial.webp"
+              alt="Tema Label editorial"
               fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover"
             />
           </div>
@@ -128,7 +129,7 @@ export default function AboutPage() {
 
           <div className="grid gap-px overflow-hidden rounded-3xl border border-neutral-200 bg-neutral-200 md:grid-cols-2 lg:grid-cols-4">
             {values.map((value) => (
-              <div key={value.title} className="bg-white p-8">
+              <div key={value.title} className="bg-surface p-8">
                 <h3 className="text-lg font-semibold">{value.title}</h3>
                 <p className="mt-4 leading-7 text-neutral-500">
                   {value.description}

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 
+import { shippingFee } from "@/lib/pricing";
 import { useCartStore } from "@/stores/cart-store";
-import { allProducts } from "@/constants/all-products";
-
-const products = allProducts;
+import { usePricing, useCatalog } from "@/components/catalog/catalog-provider";
 
 export function CartSummary() {
   const items = useCartStore((state) => state.items);
+  const products = useCatalog();
+  const pricing = usePricing();
 
   const subtotal = items.reduce((total, item) => {
     const product = products.find(
@@ -20,7 +21,7 @@ export function CartSummary() {
     return total + product.price * item.quantity;
   }, 0);
 
-  const shipping = subtotal >= 1500 ? 0 : 80;
+  const shipping = subtotal === 0 ? 0 : shippingFee(subtotal, "standard", pricing);
 
   const total = subtotal + shipping;
 
@@ -62,7 +63,7 @@ export function CartSummary() {
 
       <Link
         href="/checkout"
-        className="mt-10 flex h-14 items-center justify-center rounded-full bg-black text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-neutral-800"
+        className="mt-10 flex h-14 items-center justify-center rounded-full bg-foreground text-sm font-semibold uppercase tracking-[0.18em] text-background transition hover:bg-neutral-800"
       >
         Proceed To Checkout
       </Link>

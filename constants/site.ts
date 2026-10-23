@@ -1,20 +1,15 @@
 export const siteConfig = {
-  name: "TEMA",
+  name: "Tema Label",
+
+  /** Other names people use for the brand — exposed to search engines as alternate names. */
+  alternateNames: ["Tema", "Tema Store", "Tema Label Store", "تيما ليبل"],
 
   description:
-    "Premium fashion brand delivering timeless essentials with modern minimal design.",
+    "Tema Label — premium everyday essentials: oversized tees, women's pieces and accessories with timeless, minimal design.",
 
-  url: "https://tema.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://temalabel.com",
 
   ogImage: "/images/og-image.png",
-
-  links: {
-    instagram: "",
-    tiktok: "",
-    facebook: "",
-    x: "",
-    pinterest: "",
-  },
 
 navigation: [
   {
