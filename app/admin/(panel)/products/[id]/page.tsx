@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
-import { SubmitButton, ConfirmButton } from "@/components/admin/form-controls";
+import { ConfirmButton, SubmitButton, TypedConfirmButton } from "@/components/admin/form-controls";
 import { z } from "zod";
 
 import {
   Badge,
+  btnGhostCls,
   Card,
   inputCls,
   PageHeader,
@@ -11,10 +12,11 @@ import {
   td,
   th,
 } from "@/components/admin/ui";
+import { can } from "@/lib/auth/permissions";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
 
-import { archiveProduct, updateProduct, updateStock } from "../actions";
+import { archiveProduct, deleteProductPermanently, duplicateProduct, restoreProduct, updateProduct, updateStock } from "../actions";
 import { ProductForm, type ProductFormValues } from "../product-form";
 
 export const metadata = { title: "Edit product" };
@@ -24,7 +26,8 @@ export default async function EditProductPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireAdmin("catalog:write");
+  const admin = await requireAdmin("catalog:write");
+  const canDelete = can(admin.role, "catalog:delete");
   const { id } = await params;
   if (!z.string().uuid().safeParse(id).success) notFound();
 
@@ -36,6 +39,7 @@ export default async function EditProductPage({
     prisma.category.findMany({ orderBy: { name: "asc" } }),
   ]);
   if (!product) notFound();
+  const archived = product.status === "ARCHIVED";
 
   const initial: ProductFormValues = {
     name: product.name,
@@ -67,8 +71,32 @@ export default async function EditProductPage({
         title={product.name}
         description={`/${product.slug}`}
         actions={
-          <form action={archiveProduct.bind(null, id)}>
-            <ConfirmButton title="Archive this product?" message="It will be hidden from the storefront. Existing orders keep their history." confirmLabel="Archive">Archive</ConfirmButton>
+          <form className="flex flex-wrap items-center gap-2">
+            <SubmitButton className={btnGhostCls} formAction={duplicateProduct.bind(null, id)}>Duplicate</SubmitButton>
+            {archived ? (
+              <SubmitButton className={btnGhostCls} formAction={restoreProduct.bind(null, id)}>Restore</SubmitButton>
+            ) : (
+              <ConfirmButton
+                title="Archive this product?"
+                message="It will be hidden from the store but kept, and can be restored any time. Past orders keep their history."
+                confirmLabel="Archive"
+                formAction={archiveProduct.bind(null, id)}
+              >
+                Archive
+              </ConfirmButton>
+            )}
+            {canDelete &&
+              (product.status === "ACTIVE" ? (
+                <span className="text-xs text-neutral-500" title="Archive it first to enable permanent deletion">Archive to enable delete</span>
+              ) : (
+                <TypedConfirmButton
+                  title={`Permanently delete “${product.name}”?`}
+                  message="This cannot be undone. Its variants, photos and collection links are removed. Past orders keep their own copy of the item."
+                  formAction={deleteProductPermanently.bind(null, id)}
+                >
+                  Delete permanently
+                </TypedConfirmButton>
+              ))}
           </form>
         }
       />

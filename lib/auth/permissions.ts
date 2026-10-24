@@ -2,6 +2,7 @@ import type { AdminRole } from "@prisma/client";
 
 export type Permission =
   | "catalog:write"
+  | "catalog:delete"
   | "orders:manage"
   | "customers:view"
   | "admins:manage"
@@ -11,8 +12,8 @@ export type Permission =
   | "reports:view";
 
 const MATRIX: Record<AdminRole, Permission[]> = {
-  SUPER_ADMIN: ["catalog:write", "orders:manage", "customers:view", "admins:manage", "audit:view", "marketing:manage", "settings:manage", "reports:view"],
-  ADMIN: ["catalog:write", "orders:manage", "customers:view", "audit:view", "marketing:manage", "settings:manage", "reports:view"],
+  SUPER_ADMIN: ["catalog:write", "catalog:delete", "orders:manage", "customers:view", "admins:manage", "audit:view", "marketing:manage", "settings:manage", "reports:view"],
+  ADMIN: ["catalog:write", "catalog:delete", "orders:manage", "customers:view", "audit:view", "marketing:manage", "settings:manage", "reports:view"],
   EDITOR: ["catalog:write"],
   SUPPORT: ["orders:manage", "customers:view"],
 };

@@ -10,6 +10,7 @@ import { slugify, withMessage } from "@/lib/admin/format";
 import { CATALOG_TAG } from "@/lib/catalog";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const money = z.preprocess(
   (v) => (v === "" || v == null ? undefined : v),
@@ -91,7 +92,13 @@ function parseForm(formData: FormData) {
   ];
   if (sizes.length === 0) return { error: "Add at least one size" };
 
+  const intent = get("intent");
   const data = input.data;
+  if (intent === "draft") data.status = "DRAFT";
+  if (intent === "publish") data.status = "ACTIVE";
+  if (data.status === "ACTIVE" && images.length === 0) {
+    return { error: "Add at least one image before publishing (or save it as a draft)." };
+  }
   return {
     data: {
       ...data,
@@ -271,19 +278,176 @@ export async function updateStock(id: string, formData: FormData) {
   redirect(withMessage(back, "ok", "Stock updated"));
 }
 
+// ───────────────────────── Archive / restore / duplicate / delete ─────────────────────────
+
+const LIST = "/admin/products";
+
+function done(back: string, msg: string): never {
+  updateTag(CATALOG_TAG);
+  revalidatePath(LIST);
+  redirect(withMessage(back, "ok", msg));
+}
+
+/** Only ever send people back to the products area (the value comes from a form field). */
+function safeBack(raw: FormDataEntryValue | null) {
+  if (typeof raw !== "string" || !raw.startsWith("/admin/products") || raw.startsWith("//")) return LIST;
+  try {
+    const u = new URL(raw, "http://local");
+    u.searchParams.delete("ok");
+    u.searchParams.delete("error");
+    return u.pathname + u.search;
+  } catch {
+    return LIST;
+  }
+}
+
+const IdList = z.array(z.string().uuid()).min(1, "Select at least one product").max(200);
+
+function selectedIds(formData: FormData, back: string) {
+  const r = IdList.safeParse(formData.getAll("ids"));
+  if (!r.success) redirect(withMessage(back, "error", r.error.issues[0].message));
+  return r.data;
+}
+
 export async function archiveProduct(id: string) {
   const admin = await requireAdmin("catalog:write");
-  const product = await prisma.product.update({
+  const product = await prisma.product.update({ where: { id }, data: { status: "ARCHIVED", deletedAt: new Date() } });
+  await audit(admin, { action: "archive", entity: "Product", entityId: id, summary: `Archived product "${product.name}"` });
+  done(LIST, `"${product.name}" archived — it is hidden from the store and can be restored any time`);
+}
+
+export async function restoreProduct(id: string) {
+  const admin = await requireAdmin("catalog:write");
+  const product = await prisma.product.update({ where: { id }, data: { status: "DRAFT", deletedAt: null } });
+  await audit(admin, { action: "restore", entity: "Product", entityId: id, summary: `Restored product "${product.name}" as a draft` });
+  done(`${LIST}/${id}`, `"${product.name}" restored as a draft — review it, then publish`);
+}
+
+export async function duplicateProduct(id: string) {
+  const admin = await requireAdmin("catalog:write");
+  const src = await prisma.product.findUniqueOrThrow({
     where: { id },
-    data: { status: "ARCHIVED", deletedAt: new Date() },
+    include: { images: { orderBy: { sortOrder: "asc" } }, variants: { orderBy: { position: "asc" } } },
   });
-  await audit(admin, {
-    action: "delete",
-    entity: "Product",
-    entityId: id,
-    summary: `Archived product "${product.name}"`,
+
+  let slug = `${src.slug}-copy`;
+  for (let n = 2; await prisma.product.findUnique({ where: { slug }, select: { id: true } }); n++) slug = `${src.slug}-copy-${n}`;
+
+  const copy = await prisma.product.create({
+    data: {
+      name: `${src.name} (copy)`,
+      slug,
+      description: src.description,
+      material: src.material,
+      careInstructions: src.careInstructions,
+      metaTitle: src.metaTitle,
+      metaDescription: src.metaDescription,
+      price: src.price,
+      compareAtPrice: src.compareAtPrice,
+      costPrice: src.costPrice,
+      currency: src.currency,
+      categoryId: src.categoryId,
+      status: "DRAFT",
+      featured: false,
+      images: { create: src.images.map((i) => ({ url: i.url, alt: i.alt, sortOrder: i.sortOrder })) },
+      variants: {
+        create: src.variants.map((v) => ({
+          sku: `${slug}-${v.colorName}-${v.size}`.toUpperCase().replace(/[^A-Z0-9]+/g, "-"),
+          colorName: v.colorName,
+          colorHex: v.colorHex,
+          size: v.size,
+          position: v.position,
+          stock: 0,
+        })),
+      },
+    },
   });
-  updateTag(CATALOG_TAG);
-  revalidatePath("/admin/products");
-  redirect(withMessage("/admin/products", "ok", `"${product.name}" archived`));
+  await audit(admin, { action: "create", entity: "Product", entityId: copy.id, summary: `Duplicated "${src.name}" → "${copy.name}"` });
+  done(`${LIST}/${copy.id}`, "Duplicated as a draft with stock 0 — edit the name, images and stock, then publish");
+}
+
+type BulkAction = "publish" | "draft" | "archive" | "restore";
+
+/** Publish / unpublish / archive / restore every selected product. */
+export async function bulkProducts(action: BulkAction, formData: FormData) {
+  const admin = await requireAdmin("catalog:write");
+  const back = safeBack(formData.get("back"));
+  const ids = selectedIds(formData, back);
+
+  let skipped = 0;
+  let targets = ids;
+  if (action === "publish") {
+    // A product with no photo or no variants must not go live.
+    const ready = await prisma.product.findMany({
+      where: { id: { in: ids }, images: { some: {} }, variants: { some: {} } },
+      select: { id: true },
+    });
+    targets = ready.map((p) => p.id);
+    skipped = ids.length - targets.length;
+  }
+
+  const data =
+    action === "publish" ? { status: "ACTIVE" as const, deletedAt: null, publishedAt: new Date() }
+    : action === "draft" ? { status: "DRAFT" as const, deletedAt: null }
+    : action === "archive" ? { status: "ARCHIVED" as const, deletedAt: new Date() }
+    : { status: "DRAFT" as const, deletedAt: null };
+
+  const r = await prisma.product.updateMany({ where: { id: { in: targets } }, data });
+  await audit(admin, { action, entity: "Product", summary: `Bulk ${action}: ${r.count} product${r.count === 1 ? "" : "s"}` });
+
+  const verb = { publish: "published", draft: "moved to drafts", archive: "archived", restore: "restored as drafts" }[action];
+  done(back, `${r.count} product${r.count === 1 ? "" : "s"} ${verb}${skipped ? ` · ${skipped} skipped (need at least one image and one variant)` : ""}`);
+}
+
+const PUBLIC_PREFIX = "/storage/v1/object/public/products/";
+
+/** Removes uploaded image files from storage unless another product still points at the same file. */
+async function removeUnusedImages(urls: string[]) {
+  const paths = new Set<string>();
+  for (const url of urls) {
+    const i = url.indexOf(PUBLIC_PREFIX);
+    if (i === -1) continue;
+    const stillUsed = await prisma.productImage.count({ where: { url } });
+    if (stillUsed === 0) paths.add(decodeURIComponent(url.slice(i + PUBLIC_PREFIX.length).split("?")[0]));
+  }
+  if (paths.size) await createAdminClient().storage.from("products").remove([...paths]).catch(() => undefined);
+}
+
+async function deleteProducts(ids: string[]) {
+  const rows = await prisma.product.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, name: true, status: true, images: { select: { url: true } } },
+  });
+  // Live products must be archived first, so a live item can't vanish with a single click.
+  const deletable = rows.filter((p) => p.status !== "ACTIVE");
+  const blocked = rows.length - deletable.length;
+
+  const urls = deletable.flatMap((p) => p.images.map((i) => i.url));
+  // Past orders keep their own copy of name/price/image; only the live link is cleared.
+  await prisma.product.deleteMany({ where: { id: { in: deletable.map((p) => p.id) } } });
+  await removeUnusedImages(urls);
+  return { deleted: deletable, blocked };
+}
+
+export async function deleteProductPermanently(id: string, formData: FormData) {
+  const admin = await requireAdmin("catalog:delete");
+  const back = `${LIST}/${id}`;
+  if (formData.get("confirm") !== "DELETE") redirect(withMessage(back, "error", "Type DELETE to confirm"));
+
+  const { deleted, blocked } = await deleteProducts([id]);
+  if (blocked) redirect(withMessage(back, "error", "Archive this product first, then delete it."));
+  await audit(admin, { action: "delete", entity: "Product", entityId: id, summary: `Permanently deleted product "${deleted[0]?.name}"` });
+  done(LIST, `"${deleted[0]?.name}" permanently deleted`);
+}
+
+export async function bulkDeleteProducts(formData: FormData) {
+  const admin = await requireAdmin("catalog:delete");
+  const back = safeBack(formData.get("back"));
+  if (formData.get("confirm") !== "DELETE") redirect(withMessage(back, "error", "Type DELETE to confirm"));
+  const ids = selectedIds(formData, back);
+
+  const { deleted, blocked } = await deleteProducts(ids);
+  await audit(admin, { action: "delete", entity: "Product", summary: `Permanently deleted ${deleted.length} product(s): ${deleted.map((p) => p.name).join(", ")}`.slice(0, 480) });
+  if (deleted.length === 0) redirect(withMessage(back, "error", "Live products must be archived before they can be deleted."));
+  done(back, `${deleted.length} permanently deleted${blocked ? ` · ${blocked} live product${blocked === 1 ? "" : "s"} skipped (archive first)` : ""}`);
 }

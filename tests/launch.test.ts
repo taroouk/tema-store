@@ -55,3 +55,15 @@ describe("applyPlaceholders", () => {
     expect(applyPlaceholders("{{storeName}} ships free over {{freeThreshold}} {{nope}}", s)).toBe("Tema Label ships free over EGP 1,500 {{nope}}");
   });
 });
+
+import { can } from "@/lib/auth/permissions";
+
+describe("product deletion permission", () => {
+  it("only admins can permanently delete; editors can archive", () => {
+    expect(can("SUPER_ADMIN", "catalog:delete")).toBe(true);
+    expect(can("ADMIN", "catalog:delete")).toBe(true);
+    expect(can("EDITOR", "catalog:delete")).toBe(false);
+    expect(can("EDITOR", "catalog:write")).toBe(true);
+    expect(can("SUPPORT", "catalog:delete")).toBe(false);
+  });
+});

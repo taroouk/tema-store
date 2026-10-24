@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { SubmitButton } from "@/components/admin/form-controls";
-import { btnCls, Card, Field, inputCls } from "@/components/admin/ui";
+import { btnCls, btnGhostCls, Card, Field, inputCls } from "@/components/admin/ui";
 import { createClient } from "@/lib/supabase/client";
 
 import { createUploadTicket } from "../uploads/actions";
@@ -334,6 +334,7 @@ export function ProductForm({
       <div className="space-y-6">
         <Card title="Status">
           <div className="space-y-4">
+            {editing ? (
             <Field label="Visibility">
               <select name="status" value={v.status} onChange={(e) => set("status", e.target.value as ProductFormValues["status"])} className={inputCls}>
                 <option value="DRAFT">Draft — hidden</option>
@@ -341,6 +342,9 @@ export function ProductForm({
                 <option value="ARCHIVED">Archived</option>
               </select>
             </Field>
+            ) : (
+              <input type="hidden" name="status" value="DRAFT" />
+            )}
             <Field label="Badge">
               <select name="badge" value={v.badge} onChange={(e) => set("badge", e.target.value)} className={inputCls}>
                 <option value="">None</option>
@@ -383,7 +387,15 @@ export function ProductForm({
           </div>
         </Card>
 
-        <SubmitButton className={`${btnCls} w-full`}>{editing ? "Save changes" : "Create product"}</SubmitButton>
+        {editing ? (
+          <SubmitButton className={`${btnCls} w-full`}>Save changes</SubmitButton>
+        ) : (
+          <div className="space-y-2">
+            <SubmitButton name="intent" value="publish" className={`${btnCls} w-full`}>Publish product</SubmitButton>
+            <SubmitButton name="intent" value="draft" className={`${btnGhostCls} w-full`}>Save as draft</SubmitButton>
+            <p className="text-center text-xs text-neutral-500">A draft stays hidden from the store until you publish it. Publishing needs at least one image.</p>
+          </div>
+        )}
       </div>
     </form>
   );

@@ -13,4 +13,4 @@ export const slugify = (s: string) =>
 
 /** Redirect target carrying a flash message. */
 export const withMessage = (path: string, key: "error" | "ok", msg: string) =>
-  `${path}?${key}=${encodeURIComponent(msg)}`;
+  `${path}${path.includes("?") ? "&" : "?"}${key}=${encodeURIComponent(msg)}`;
