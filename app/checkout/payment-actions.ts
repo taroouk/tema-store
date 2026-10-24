@@ -3,9 +3,12 @@
 import { randomUUID } from "node:crypto";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 
+import { findOrderByContact } from "@/lib/orders/lookup";
 import { prisma } from "@/lib/prisma/client";
+import { publishAdminEvent } from "@/lib/realtime";
 import { rateLimit } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -19,19 +22,17 @@ const TYPES: Record<string, string> = {
 
 const Ref = z.object({
   number: z.coerce.number().int().positive().max(2_000_000_000),
-  email: z.string().trim().toLowerCase().email().max(200),
+  contact: z.string().trim().min(3).max(200),
 });
 
-/** The order number + checkout email together act as the customer's proof of ownership. */
+/** The order number + the email/phone used at checkout together act as the customer's proof of ownership. */
 async function findTransferOrder(input: unknown) {
   const ref = Ref.safeParse(input);
   if (!ref.success) return null;
-  const order = await prisma.order.findFirst({
-    where: { number: ref.data.number, email: ref.data.email, paymentMethod: { in: ["INSTAPAY", "WALLET"] } },
-    select: { id: true, paymentStatus: true },
-  });
-  if (!order || order.paymentStatus === "PAID" || order.paymentStatus === "REFUNDED") return null;
-  return order;
+  const order = await findOrderByContact(ref.data.number, ref.data.contact);
+  if (!order || !["INSTAPAY", "WALLET"].includes(order.paymentMethod)) return null;
+  if (order.paymentStatus === "PAID" || order.paymentStatus === "REFUNDED") return null;
+  return { id: order.id, paymentStatus: order.paymentStatus };
 }
 
 export type ProofTicket =
@@ -39,7 +40,7 @@ export type ProofTicket =
   | { ok: false; error: string };
 
 /** One-time signed upload URL into a private bucket (the browser uploads directly to storage). */
-export async function createProofTicket(input: { number: number; email: string }, type: string, size: number): Promise<ProofTicket> {
+export async function createProofTicket(input: { number: number; contact: string }, type: string, size: number): Promise<ProofTicket> {
   if (!(await rateLimit("proof", 10, 10 * 60_000))) return { ok: false, error: "Too many uploads. Please try again later." };
 
   const ext = TYPES[type];
@@ -65,7 +66,7 @@ export async function createProofTicket(input: { number: number; email: string }
   return { ok: true, path, token: data.token };
 }
 
-export async function attachPaymentProof(input: { number: number; email: string }, path: string): Promise<{ ok: boolean; error?: string }> {
+export async function attachPaymentProof(input: { number: number; contact: string }, path: string): Promise<{ ok: boolean; error?: string }> {
   if (!(await rateLimit("proof-attach", 10, 10 * 60_000))) return { ok: false, error: "Too many attempts." };
 
   const order = await findTransferOrder(input);
@@ -79,5 +80,14 @@ export async function attachPaymentProof(input: { number: number; email: string 
     data: { paymentProof: path, paymentStatus: "AWAITING_VERIFICATION" },
   });
   revalidatePath("/admin/orders");
+  after(() =>
+    publishAdminEvent({
+      type: "payment.proof",
+      scope: "orders",
+      title: `Payment proof for order #${input.number}`,
+      body: "Waiting for your confirmation",
+      href: `/admin/orders/${order.id}`,
+    })
+  );
   return { ok: true };
 }

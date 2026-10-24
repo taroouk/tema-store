@@ -5,6 +5,7 @@ import { z } from "zod";
 import { SubmitButton } from "@/components/admin/form-controls";
 import { Badge, Card, Field, inputCls, orderTone, PageHeader, Table, td, th } from "@/components/admin/ui";
 import { dateTime, money } from "@/lib/admin/format";
+import { whatsappLink } from "@/lib/egypt";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
 
@@ -55,8 +56,13 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
         </div>
         <div className="space-y-6">
           <Card title="Contact">
-            <p className="text-sm">{customer.email}</p>
+            <p className="text-sm">{customer.email ?? <span className="text-neutral-500">No email on file</span>}</p>
             <p className="text-sm text-neutral-600">{customer.phone ?? "No phone"}</p>
+            {whatsappLink(customer.phone) && (
+              <a href={whatsappLink(customer.phone)} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm underline underline-offset-4">
+                Message on WhatsApp
+              </a>
+            )}
           </Card>
           <Card title="Internal notes">
             <form action={saveCustomerNotes.bind(null, id)} className="space-y-3">

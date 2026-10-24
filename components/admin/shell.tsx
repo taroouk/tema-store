@@ -26,6 +26,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
+import { LiveIndicator } from "@/components/admin/live-indicator";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 const ICONS = {
@@ -175,6 +176,7 @@ export function AdminShell({
             )}
           </div>
           <div className="ml-auto flex items-center gap-3">
+            <LiveIndicator />
             <ThemeToggle className="rounded-md border border-neutral-200 p-2 text-neutral-600 hover:bg-neutral-100 hover:opacity-100" />
             <div className="hidden text-right leading-tight sm:block">
               <p className="text-sm font-medium">{user.name}</p>

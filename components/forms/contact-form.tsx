@@ -37,8 +37,13 @@ export function ContactForm() {
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <label htmlFor="email" className={label}>Email</label>
-        <input id="email" name="email" type="email" required autoComplete="email" defaultValue={state?.values?.email} className={field} />
+        <label htmlFor="email" className={label}>Email <span className="normal-case tracking-normal">(optional)</span></label>
+        <input id="email" name="email" type="email" autoComplete="email" defaultValue={state?.values?.email} className={field} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="phone" className={label}>Phone <span className="normal-case tracking-normal">(optional)</span></label>
+        <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="01012345678" defaultValue={state?.values?.phone} className={field} />
+        <p className="text-xs text-neutral-500">Add at least an email or a phone number so we can reply.</p>
       </div>
       <div className="flex flex-col gap-2">
         <label htmlFor="message" className={label}>Message</label>

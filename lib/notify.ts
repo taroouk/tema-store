@@ -67,8 +67,10 @@ function layout(title: string, body: string) {
 }
 
 export interface OrderForEmail {
+  id: string;
   number: number;
-  email: string;
+  /** Optional: without it only the owner is notified. */
+  email: string | null;
   customerName: string;
   phone: string;
   total: number;
@@ -81,8 +83,8 @@ export interface OrderForEmail {
   items: { name: string; color: string; size: string; quantity: number; unitPrice: number }[];
 }
 
-export const orderLink = (o: { number: number; email: string }) =>
-  `${siteConfig.url}/order/${o.number}?t=${signToken("order", `${o.number}:${o.email}`)}`;
+export const orderLink = (o: { number: number; id: string }) =>
+  `${siteConfig.url}/order/${o.number}?t=${signToken("order", `${o.number}:${o.id}`)}`;
 
 const METHOD: Record<string, string> = { COD: "Cash on delivery", INSTAPAY: "InstaPay", WALLET: "Mobile wallet", CARD: "Card" };
 
@@ -113,19 +115,21 @@ export async function notifyNewOrder(o: OrderForEmail, ownerEmail: string | null
 
   const ownerLines = [
     `🛍️ New order #${o.number} — ${egp(o.total)}`,
-    `${o.customerName} · ${o.phone}`,
+    `${o.customerName} · ${o.phone}${o.email ? ` · ${o.email}` : ""}`,
     `${METHOD[o.paymentMethod]}${transfer ? ` · ref ${o.paymentReference ?? "n/a"} → confirm payment in the dashboard` : ""}`,
     ...o.items.map((i) => `• ${i.name} (${i.color}/${i.size}) ×${i.quantity}`),
     `${siteConfig.url}/admin/orders`,
   ];
 
   await Promise.allSettled([
-    sendEmail({
-      to: o.email,
-      subject: `Your ${siteConfig.name} order #${o.number}`,
-      html: layout(`Order #${o.number} received`, customerBody),
-      text: `Thank you for your order #${o.number} (${egp(o.total)}). View it: ${link}`,
-    }),
+    o.email
+      ? sendEmail({
+          to: o.email,
+          subject: `Your ${siteConfig.name} order #${o.number}`,
+          html: layout(`Order #${o.number} received`, customerBody),
+          text: `Thank you for your order #${o.number} (${egp(o.total)}). View it: ${link}`,
+        })
+      : Promise.resolve(false),
     ownerEmail
       ? sendEmail({
           to: ownerEmail,
@@ -147,7 +151,8 @@ const STATUS_COPY: Record<StatusEvent, { subject: string; text: string }> = {
   CANCELLED: { subject: "Your order was cancelled", text: "Your order has been cancelled. If you did not ask for this, or you already paid, please contact us and we will sort it out." },
 };
 
-export async function notifyOrderStatus(o: { number: number; email: string; customerName: string }, event: StatusEvent) {
+export async function notifyOrderStatus(o: { id: string; number: number; email: string | null; customerName: string }, event: StatusEvent) {
+  if (!o.email) return; // phone-only customer: nothing to email
   const copy = STATUS_COPY[event];
   const link = orderLink(o);
   await sendEmail({

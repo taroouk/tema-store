@@ -78,3 +78,10 @@ Nobody can guarantee a #1 position (especially for the single word "tema", which
 3. Get the brand mentioned and linked by other sites (press, influencers, directories). A brand search ranks first mostly because many sites say "Tema Label → temalabel.com".
 4. Keep the name consistent everywhere ("Tema Label"), use real photos with descriptive names, and keep adding products/collections.
 5. Indexing a new domain takes days to weeks; brand-name results usually appear first, generic words later.
+
+## Realtime admin updates
+
+The dashboard listens on a private Supabase Realtime channel (`admin-events`). New orders, payment proofs,
+messages and subscribers appear as toasts and refresh the open page; the header shows Live/Offline and a sound toggle.
+Requires migration `20261024020000_admin_realtime` (only active admins can listen; browsers cannot publish).
+Verify with `npm run qa:realtime`. If Realtime is unreachable the dashboard still works, it just doesn't live-update.

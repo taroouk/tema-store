@@ -65,7 +65,7 @@ export default async function CustomersPage({
             return (
               <tr key={c.id}>
                 <td className={td}><Link href={`/admin/customers/${c.id}`} className="font-medium hover:underline">{c.name}</Link></td>
-                <td className={td}>{c.email}</td>
+                <td className={td}>{c.email ?? <span className="text-neutral-500">—</span>}</td>
                 <td className={td}>{c.phone ?? "—"}</td>
                 <td className={td}>{c.orders.length}</td>
                 <td className={td}>{money(valid.reduce((n, o) => n + Number(o.total), 0))}</td>

@@ -5,6 +5,8 @@ import { ThemedToaster } from "@/components/theme/themed-toaster";
 
 import { FlashToast } from "@/components/admin/form-controls";
 import { AdminShell, type NavLink } from "@/components/admin/shell";
+import { LiveUpdates } from "@/components/admin/live-updates";
+import type { AdminEvent } from "@/lib/realtime";
 import { signOut } from "@/app/admin/login/actions";
 import { can, ROLE_LABELS } from "@/lib/auth/permissions";
 import { permissionForPath } from "@/lib/auth/route-permissions";
@@ -57,8 +59,15 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (can(admin.role, "admins:manage"))
     links.push({ href: "/admin/admins", label: "Admins", icon: "admins", section: "System" });
 
+  const scopes: AdminEvent["scope"][] = [];
+  if (can(admin.role, "orders:manage")) scopes.push("orders");
+  if (can(admin.role, "customers:view")) scopes.push("customers");
+  if (can(admin.role, "marketing:manage")) scopes.push("marketing");
+  if (can(admin.role, "catalog:write")) scopes.push("catalog");
+
   return (
     <div className="admin-root">
+      <LiveUpdates scopes={scopes} />
       <AdminShell
         links={links}
         signOutAction={signOut}

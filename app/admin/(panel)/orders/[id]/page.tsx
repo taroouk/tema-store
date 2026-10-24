@@ -15,6 +15,7 @@ import {
   th,
 } from "@/components/admin/ui";
 import { dateTime, money } from "@/lib/admin/format";
+import { whatsappLink } from "@/lib/egypt";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
 
@@ -126,8 +127,18 @@ export default async function OrderPage({
           )}
           <Card title="Customer">
             <p className="font-medium">{order.customerName}</p>
-            <p className="text-sm text-neutral-600">{order.email}</p>
-            <p className="text-sm text-neutral-600">{order.phone}</p>
+            <p className="text-sm text-neutral-600">{order.email ?? "No email (phone order)"}</p>
+            <p className="text-sm text-neutral-600">
+              <a href={`tel:${order.phone}`} className="hover:underline">{order.phone}</a>
+              {whatsappLink(order.phone, `Hi ${order.customerName}, about your Tema Label order #${order.number}`) && (
+                <>
+                  {" · "}
+                  <a href={whatsappLink(order.phone, `Hi ${order.customerName}, about your Tema Label order #${order.number}`)} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+                    WhatsApp
+                  </a>
+                </>
+              )}
+            </p>
             <p className="mt-3 whitespace-pre-line text-sm text-neutral-700">
               {[addr.address, addr.city, addr.governorate, addr.postalCode].filter(Boolean).join("\n")}
             </p>

@@ -49,7 +49,7 @@ export default async function OrderPage({
   if (!n.success) notFound();
 
   const order = await prisma.order.findUnique({ where: { number: n.data }, include: { items: true } });
-  if (!order || !verifyToken("order", `${order.number}:${order.email}`, t)) notFound();
+  if (!order || !verifyToken("order", `${order.number}:${order.id}`, t)) notFound();
 
   const settings = await getSettings();
   const transfer = order.paymentMethod === "INSTAPAY" || order.paymentMethod === "WALLET";
@@ -64,8 +64,17 @@ export default async function OrderPage({
           Thank you, {order.customerName.split(" ")[0]}.
         </h1>
         <p className="mt-4 leading-8 text-neutral-600">
-          Your order has been received. We&apos;ve emailed a copy to <strong className="text-foreground">{order.email}</strong> — keep this page
-          bookmarked to follow your order.
+          Your order has been received.{" "}
+          {order.email ? (
+            <>
+              We&apos;ve emailed a copy to <strong className="text-foreground">{order.email}</strong> — keep this page bookmarked to follow your order.
+            </>
+          ) : (
+            <>
+              We&apos;ll call or message you on <strong className="text-foreground">{order.phone}</strong> to confirm delivery. Save your order number{" "}
+              <strong className="text-foreground">#{order.number}</strong>: you can follow the order any time from <Link href="/track" className="underline underline-offset-4">Track Order</Link> with that number and your phone.
+            </>
+          )}
         </p>
 
         <div className="mt-8 grid gap-3 rounded-2xl bg-neutral-100 p-5 text-sm sm:grid-cols-2">
@@ -80,7 +89,7 @@ export default async function OrderPage({
             <p className="text-sm text-neutral-600">
               We already have your transfer reference <strong className="font-mono text-foreground">{order.paymentReference}</strong>. A screenshot of the transfer helps us confirm it faster.
             </p>
-            <ProofUploader number={order.number} email={order.email} />
+            <ProofUploader number={order.number} contact={order.email ?? order.phone} />
           </div>
         )}
 

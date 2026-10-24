@@ -30,7 +30,7 @@ export async function updateOrder(id: string, formData: FormData) {
   if (!parsed.success) redirect(withMessage(back, "error", "Invalid input"));
 
   let event: StatusEvent | null = null;
-  let recipient: { number: number; email: string; customerName: string } | null = null;
+  let recipient: { id: string; number: number; email: string | null; customerName: string } | null = null;
 
   await prisma.$transaction(async (tx) => {
     const order = await tx.order.findUniqueOrThrow({ where: { id }, include: { items: true } });
@@ -46,7 +46,7 @@ export async function updateOrder(id: string, formData: FormData) {
     } else if (parsed.data.paymentStatus === "PAID" && order.paymentStatus !== "PAID") {
       event = "PAYMENT_CONFIRMED";
     }
-    recipient = { number: order.number, email: order.email, customerName: order.customerName };
+    recipient = { id: order.id, number: order.number, email: order.email, customerName: order.customerName };
 
     await tx.order.update({
       where: { id },

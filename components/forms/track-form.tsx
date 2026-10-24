@@ -35,7 +35,7 @@ export function TrackForm() {
     <div className="grid gap-12 lg:grid-cols-2">
       <form action={action} className="space-y-5 rounded-3xl border border-neutral-200 p-8">
         <Input label="Order number" name="number" required inputMode="numeric" placeholder="e.g. 1042" defaultValue={state?.values?.number} />
-        <Input label="Email used at checkout" name="email" type="email" required autoComplete="email" placeholder="you@example.com" defaultValue={state?.values?.email} />
+        <Input label="Phone number or email used at checkout" name="contact" required autoComplete="tel" placeholder="01012345678 or you@example.com" defaultValue={state?.values?.contact} />
         {state?.error && <p role="alert" className="text-sm text-red-600">{state.error}</p>}
         <Button type="submit" size="lg" className="w-full" disabled={pending}>
           {pending && <Loader2 size={16} className="mr-2 animate-spin" />}
@@ -65,7 +65,7 @@ export function TrackForm() {
             !["PAID", "REFUNDED"].includes(order.paymentStatus) &&
             !["CANCELLED", "REFUNDED"].includes(order.status) && (
               <div className="mt-4">
-                <ProofUploader number={order.number} email={order.email} compact />
+                <ProofUploader number={order.number} contact={order.contact} compact />
               </div>
             )}
 

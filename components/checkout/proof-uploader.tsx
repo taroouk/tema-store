@@ -7,7 +7,7 @@ import { attachPaymentProof, createProofTicket } from "@/app/checkout/payment-ac
 import { createClient } from "@/lib/supabase/client";
 
 /** Lets a customer attach a screenshot of their transfer to an existing order. */
-export function ProofUploader({ number, email, compact = false }: { number: number; email: string; compact?: boolean }) {
+export function ProofUploader({ number, contact, compact = false }: { number: number; contact: string; compact?: boolean }) {
   const input = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<"idle" | "uploading" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +17,7 @@ export function ProofUploader({ number, email, compact = false }: { number: numb
     setError(null);
     setState("uploading");
     try {
-      const ref = { number, email };
+      const ref = { number, contact };
       const ticket = await createProofTicket(ref, file.type, file.size);
       if (!ticket.ok) throw new Error(ticket.error);
 

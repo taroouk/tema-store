@@ -160,7 +160,7 @@ export default function CheckoutPage() {
               <h2 className="mb-6 text-xl font-semibold">Contact Information</h2>
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <Input label="Email" name="email" required type="email" autoComplete="email" placeholder="you@example.com" />
+                <Input label="Email (optional)" name="email" type="email" autoComplete="email" placeholder="you@example.com" />
                 <Input label="Phone" name="phone" required type="tel" inputMode="tel" autoComplete="tel" placeholder="01012345678" />
               </div>
             </div>

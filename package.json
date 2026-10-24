@@ -23,6 +23,7 @@
     "qa:db": "node scripts/qa/db-integrity.cjs",
     "qa:roles": "node scripts/qa/roles.cjs",
     "qa:a11y": "node scripts/qa/a11y.cjs",
+    "qa:realtime": "node scripts/qa/realtime.cjs",
     "qa:all": "npm run typecheck && npm run lint && npm test && npm run test:integration && npm run qa:db"
   },
   "dependencies": {

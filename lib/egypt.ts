@@ -15,3 +15,10 @@ export function normalizeEgyptianPhone(raw: string): string | null {
   const local = m[1].startsWith("0") ? m[1] : `0${m[1]}`;
   return local;
 }
+
+/** wa.me link for an Egyptian number in local format (01012345678). Empty string if it isn't one. */
+export function whatsappLink(phone: string | null | undefined, text?: string) {
+  const local = phone ? normalizeEgyptianPhone(phone) : null;
+  if (!local || !/^01[0125]/.test(local)) return "";
+  return `https://wa.me/20${local.slice(1)}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
+}

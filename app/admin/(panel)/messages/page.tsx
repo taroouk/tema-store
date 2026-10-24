@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SubmitButton } from "@/components/admin/form-controls";
 import { Badge, btnGhostCls, PageHeader, Pagination } from "@/components/admin/ui";
 import { dateTime } from "@/lib/admin/format";
+import { whatsappLink } from "@/lib/egypt";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
 
@@ -54,9 +55,13 @@ export default async function MessagesPage({
             <header className="flex flex-wrap items-start justify-between gap-2">
               <div>
                 <p className="font-medium">{m.name}</p>
-                <a href={`mailto:${m.email}?subject=Re: your message to Tema Label`} className="text-sm text-neutral-500 hover:underline">
-                  {m.email}
-                </a>
+                <p className="text-sm text-neutral-500">
+                  {m.email && (
+                    <a href={`mailto:${m.email}?subject=Re: your message to Tema Label`} className="hover:underline">{m.email}</a>
+                  )}
+                  {m.email && m.phone && " · "}
+                  {m.phone && <a href={`tel:${m.phone}`} className="hover:underline">{m.phone}</a>}
+                </p>
               </div>
               <div className="flex items-center gap-2 text-xs text-neutral-500">
                 {m.status === "NEW" && <Badge tone="blue">new</Badge>}
@@ -65,7 +70,12 @@ export default async function MessagesPage({
             </header>
             <p className="mt-3 whitespace-pre-wrap text-sm text-neutral-700">{m.message}</p>
             <div className="mt-4 flex gap-2">
-              <a href={`mailto:${m.email}?subject=Re: your message to Tema Label`} className={btnGhostCls}>Reply by email</a>
+              {m.email && (
+                <a href={`mailto:${m.email}?subject=Re: your message to Tema Label`} className={btnGhostCls}>Reply by email</a>
+              )}
+              {whatsappLink(m.phone, `Hi ${m.name}, this is Tema Label replying to your message.`) && (
+                <a href={whatsappLink(m.phone, `Hi ${m.name}, this is Tema Label replying to your message.`)} target="_blank" rel="noopener noreferrer" className={btnGhostCls}>Reply on WhatsApp</a>
+              )}
               {m.status !== "READ" && (
                 <form action={setMessageStatus.bind(null, m.id, "READ")}><SubmitButton className={btnGhostCls}>Mark as read</SubmitButton></form>
               )}

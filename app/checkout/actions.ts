@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { GOVERNORATES, normalizeEgyptianPhone } from "@/lib/egypt";
 import { notifyNewOrder } from "@/lib/notify";
+import { publishAdminEvent } from "@/lib/realtime";
 import { signToken } from "@/lib/tokens";
 
 import { CATALOG_TAG } from "@/lib/catalog";
@@ -50,7 +51,11 @@ export async function validateCoupon(code: string, subtotal: number) {
 const text = (max: number) => z.string().trim().min(1).max(max);
 
 const OrderInput = z.object({
-  email: z.string().trim().toLowerCase().email().max(200),
+  // Optional: customers may order with just a phone number and address.
+  email: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+    z.string().trim().toLowerCase().email("Enter a valid email address, or leave it empty").max(200).optional()
+  ),
   phone: z.string().trim().max(30).refine((v) => normalizeEgyptianPhone(v) !== null, "Enter a valid Egyptian phone number (e.g. 01012345678)"),
   firstName: text(60),
   lastName: text(60),
@@ -79,7 +84,7 @@ const OrderInput = z.object({
 });
 
 export type PlaceOrderResult =
-  | { ok: true; orderNumber: number; email: string; method: "cod" | "instapay" | "wallet"; total: number; confirmUrl: string }
+  | { ok: true; orderNumber: number; email: string | null; method: "cod" | "instapay" | "wallet"; total: number; confirmUrl: string }
   | { ok: false; error: string };
 
 export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
@@ -178,16 +183,26 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
       const shipping = shippingFee(subtotal, data.shippingMethod, settings);
       const customerName = `${data.firstName} ${data.lastName}`;
 
-      const customer = await tx.customer.upsert({
-        where: { email: data.email },
-        update: { name: customerName, phone: normalizeEgyptianPhone(data.phone)! },
-        create: { email: data.email, name: customerName, phone: normalizeEgyptianPhone(data.phone)! },
-      });
+      const phone = normalizeEgyptianPhone(data.phone)!;
+      // Returning customers are recognised by email when given, otherwise by phone number.
+      let customer;
+      if (data.email) {
+        customer = await tx.customer.upsert({
+          where: { email: data.email },
+          update: { name: customerName, phone },
+          create: { email: data.email, name: customerName, phone },
+        });
+      } else {
+        const existing = await tx.customer.findFirst({ where: { phone, email: null } });
+        customer = existing
+          ? await tx.customer.update({ where: { id: existing.id }, data: { name: customerName } })
+          : await tx.customer.create({ data: { name: customerName, phone } });
+      }
 
       return tx.order.create({
         data: {
           customerId: customer.id,
-          email: data.email,
+          email: data.email ?? null,
           customerName,
           phone: normalizeEgyptianPhone(data.phone)!,
           paymentMethod: data.paymentMethod === "instapay" ? "INSTAPAY" : data.paymentMethod === "wallet" ? "WALLET" : "COD",
@@ -218,10 +233,20 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
 
     updateTag(CATALOG_TAG);
     revalidatePath("/admin/orders");
+    after(() =>
+      publishAdminEvent({
+        type: "order.new",
+        scope: "orders",
+        title: `New order #${order.number}`,
+        body: `${order.customerName} · EGP ${Number(order.total).toLocaleString("en-US")}`,
+        href: `/admin/orders/${order.id}`,
+      })
+    );
     // Emails / alerts run after the response is sent and can never fail the order.
     after(() =>
       notifyNewOrder(
         {
+          id: order.id,
           number: order.number,
           email: order.email,
           customerName: order.customerName,
@@ -245,7 +270,7 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
       email: order.email,
       method: data.paymentMethod,
       total: Number(order.total),
-      confirmUrl: `/order/${order.number}?t=${signToken("order", `${order.number}:${order.email}`)}`,
+      confirmUrl: `/order/${order.number}?t=${signToken("order", `${order.number}:${order.id}`)}`,
     };
   } catch (e) {
     if (e instanceof CheckoutError) return { ok: false, error: e.message };

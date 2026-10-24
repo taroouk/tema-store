@@ -27,7 +27,7 @@ export default async function ReportsPage({
   const [orders, items, customers, coupons] = await Promise.all([
     prisma.order.findMany({
       where: { createdAt: { gte: since }, status: COUNTED },
-      select: { createdAt: true, total: true, paymentMethod: true, customerId: true, customerName: true, email: true },
+      select: { createdAt: true, total: true, paymentMethod: true, customerId: true, customerName: true, email: true, phone: true },
     }),
     prisma.orderItem.findMany({
       where: { order: { createdAt: { gte: since }, status: COUNTED } },
@@ -65,11 +65,11 @@ export default async function ReportsPage({
   }
 
   const byMethod = new Map<string, number>();
-  const byCustomer = new Map<string, { name: string; email: string; total: number; orders: number }>();
+  const byCustomer = new Map<string, { name: string; contact: string; total: number; orders: number }>();
   for (const o of orders) {
     byMethod.set(o.paymentMethod, (byMethod.get(o.paymentMethod) ?? 0) + 1);
-    const k = o.customerId ?? o.email;
-    const c = byCustomer.get(k) ?? { name: o.customerName, email: o.email, total: 0, orders: 0 };
+    const k = o.customerId ?? o.email ?? o.phone;
+    const c = byCustomer.get(k) ?? { name: o.customerName, contact: o.email ?? o.phone, total: 0, orders: 0 };
     c.total += Number(o.total);
     c.orders++;
     byCustomer.set(k, c);
@@ -137,8 +137,8 @@ export default async function ReportsPage({
           <thead><tr><th className={th}>Customer</th><th className={th}>Orders</th><th className={th}>Spent</th></tr></thead>
           <tbody>
             {top.map((c) => (
-              <tr key={c.email}>
-                <td className={td}>{c.name}<p className="text-xs text-neutral-500">{c.email}</p></td>
+              <tr key={c.contact}>
+                <td className={td}>{c.name}<p className="text-xs text-neutral-500">{c.contact}</p></td>
                 <td className={td}>{c.orders}</td>
                 <td className={td}>{money(c.total)}</td>
               </tr>

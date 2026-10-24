@@ -154,6 +154,7 @@ describe.skipIf(!run)("checkout (real database)", { timeout: 60_000 }, () => {
   it("rejects bad input", async () => {
     const bad: [string, Record<string, unknown>][] = [
       ["non-Egyptian phone", { phone: "+1 202 555 0100" }],
+      ["malformed email", { email: "not-an-email" }],
       ["unknown governorate", { governorate: "Atlantis" }],
       ["bot honeypot filled", { website: "http://spam.example" }],
       ["quantity above 20", { items: [{ productId: ids.cheap, colorId: "black", size: "M", quantity: 21 }] }],
@@ -192,8 +193,41 @@ describe.skipIf(!run)("checkout (real database)", { timeout: 60_000 }, () => {
     if (!r.ok) return;
     expect(r.confirmUrl).toMatch(/^\/order\/\d+\?t=[\w-]{32}$/);
     const { verifyToken } = await import("@/lib/tokens");
+    const order = await prisma.order.findFirstOrThrow({ where: { number: r.orderNumber } });
     const t = r.confirmUrl.split("t=")[1];
-    expect(verifyToken("order", `${r.orderNumber}:${r.email}`, t)).toBe(true);
-    expect(verifyToken("order", `${r.orderNumber + 1}:${r.email}`, t)).toBe(false);
+    expect(verifyToken("order", `${r.orderNumber}:${order.id}`, t)).toBe(true);
+    expect(verifyToken("order", `${r.orderNumber + 1}:${order.id}`, t)).toBe(false);
+  });
+
+  it("customers can order with only a phone number and address (email is optional)", async () => {
+    const phone = "0122" + String(Date.now()).slice(-7);
+    const base = { ...input(), email: "", phone, items: [{ productId: ids.cheap, colorId: "black", size: "M", quantity: 1 }] };
+    const first = await actions.placeOrder(base);
+    const second = await actions.placeOrder({ ...base, firstName: "Same", lastName: "Person" });
+    expect(first.ok && second.ok).toBe(true);
+    if (!first.ok || !second.ok) return;
+
+    const orders = await prisma.order.findMany({ where: { phone }, orderBy: { number: "asc" } });
+    expect(orders).toHaveLength(2);
+    expect(orders.every((o) => o.email === null)).toBe(true);
+    // the same phone number is recognised as the same customer
+    expect(orders[0].customerId).toBeTruthy();
+    expect(orders[0].customerId).toBe(orders[1].customerId);
+    await prisma.customer.deleteMany({ where: { phone, email: null } });
+  });
+
+  it("an order is found by number + phone or number + email, and by nothing else", async () => {
+    const { findOrderByContact } = await import("@/lib/orders/lookup");
+    const phone = "0155" + String(Date.now()).slice(-7);
+    const r = await actions.placeOrder({ ...input({ email: email("find") }), phone, items: [{ productId: ids.cheap, colorId: "black", size: "M", quantity: 1 }] });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect((await findOrderByContact(r.orderNumber, phone))?.number).toBe(r.orderNumber);
+    expect((await findOrderByContact(r.orderNumber, `+20 ${phone.slice(1, 4)} ${phone.slice(4)}`))?.number).toBe(r.orderNumber);
+    expect((await findOrderByContact(r.orderNumber, email("find").toUpperCase()))?.number).toBe(r.orderNumber);
+    expect(await findOrderByContact(r.orderNumber, "01000000000")).toBeNull();
+    expect(await findOrderByContact(r.orderNumber, "someone@else.com")).toBeNull();
+    expect(await findOrderByContact(r.orderNumber, "abc")).toBeNull();
+    await prisma.customer.deleteMany({ where: { phone } });
   });
 });
