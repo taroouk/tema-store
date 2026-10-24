@@ -113,7 +113,7 @@ export function FiltersSidebar({ facets }: { facets: Facets }) {
               defaultValue={params.get("min") ?? ""}
               className="h-11 w-full rounded-xl border border-neutral-300 px-3 text-sm outline-none focus:border-foreground"
             />
-            <span className="text-neutral-400">–</span>
+            <span className="text-neutral-500">–</span>
             <input
               name="max"
               type="number"

@@ -159,7 +159,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
 
           <form onSubmit={handleSubmit} className="pb-6">
             <div className="flex items-center gap-4 border-b border-neutral-200 pb-4">
-              <SearchIcon size={22} className="text-neutral-400" />
+              <SearchIcon size={22} className="text-neutral-500" />
 
               <input
                 ref={inputRef}
@@ -167,7 +167,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search products, categories, colors..."
-                className="w-full bg-transparent text-lg outline-none placeholder:text-neutral-400 md:text-2xl"
+                className="w-full bg-transparent text-lg outline-none placeholder:text-neutral-500 md:text-2xl"
                 tabIndex={open ? 0 : -1}
                 aria-label="Search query"
               />
@@ -188,7 +188,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                     <button
                       type="button"
                       onClick={clearRecent}
-                      className="text-xs uppercase tracking-[0.18em] text-neutral-400 transition hover:text-foreground"
+                      className="text-xs uppercase tracking-[0.18em] text-neutral-500 transition hover:text-foreground"
                       tabIndex={open ? 0 : -1}
                     >
                       Clear
@@ -210,7 +210,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                   </div>
                 </div>
               ) : (
-                <p className="py-16 text-center text-neutral-400">
+                <p className="py-16 text-center text-neutral-500">
                   Start typing to search our collection.
                 </p>
               )

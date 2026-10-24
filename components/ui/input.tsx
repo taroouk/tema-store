@@ -24,7 +24,7 @@ export function Input({ label, className, id, ...props }: InputProps) {
         id={inputId}
         className={cn(
           "h-12 rounded-xl border border-neutral-300 bg-surface px-4 text-sm",
-          "transition-colors placeholder:text-neutral-400",
+          "transition-colors placeholder:text-neutral-500",
           "focus:border-foreground focus:outline-none",
           className
         )}

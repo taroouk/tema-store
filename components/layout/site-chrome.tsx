@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { CartDrawer } from "@/components/cart/cart-drawer";
+import { LazyCartDrawer } from "@/components/cart/lazy-cart-drawer";
 import { ThemedToaster } from "@/components/theme/themed-toaster";
 
 import { useCartStore } from "@/stores/cart-store";
@@ -34,7 +34,7 @@ export function SiteChrome({ children, footer }: { children: React.ReactNode; fo
       <Navbar />
       <PageTransition>{children}</PageTransition>
       {footer}
-      <CartDrawer />
+      <LazyCartDrawer />
       <ThemedToaster />
     </>
   );

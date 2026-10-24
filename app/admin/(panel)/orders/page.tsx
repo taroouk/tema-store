@@ -86,7 +86,7 @@ export default async function OrdersPage({
             href={`/admin/orders${t.key ? `?status=${t.key}` : ""}`}
             className={`-mb-px border-b-2 px-3 py-2 text-sm ${(sp.status ?? "") === t.key ? "border-neutral-900 font-medium text-neutral-900" : "border-transparent text-neutral-500 hover:text-neutral-900"}`}
           >
-            {t.label} <span className="text-xs text-neutral-400">{t.n}</span>
+            {t.label} <span className="text-xs text-neutral-500">{t.n}</span>
           </Link>
         ))}
       </div>

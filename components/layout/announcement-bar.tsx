@@ -23,7 +23,7 @@ export function AnnouncementBar() {
   }, [messages.length]);
 
   return (
-    <div className="flex h-8 items-center justify-center bg-foreground px-4">
+    <div role="region" aria-label="Store announcements" className="flex h-8 items-center justify-center bg-foreground px-4">
       <p
         key={current}
         className="text-center text-[11px] font-medium uppercase tracking-[0.25em] text-background transition-opacity duration-300"

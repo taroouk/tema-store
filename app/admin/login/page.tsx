@@ -19,7 +19,7 @@ export default async function LoginPage({
   const { error } = await searchParams;
 
   return (
-    <div className="admin-root flex min-h-screen items-center justify-center bg-neutral-50 px-4 text-neutral-900">
+    <main className="admin-root flex min-h-screen items-center justify-center bg-neutral-50 px-4 text-neutral-900">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <p className="text-2xl font-semibold tracking-[0.12em]">Tema Label</p>
@@ -43,6 +43,6 @@ export default async function LoginPage({
         </form>
         <p className="mt-6 text-center text-xs text-neutral-500">Authorized personnel only.</p>
       </div>
-    </div>
+    </main>
   );
 }

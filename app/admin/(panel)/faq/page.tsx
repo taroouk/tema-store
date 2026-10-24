@@ -23,7 +23,7 @@ export default async function FaqAdmin() {
           <details key={f.id} className="rounded-lg border border-neutral-200 bg-white">
             <summary className="flex cursor-pointer items-center justify-between gap-3 px-5 py-4 text-sm">
               <span className="font-medium">
-                <span className="mr-3 text-neutral-400">{f.position}</span>
+                <span className="mr-3 text-neutral-500">{f.position}</span>
                 {f.question}
               </span>
               <Badge tone={f.isActive ? "green" : "gray"}>{f.isActive ? "shown" : "hidden"}</Badge>

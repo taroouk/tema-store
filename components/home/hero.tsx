@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +15,7 @@ export function Hero() {
         fill
         sizes="100vw"
         priority
+        fetchPriority="high"
         className="object-cover object-center"
       />
 
@@ -25,15 +25,7 @@ export function Hero() {
       {/* Content */}
       <div className="absolute inset-0 z-10 flex items-center">
         <div className="mx-auto w-full max-w-[1440px] px-6 md:px-10 xl:px-16">
-          <motion.div
-            initial={{ opacity: 0, x: -60 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: 0.8,
-              ease: "easeOut",
-            }}
-            className="max-w-[560px] text-left text-white"
-          >
+          <div className="animate-hero-in max-w-[560px] text-left text-white">
             {/* Top Label */}
             <div className="mb-8 flex items-center gap-5">
               <span className="text-sm uppercase tracking-[0.35em]">
@@ -81,7 +73,7 @@ export function Hero() {
                 <Link href="/women">SHOP WOMEN</Link>
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

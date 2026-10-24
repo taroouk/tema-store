@@ -396,7 +396,7 @@ export default function CheckoutPage() {
                 {pending || redirecting ? "Placing order…" : paymentMethod === "cod" ? "Place Order" : "Confirm Order & Payment"}
               </Button>
 
-              <p className="mt-4 text-center text-xs text-neutral-400">
+              <p className="mt-4 text-center text-xs text-neutral-500">
                 {paymentMethod === "cod"
                   ? "Pay in cash when your order arrives."
                   : "Your order is prepared as soon as we confirm your transfer."}

@@ -74,7 +74,7 @@ export function CartDrawer() {
 
             {lines.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 text-center">
-                <ShoppingBag size={40} strokeWidth={1.2} className="text-neutral-400" />
+                <ShoppingBag size={40} strokeWidth={1.2} className="text-neutral-500" />
                 <p className="text-lg font-medium">Your bag is empty</p>
                 <p className="text-sm text-neutral-500">Add a piece you love and it will show up here.</p>
                 <Link
@@ -133,7 +133,7 @@ export function CartDrawer() {
                                 <Plus size={14} />
                               </button>
                             </div>
-                            <button aria-label="Remove item" onClick={() => remove(item.productId, item.colorId, item.size)} className="text-neutral-400 transition hover:text-red-500">
+                            <button aria-label="Remove item" onClick={() => remove(item.productId, item.colorId, item.size)} className="text-neutral-500 transition hover:text-red-500">
                               <Trash2 size={16} />
                             </button>
                           </div>

@@ -8,34 +8,34 @@ interface LogoProps {
    * Both are rendered and swapped with CSS so the correct one shows in either theme.
    */
   variant?: "black" | "white";
+  /** Size of the box the logo is fitted into. Any logo proportions work: the image is never stretched. */
   width?: number;
   height?: number;
   priority?: boolean;
   className?: string;
+  align?: "left" | "center";
 }
 
 const LIGHT_BG_LOGO = "/logos/tema-black.png";
 const DARK_BG_LOGO = "/logos/tema-white.png";
 
-export function Logo({
-  variant = "black",
-  width = 120,
-  height = 40,
-  priority = false,
-  className,
-}: LogoProps) {
-  const common = { width, height, priority };
-  const base = "h-auto w-auto select-none";
+export function Logo({ variant = "black", width = 120, height = 40, priority = false, className, align = "center" }: LogoProps) {
+  const fit = cn("select-none object-contain", align === "left" ? "object-left" : "object-center");
+  const box = { width, height };
 
   // Always-dark surfaces (e.g. over photography) keep a fixed variant.
   if (variant === "white") {
-    return <Image src={DARK_BG_LOGO} alt="Tema Label" {...common} className={cn(base, className)} />;
+    return (
+      <span className={cn("relative inline-block", className)} style={box}>
+        <Image src={DARK_BG_LOGO} alt="Tema Label" fill sizes={`${width}px`} priority={priority} className={fit} />
+      </span>
+    );
   }
 
   return (
-    <>
-      <Image src={LIGHT_BG_LOGO} alt="Tema Label" {...common} className={cn(base, "dark:hidden", className)} />
-      <Image src={DARK_BG_LOGO} {...common} alt="" aria-hidden className={cn(base, "hidden dark:block", className)} />
-    </>
+    <span className={cn("relative inline-block", className)} style={box}>
+      <Image src={LIGHT_BG_LOGO} alt="Tema Label" fill sizes={`${width}px`} priority={priority} className={cn(fit, "dark:hidden")} />
+      <Image src={DARK_BG_LOGO} alt="" aria-hidden fill sizes={`${width}px`} priority={priority} className={cn(fit, "hidden dark:block")} />
+    </span>
   );
 }

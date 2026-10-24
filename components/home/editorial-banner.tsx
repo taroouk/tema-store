@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
 
 import { Container } from "@/components/common/container";
 
@@ -14,13 +13,7 @@ export function EditorialBanner() {
         <div className="overflow-hidden rounded-[32px] bg-neutral-100">
           <div className="grid items-center lg:grid-cols-2">
             {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.7 }}
-              className="flex flex-col justify-center p-10 md:p-14 xl:p-20"
-            >
+            <div className="flex flex-col justify-center p-10 md:p-14 xl:p-20">
               <span className="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
                 Summer 2026
               </span>
@@ -50,16 +43,10 @@ export function EditorialBanner() {
 
                 <ArrowRight size={18} />
               </Link>
-            </motion.div>
+            </div>
 
             {/* Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 1.05 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.8 }}
-              className="relative aspect-[3/4] lg:aspect-[4/5]"
-            >
+            <div className="relative aspect-[3/4] lg:aspect-[4/5]">
               <Image
                 src="/images/editorial/editorial.webp"
                 alt="Tema Label Editorial Campaign"
@@ -67,7 +54,7 @@ export function EditorialBanner() {
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover"
               />
-            </motion.div>
+            </div>
           </div>
         </div>
       </Container>

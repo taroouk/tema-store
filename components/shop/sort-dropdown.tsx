@@ -15,6 +15,7 @@ export function SortDropdown() {
     <label className="flex items-center gap-3 text-sm text-neutral-600">
       <span className="hidden sm:inline">Sort by</span>
       <select
+        aria-label="Sort products"
         value={params.get("sort") ?? "featured"}
         onChange={(e) => {
           const next = new URLSearchParams(params.toString());

@@ -325,6 +325,19 @@ html {
   animation: page-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
+@keyframes hero-in {
+  from { opacity: 0; transform: translateX(-48px); }
+  to { opacity: 1; transform: none; }
+}
+
+.animate-hero-in {
+  animation: hero-in 0.8s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-in { animation: none; }
+}
+
 @keyframes progress {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(300%); }

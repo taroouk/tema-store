@@ -76,7 +76,7 @@ export function TrackForm() {
                   <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs ${i <= step ? "bg-foreground text-background" : "bg-neutral-200 text-neutral-500"}`}>
                     {i + 1}
                   </span>
-                  <span className={i <= step ? "font-medium" : "text-neutral-400"}>{LABELS[s]}</span>
+                  <span className={i <= step ? "font-medium" : "text-neutral-500"}>{LABELS[s]}</span>
                 </li>
               ))}
             </ol>

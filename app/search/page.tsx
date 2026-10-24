@@ -39,7 +39,7 @@ export default async function SearchPage({
 
         <div className="mt-12">
           {results.length > 0 ? (
-            <ProductGrid products={results} />
+            <ProductGrid products={results} headingLevel="h2" />
           ) : q ? (
             <p className="rounded-3xl border border-dashed border-neutral-300 px-8 py-20 text-center text-neutral-500">
               Nothing matched “{q}”. Try a different word, or browse Men, Women and Accessories from the menu.

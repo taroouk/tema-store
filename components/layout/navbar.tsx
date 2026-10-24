@@ -1,21 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Heart, Search, ShoppingBag, User } from "lucide-react";
 
 import { Container } from "@/components/common/container";
 import { Logo } from "@/components/icons/logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
-import { SearchOverlay } from "@/components/search/search-overlay";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { siteConfig } from "@/constants/site";
 import { useCartStore } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 
+const SearchOverlay = dynamic(() => import("@/components/search/search-overlay").then((m) => m.SearchOverlay), { ssr: false });
+
 export function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchUsed, setSearchUsed] = useState(false);
 
   const itemCount = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.quantity, 0)
@@ -66,8 +69,11 @@ export function Navbar() {
             <button
               type="button"
               aria-label="Search"
-              onClick={() => setSearchOpen(true)}
-              className="transition hover:opacity-60"
+              onClick={() => {
+                setSearchUsed(true);
+                setSearchOpen(true);
+              }}
+              className="-m-2 p-2 transition hover:opacity-60"
             >
               <Search size={18} strokeWidth={1.8} />
             </button>
@@ -75,7 +81,7 @@ export function Navbar() {
             <Link
               href="/wishlist"
               aria-label="Wishlist"
-              className="relative transition hover:opacity-60"
+              className="relative -m-2 p-2 transition hover:opacity-60"
             >
               <Heart size={18} strokeWidth={1.8} />
 
@@ -86,13 +92,13 @@ export function Navbar() {
               )}
             </Link>
 
-            <ThemeToggle />
+            <ThemeToggle className="-m-2 p-2" />
 
             <Link
               href="/track"
               aria-label="Track your order"
               title="Track your order"
-              className="hidden transition hover:opacity-60 lg:flex"
+              className="-m-2 hidden p-2 transition hover:opacity-60 lg:flex"
             >
               <User size={18} strokeWidth={1.8} />
             </Link>
@@ -101,7 +107,7 @@ export function Navbar() {
               type="button"
               onClick={openCart}
               aria-label="Open shopping bag"
-              className="relative transition hover:opacity-60"
+              className="relative -m-2 p-2 transition hover:opacity-60"
             >
               <ShoppingBag size={18} strokeWidth={1.8} />
 
@@ -120,7 +126,7 @@ export function Navbar() {
   return (
     <>
       {header}
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      {searchUsed && <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />}
     </>
   );
 }

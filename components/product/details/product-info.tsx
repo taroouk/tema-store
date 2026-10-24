@@ -95,7 +95,7 @@ export function ProductInfo({
         </span>
 
         {product.compareAtPrice && (
-          <span className="text-xl text-neutral-400 line-through">
+          <span className="text-xl text-neutral-500 line-through">
             EGP {product.compareAtPrice}
           </span>
         )}

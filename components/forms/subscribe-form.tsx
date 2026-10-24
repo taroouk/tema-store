@@ -23,7 +23,7 @@ export function SubscribeForm() {
           autoComplete="email"
           defaultValue={state?.values?.email}
           placeholder="Enter your email"
-          className="h-14 flex-1 rounded-full border border-neutral-300 bg-surface px-6 text-base outline-none transition-all placeholder:text-neutral-400 focus:border-foreground"
+          className="h-14 flex-1 rounded-full border border-neutral-300 bg-surface px-6 text-base outline-none transition-all placeholder:text-neutral-500 focus:border-foreground"
         />
         <button
           type="submit"

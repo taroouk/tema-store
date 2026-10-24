@@ -55,6 +55,7 @@ export async function Footer() {
               variant="black"
               width={160}
               height={48}
+              align="left"
             />
 
             <p className="mt-6 max-w-sm leading-7 text-neutral-600">
@@ -79,9 +80,9 @@ export async function Footer() {
 
           {/* Shop */}
           <div>
-            <h3 className="mb-6 text-sm font-semibold uppercase tracking-[0.18em]">
+            <h2 className="mb-6 text-sm font-semibold uppercase tracking-[0.18em]">
               Shop
-            </h3>
+            </h2>
 
             <ul className="space-y-4">
               {shopLinks.map((item) => (
@@ -99,9 +100,9 @@ export async function Footer() {
 
           {/* Support */}
           <div>
-            <h3 className="mb-6 text-sm font-semibold uppercase tracking-[0.18em]">
+            <h2 className="mb-6 text-sm font-semibold uppercase tracking-[0.18em]">
               Support
-            </h3>
+            </h2>
 
             <ul className="space-y-4">
               {supportLinks.map((item) => (
@@ -119,9 +120,9 @@ export async function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="mb-6 text-sm font-semibold uppercase tracking-[0.18em]">
+            <h2 className="mb-6 text-sm font-semibold uppercase tracking-[0.18em]">
               Company
-            </h3>
+            </h2>
 
             <ul className="space-y-4">
               {companyLinks.map((item) => (
@@ -141,7 +142,7 @@ export async function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 border-t border-neutral-200 py-8 text-sm text-neutral-500 md:flex-row">
           <div className="text-center md:text-left">
             <p>© {new Date().getFullYear()} Tema Label. All rights reserved.</p>
-            {legal.length > 0 && <p className="mt-1 text-xs text-neutral-400">{legal.join(" · ")}</p>}
+            {legal.length > 0 && <p className="mt-1 text-xs text-neutral-500">{legal.join(" · ")}</p>}
           </div>
         </div>
       </Container>

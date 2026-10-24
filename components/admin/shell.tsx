@@ -95,7 +95,7 @@ export function AdminShell({
         if (!items.length) return null;
         return (
           <div key={section}>
-            <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+            <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
               {section}
             </p>
             <ul className="space-y-0.5">

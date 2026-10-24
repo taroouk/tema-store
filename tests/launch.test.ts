@@ -67,3 +67,21 @@ describe("product deletion permission", () => {
     expect(can("SUPPORT", "catalog:delete")).toBe(false);
   });
 });
+
+import { permissionForPath } from "@/lib/auth/route-permissions";
+
+describe("permissionForPath", () => {
+  it("maps admin sections to their permission", () => {
+    expect(permissionForPath("/admin/orders")).toBe("orders:manage");
+    expect(permissionForPath("/admin/orders/abc")).toBe("orders:manage");
+    expect(permissionForPath("/admin/products/new")).toBe("catalog:write");
+    expect(permissionForPath("/admin/admins")).toBe("admins:manage");
+  });
+  it("only needs a login for the dashboard and profile", () => {
+    expect(permissionForPath("/admin")).toBeUndefined();
+    expect(permissionForPath("/admin/profile")).toBeUndefined();
+  });
+  it("does not match look-alike prefixes", () => {
+    expect(permissionForPath("/admin/orders-archive")).toBeUndefined();
+  });
+});

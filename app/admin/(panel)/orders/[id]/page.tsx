@@ -137,7 +137,8 @@ export default async function OrderPage({
 
         <div className="space-y-6">
         <Card title="Fulfilment" className="no-print">
-          <form action={updateOrder.bind(null, id)} className="space-y-4">
+          {/* key: when the server changes status/payment (e.g. "Confirm payment received"), the form must pick up the new values instead of keeping stale uncontrolled ones */}
+          <form key={`${order.status}-${order.paymentStatus}-${order.updatedAt.getTime()}`} action={updateOrder.bind(null, id)} className="space-y-4">
             <Field label="Order status">
               <select name="status" defaultValue={order.status} className={inputCls}>
                 {ORDER.map((s) => <option key={s} value={s}>{s.toLowerCase()}</option>)}

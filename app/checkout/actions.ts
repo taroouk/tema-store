@@ -212,7 +212,9 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
         },
         include: { items: true },
       });
-    });
+    },
+    // Under a burst of simultaneous checkouts, wait in line for a database connection instead of failing.
+    { maxWait: 15_000, timeout: 20_000 });
 
     updateTag(CATALOG_TAG);
     revalidatePath("/admin/orders");

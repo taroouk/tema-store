@@ -63,7 +63,7 @@ export async function ShopCatalog({
         <ActiveFilters basePath={basePath} query={query} />
         {result.items.length ? (
           <>
-            <ProductGrid products={result.items} />
+            <ProductGrid products={result.items} headingLevel="h2" eagerCount={4} />
             <ShopPagination basePath={basePath} page={result.page} pages={result.pages} params={urlParams} />
           </>
         ) : (

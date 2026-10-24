@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 import { ThemedToaster } from "@/components/theme/themed-toaster";
 
@@ -6,6 +7,7 @@ import { FlashToast } from "@/components/admin/form-controls";
 import { AdminShell, type NavLink } from "@/components/admin/shell";
 import { signOut } from "@/app/admin/login/actions";
 import { can, ROLE_LABELS } from "@/lib/auth/permissions";
+import { permissionForPath } from "@/lib/auth/route-permissions";
 import { requireAdmin } from "@/lib/auth/session";
 
 import "../admin.css";
@@ -18,7 +20,9 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
-  const admin = await requireAdmin();
+  // Section-level gate: runs before the page streams, so a denied role gets a real redirect.
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  const admin = await requireAdmin(permissionForPath(pathname));
 
   const links: NavLink[] = [
     { href: "/admin", label: "Dashboard", icon: "dashboard", section: "Overview" },

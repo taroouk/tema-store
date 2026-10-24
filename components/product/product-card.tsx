@@ -11,11 +11,15 @@ import { SmartImage } from "@/components/ux/smart-image";
 
 interface ProductCardProps {
   product: Product;
+  /** Use "h2" on listing pages (the page title is the h1); "h3" inside a titled section. */
+  headingLevel?: "h2" | "h3";
+  /** Above-the-fold cards load their first image eagerly (better LCP). */
+  eager?: boolean;
 }
 
 const money = (n: number) => `EGP ${n.toLocaleString("en-US")}`;
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, headingLevel: Heading = "h3", eager = false }: ProductCardProps) {
   const primaryImage = product.images[0];
   const hoverImage = product.images[1];
   const soldOut = product.stock <= 0;
@@ -54,6 +58,8 @@ export function ProductCard({ product }: ProductCardProps) {
                 sizes="(min-width: 1024px) 25vw, 50vw"
                 alt={primaryImage.alt || product.name}
                 fill
+                priority={eager}
+                fetchPriority={eager ? "high" : undefined}
                 wrapperClassName="absolute inset-0"
                 className={`object-cover transition-all duration-700 ${
                   hoverImage ? "group-hover:opacity-0" : "group-hover:scale-105"
@@ -71,7 +77,7 @@ export function ProductCard({ product }: ProductCardProps) {
               )}
             </>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200 text-xs uppercase tracking-[0.3em] text-neutral-400">
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200 text-xs uppercase tracking-[0.3em] text-neutral-500">
               Tema Label
             </div>
           )}
@@ -131,10 +137,10 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="mt-4 flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-medium">{product.name}</h3>
+            <Heading className="truncate text-sm font-medium">{product.name}</Heading>
             <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2">
               <span className={`text-sm font-semibold ${onSale ? "text-red-600" : ""}`}>{money(product.price)}</span>
-              {onSale && <span className="text-xs text-neutral-400 line-through">{money(product.compareAtPrice!)}</span>}
+              {onSale && <span className="text-xs text-neutral-500 line-through">{money(product.compareAtPrice!)}</span>}
             </div>
             <div className="mt-3 flex gap-1.5">
               {product.colors.slice(0, 5).map((color) => (

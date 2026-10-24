@@ -6,6 +6,9 @@ import { NextResponse, type NextRequest } from "next/server";
  * Real authorization happens server-side in `requireAdmin()`.
  */
 export async function proxy(request: NextRequest) {
+  // Lets the admin layout enforce per-section permissions *before* any HTML is streamed (real 307, not a late redirect).
+  request.headers.set("x-pathname", request.nextUrl.pathname);
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
