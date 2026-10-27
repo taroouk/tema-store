@@ -19,33 +19,22 @@ export function Categories() {
 
   if (categories.length === 0) return null;
 
-  const cols =
-    categories.length === 1 ? "" : categories.length === 2 ? "md:grid-cols-2" : "md:grid-cols-2 lg:grid-cols-3";
+  // Few categories stay compact and centered instead of stretching across the page.
+  const layout =
+    categories.length === 1
+      ? "mx-auto max-w-xl"
+      : categories.length === 2
+        ? "mx-auto max-w-4xl md:grid-cols-2"
+        : "md:grid-cols-2 lg:grid-cols-3";
 
   return (
     <Section className="pt-8 pb-6">
       <Container>
-        <div className={`grid grid-cols-1 gap-6 ${cols}`}>
-          {categories.map((c, i) => {
+        <div className={`grid grid-cols-1 gap-5 ${layout}`}>
+          {categories.map((c) => {
             const image =
               PHOTOS[c.slug] ?? products.find((p) => p.category === c.slug)?.images[0]?.src ?? "/images/hero-1.png";
-            // With exactly three banners the first spans two columns on tablets, as before.
-            const wideFirst = categories.length === 3 && i === 0;
-            return (
-              <CategoryBanner
-                key={c.slug}
-                title={c.name}
-                href={`/${c.slug}`}
-                image={image}
-                className={
-                  categories.length === 1
-                    ? "aspect-[21/9]"
-                    : wideFirst
-                      ? "md:col-span-2 md:aspect-[21/9] lg:col-span-1 lg:aspect-[4/5]"
-                      : "lg:aspect-[4/5]"
-                }
-              />
-            );
+            return <CategoryBanner key={c.slug} title={c.name} href={`/${c.slug}`} image={image} />;
           })}
         </div>
       </Container>
