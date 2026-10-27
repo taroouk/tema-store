@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ShopCatalog } from "@/components/shop/shop-catalog";
-import { getProductsByCategory } from "@/lib/catalog";
+import { getCategories, getProductsByCategory } from "@/lib/catalog";
 
 type Props = {
   params: Promise<{ category: string }>;
@@ -12,9 +12,9 @@ type Props = {
 // Any category added in Admin → Categories gets its own page here (men / women / accessories keep their own files).
 export async function generateMetadata({ params }: Pick<Props, "params">): Promise<Metadata> {
   const { category } = await params;
-  const products = await getProductsByCategory(category);
-  if (products.length === 0) return { title: "Not found", robots: { index: false } };
-  const name = products[0].categoryName ?? category;
+  const found = (await getCategories()).find((c) => c.slug === category);
+  if (!found) return { title: "Not found", robots: { index: false } };
+  const name = found.name;
   return {
     title: name,
     description: `Shop ${name} at Tema Label.`,
@@ -24,9 +24,10 @@ export async function generateMetadata({ params }: Pick<Props, "params">): Promi
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { category } = await params;
+  const found = (await getCategories()).find((c) => c.slug === category);
+  if (!found) notFound();
   const products = await getProductsByCategory(category);
-  if (products.length === 0) notFound();
-  const name = products[0].categoryName ?? category;
+  const name = found.name;
 
   return (
     <ShopCatalog

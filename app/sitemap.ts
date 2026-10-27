@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
 
 import { siteConfig } from "@/constants/site";
-import { getCollections, getProducts } from "@/lib/catalog";
+import { getCategories, getCollections, getProducts } from "@/lib/catalog";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteConfig.url;
-  const [allProducts, collections] = await Promise.all([getProducts(), getCollections()]);
+  const [allProducts, collections, categories] = await Promise.all([getProducts(), getCollections(), getCategories()]);
 
-  const categoryRoutes = [...new Set(allProducts.map((p) => `/${p.category}`))];
+  const categoryRoutes = categories.map((c) => `/${c.slug}`);
   const staticRoutes = ["", ...categoryRoutes, "/new-in", "/collections"].map(
     (route) => ({
       url: `${base}${route}`,

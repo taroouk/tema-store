@@ -6,7 +6,7 @@ import { siteConfig } from "@/constants/site";
 import { ThemeSync } from "@/components/theme/theme-sync";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import { CatalogProvider } from "@/components/catalog/catalog-provider";
-import { getProducts } from "@/lib/catalog";
+import { getCategories, getProducts } from "@/lib/catalog";
 import { getSettings } from "@/lib/settings";
 import { Footer } from "@/components/layout/footer";
 import { SiteChrome } from "@/components/layout/site-chrome";
@@ -64,7 +64,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [products, settings] = await Promise.all([getProducts(), getSettings()]);
+  const [products, categories, settings] = await Promise.all([getProducts(), getCategories(), getSettings()]);
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -80,7 +80,7 @@ export default async function RootLayout({
   )}
 >
 <ThemeSync />
-<CatalogProvider products={products} pricing={settings} announcement={settings.announcement} payments={settings.payments}>
+<CatalogProvider products={products} categories={categories} pricing={settings} announcement={settings.announcement} payments={settings.payments}>
   <SiteChrome footer={<Footer />}>{children}</SiteChrome>
 </CatalogProvider>
 </body>

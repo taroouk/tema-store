@@ -5,6 +5,7 @@ import { createContext, useContext, useMemo } from "react";
 import { DEFAULT_PAYMENTS, DEFAULT_PRICING, type PaymentConfig, type PricingSettings } from "@/lib/pricing";
 import type { Product } from "@/types/product";
 
+const CategoriesContext = createContext<NavCategory[]>([]);
 const CatalogContext = createContext<Product[]>([]);
 const PricingContext = createContext<PricingSettings>(DEFAULT_PRICING);
 const AnnouncementContext = createContext("");
@@ -13,12 +14,14 @@ const PaymentsContext = createContext<PaymentConfig>(DEFAULT_PAYMENTS);
 /** Gives client components (cart, wishlist, search) access to the live catalog. */
 export function CatalogProvider({
   products,
+  categories = [],
   pricing,
   announcement = "",
   payments = DEFAULT_PAYMENTS,
   children,
 }: {
   products: Product[];
+  categories?: NavCategory[];
   pricing: PricingSettings;
   announcement?: string;
   payments?: PaymentConfig;
@@ -26,11 +29,13 @@ export function CatalogProvider({
 }) {
   return (
     <CatalogContext.Provider value={products}>
+      <CategoriesContext.Provider value={categories}>
       <PricingContext.Provider value={pricing}>
         <AnnouncementContext.Provider value={announcement}>
           <PaymentsContext.Provider value={payments}>{children}</PaymentsContext.Provider>
         </AnnouncementContext.Provider>
       </PricingContext.Provider>
+      </CategoriesContext.Provider>
     </CatalogContext.Provider>
   );
 }
@@ -63,18 +68,14 @@ export interface NavCategory {
 
 const CATEGORY_ORDER = ["men", "women", "accessories"];
 
-/** Every category that currently has at least one product, in a stable order (men, women, accessories, then A–Z). */
+/** Every category created in Admin → Categories (men, women, accessories first, then A–Z). */
 export function useCategories(): NavCategory[] {
-  const products = useCatalog();
+  const categories = useContext(CategoriesContext);
   return useMemo(() => {
-    const map = new Map<string, string>();
-    for (const p of products) map.set(p.category, p.categoryName ?? p.category.charAt(0).toUpperCase() + p.category.slice(1));
     const rank = (s: string) => {
       const i = CATEGORY_ORDER.indexOf(s);
       return i === -1 ? CATEGORY_ORDER.length : i;
     };
-    return [...map.entries()]
-      .map(([slug, name]) => ({ slug, name }))
-      .sort((a, b) => rank(a.slug) - rank(b.slug) || a.name.localeCompare(b.name));
-  }, [products]);
+    return [...categories].sort((a, b) => rank(a.slug) - rank(b.slug) || a.name.localeCompare(b.name));
+  }, [categories]);
 }

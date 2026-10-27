@@ -98,6 +98,15 @@ export const getProducts = unstable_cache(
   { tags: [CATALOG_TAG], revalidate: REVALIDATE_SECONDS }
 );
 
+export const getCategories = unstable_cache(
+  async (): Promise<{ slug: string; name: string }[]> => {
+    const rows = await prisma.category.findMany({ select: { slug: true, name: true } });
+    return rows;
+  },
+  ["catalog-categories"],
+  { tags: [CATALOG_TAG], revalidate: REVALIDATE_SECONDS }
+);
+
 export async function getProductBySlug(slug: string) {
   return (await getProducts()).find((p) => p.slug === slug);
 }
