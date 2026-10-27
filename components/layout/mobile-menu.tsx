@@ -29,7 +29,7 @@ export function MobileMenu() {
           setEverOpened(true);
           setOpen((prev) => !prev);
         }}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 transition hover:bg-neutral-100 lg:hidden"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 transition hover:bg-neutral-100 lg:hidden"
       >
         {open ? <X size={20} /> : <Menu size={20} />}
       </button>

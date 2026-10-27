@@ -3,6 +3,7 @@
 import { createContext, useContext, useMemo } from "react";
 
 import { DEFAULT_PAYMENTS, DEFAULT_PRICING, type PaymentConfig, type PricingSettings } from "@/lib/pricing";
+import { siteConfig } from "@/constants/site";
 import type { Product } from "@/types/product";
 
 const CatalogContext = createContext<Product[]>([]);
@@ -54,4 +55,17 @@ export function useCatalog() {
 export function useProduct(id: string) {
   const products = useCatalog();
   return useMemo(() => products.find((p) => p.id === id), [products, id]);
+}
+
+/** Main-menu links, minus any category that has no products yet (so the menu never leads to an empty page). */
+export function useNavigation() {
+  const products = useCatalog();
+  return useMemo(
+    () =>
+      siteConfig.navigation.filter((item) => {
+        if (item.href === "/new-in") return products.length > 0;
+        return products.some((p) => `/${p.category}` === item.href);
+      }),
+    [products]
+  );
 }

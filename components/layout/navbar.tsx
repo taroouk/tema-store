@@ -9,6 +9,7 @@ import { Container } from "@/components/common/container";
 import { Logo } from "@/components/icons/logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { useNavigation } from "@/components/catalog/catalog-provider";
 import { siteConfig } from "@/constants/site";
 import { useCartStore } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
@@ -17,6 +18,7 @@ import { useWishlistStore } from "@/stores/wishlist-store";
 const SearchOverlay = dynamic(() => import("@/components/search/search-overlay").then((m) => m.SearchOverlay), { ssr: false });
 
 export function Navbar() {
+  const navigation = useNavigation();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchUsed, setSearchUsed] = useState(false);
 
@@ -31,19 +33,19 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-surface/85 backdrop-blur-xl">
       <Container>
         <nav
-          className="grid h-20 grid-cols-3 items-center"
+          className="grid h-14 grid-cols-3 items-center"
           aria-label="Main Navigation"
         >
           {/* Left */}
           <div className="flex items-center gap-6">
             <MobileMenu />
 
-            <ul className="hidden items-center gap-7 lg:flex">
-              {siteConfig.navigation.map((item) => (
+            <ul className="hidden items-center gap-6 lg:flex">
+              {navigation.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="whitespace-nowrap text-xs font-medium uppercase tracking-[0.18em] transition-colors hover:text-neutral-500"
+                    className="whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.16em] transition-colors hover:text-neutral-500"
                   >
                     {item.title}
                   </Link>
@@ -58,14 +60,14 @@ export function Navbar() {
               <Logo
                 priority
                 variant="black"
-                width={160}
-                height={48}
+                width={118}
+                height={34}
               />
             </Link>
           </div>
 
           {/* Right */}
-          <div className="flex items-center justify-end gap-5">
+          <div className="flex items-center justify-end gap-4">
             <button
               type="button"
               aria-label="Search"
@@ -75,7 +77,7 @@ export function Navbar() {
               }}
               className="-m-2 p-2 transition hover:opacity-60"
             >
-              <Search size={18} strokeWidth={1.8} />
+              <Search size={17} strokeWidth={1.8} />
             </button>
 
             <Link
@@ -83,7 +85,7 @@ export function Navbar() {
               aria-label="Wishlist"
               className="relative -m-2 p-2 transition hover:opacity-60"
             >
-              <Heart size={18} strokeWidth={1.8} />
+              <Heart size={17} strokeWidth={1.8} />
 
               {wishlistCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[10px] text-background">
@@ -100,7 +102,7 @@ export function Navbar() {
               title="Track your order"
               className="-m-2 hidden p-2 transition hover:opacity-60 lg:flex"
             >
-              <User size={18} strokeWidth={1.8} />
+              <User size={17} strokeWidth={1.8} />
             </Link>
 
             <button
@@ -109,7 +111,7 @@ export function Navbar() {
               aria-label="Open shopping bag"
               className="relative -m-2 p-2 transition hover:opacity-60"
             >
-              <ShoppingBag size={18} strokeWidth={1.8} />
+              <ShoppingBag size={17} strokeWidth={1.8} />
 
               {itemCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[10px] text-background">
