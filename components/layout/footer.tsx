@@ -2,14 +2,8 @@ import Link from "next/link";
 
 import { Container } from "@/components/common/container";
 import { Logo } from "@/components/icons/logo";
+import { getCategories } from "@/lib/catalog";
 import { getSettings } from "@/lib/settings";
-
-const shopLinks = [
-  { label: "Men", href: "/men" },
-  { label: "Women", href: "/women" },
-  { label: "Accessories", href: "/accessories" },
-  { label: "New Arrivals", href: "/new-in" },
-];
 
 const supportLinks = [
   { label: "Contact Us", href: "/contact" },
@@ -35,7 +29,11 @@ const socialLabels = {
 } as const;
 
 export async function Footer() {
-  const settings = await getSettings();
+  const [settings, categories] = await Promise.all([getSettings(), getCategories()]);
+  const shopLinks = [
+    ...categories.map((c) => ({ label: c.name, href: `/${c.slug}` })),
+    { label: "New Arrivals", href: "/new-in" },
+  ];
   const socialLinks = Object.entries(settings.links)
     .filter(([, href]) => href)
     .map(([key, href]) => ({ href, label: socialLabels[key as keyof typeof socialLabels] }));
