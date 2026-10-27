@@ -38,7 +38,10 @@ export interface Product {
 
   compareAtPrice?: number;
 
-  category: "men" | "women" | "accessories";
+  /** Category slug (from Admin → Categories). */
+  category: string;
+
+  categoryName?: string;
 
   images: ProductImage[];
 

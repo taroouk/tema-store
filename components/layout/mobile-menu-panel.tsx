@@ -5,11 +5,11 @@ import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { Logo } from "@/components/icons/logo";
-import { useNavigation } from "@/components/catalog/catalog-provider";
+import { useCategories } from "@/components/catalog/catalog-provider";
 
 /** The slide-over itself. Loaded on demand (framer-motion stays out of the first page load). */
 export default function MobileMenuPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const navigation = useNavigation();
+  const categories = useCategories();
   const setOpen = (value: boolean) => {
     if (!value) onClose();
   };
@@ -52,16 +52,26 @@ export default function MobileMenuPanel({ open, onClose }: { open: boolean; onCl
               </div>
 
               <nav className="flex flex-1 flex-col px-6 py-8">
-                {navigation.map((item) => (
+                {categories.map((c) => (
                   <Link
-                    key={item.href}
-                    href={item.href}
+                    key={c.slug}
+                    href={`/${c.slug}`}
                     onClick={() => setOpen(false)}
                     className="border-b py-4 text-lg font-medium transition hover:opacity-60"
                   >
-                    {item.title}
+                    {c.name}
                   </Link>
                 ))}
+
+                {categories.length > 0 && (
+                  <Link
+                    href="/new-in"
+                    onClick={() => setOpen(false)}
+                    className="border-b py-4 text-lg font-medium transition hover:opacity-60"
+                  >
+                    New In
+                  </Link>
+                )}
 
                 <Link
                   href="/cart"

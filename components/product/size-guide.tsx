@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SizeGuideProps {
-  category?: "men" | "women" | "accessories";
+  category?: string;
 }
 
 const SIZE_TABLES: Record<string, { size: string; chest: string; length: string }[]> = {

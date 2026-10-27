@@ -61,7 +61,8 @@ function toProduct(row: ProductRow): Product {
     price: Number(row.price),
     priceLarge: row.priceLarge ? Number(row.priceLarge) : undefined,
     compareAtPrice: row.compareAtPrice ? Number(row.compareAtPrice) : undefined,
-    category: row.category.slug as Product["category"],
+    category: row.category.slug,
+    categoryName: row.category.name,
     images: row.images.map((img) => ({ id: img.id, src: img.url, alt: img.alt || row.name })),
     colors: [...colors.values()],
     sizes: sortSizes([...sizes]),
@@ -101,7 +102,7 @@ export async function getProductBySlug(slug: string) {
   return (await getProducts()).find((p) => p.slug === slug);
 }
 
-export async function getProductsByCategory(category: Product["category"]) {
+export async function getProductsByCategory(category: string) {
   return (await getProducts()).filter((p) => p.category === category);
 }
 

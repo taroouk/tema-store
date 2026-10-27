@@ -3,7 +3,6 @@
 import { createContext, useContext, useMemo } from "react";
 
 import { DEFAULT_PAYMENTS, DEFAULT_PRICING, type PaymentConfig, type PricingSettings } from "@/lib/pricing";
-import { siteConfig } from "@/constants/site";
 import type { Product } from "@/types/product";
 
 const CatalogContext = createContext<Product[]>([]);
@@ -57,15 +56,25 @@ export function useProduct(id: string) {
   return useMemo(() => products.find((p) => p.id === id), [products, id]);
 }
 
-/** Main-menu links, minus any category that has no products yet (so the menu never leads to an empty page). */
-export function useNavigation() {
+export interface NavCategory {
+  slug: string;
+  name: string;
+}
+
+const CATEGORY_ORDER = ["men", "women", "accessories"];
+
+/** Every category that currently has at least one product, in a stable order (men, women, accessories, then A–Z). */
+export function useCategories(): NavCategory[] {
   const products = useCatalog();
-  return useMemo(
-    () =>
-      siteConfig.navigation.filter((item) => {
-        if (item.href === "/new-in") return products.length > 0;
-        return products.some((p) => `/${p.category}` === item.href);
-      }),
-    [products]
-  );
+  return useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of products) map.set(p.category, p.categoryName ?? p.category.charAt(0).toUpperCase() + p.category.slice(1));
+    const rank = (s: string) => {
+      const i = CATEGORY_ORDER.indexOf(s);
+      return i === -1 ? CATEGORY_ORDER.length : i;
+    };
+    return [...map.entries()]
+      .map(([slug, name]) => ({ slug, name }))
+      .sort((a, b) => rank(a.slug) - rank(b.slug) || a.name.localeCompare(b.name));
+  }, [products]);
 }

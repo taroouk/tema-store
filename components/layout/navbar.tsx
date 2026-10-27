@@ -9,7 +9,8 @@ import { Container } from "@/components/common/container";
 import { Logo } from "@/components/icons/logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { useNavigation } from "@/components/catalog/catalog-provider";
+import { useCatalog } from "@/components/catalog/catalog-provider";
+import { ShopDropdown } from "@/components/layout/shop-dropdown";
 import { siteConfig } from "@/constants/site";
 import { useCartStore } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
@@ -18,7 +19,7 @@ import { useWishlistStore } from "@/stores/wishlist-store";
 const SearchOverlay = dynamic(() => import("@/components/search/search-overlay").then((m) => m.SearchOverlay), { ssr: false });
 
 export function Navbar() {
-  const navigation = useNavigation();
+  const products = useCatalog();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchUsed, setSearchUsed] = useState(false);
 
@@ -41,16 +42,27 @@ export function Navbar() {
             <MobileMenu />
 
             <ul className="hidden items-center gap-6 lg:flex">
-              {navigation.map((item) => (
-                <li key={item.href}>
+              <ShopDropdown />
+              {products.length > 0 && (
+                <li>
                   <Link
-                    href={item.href}
+                    href="/collections"
                     className="whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.16em] transition-colors hover:text-neutral-500"
                   >
-                    {item.title}
+                    Collections
                   </Link>
                 </li>
-              ))}
+              )}
+              {products.length > 0 && (
+                <li>
+                  <Link
+                    href="/new-in"
+                    className="whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.16em] transition-colors hover:text-neutral-500"
+                  >
+                    New In
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 

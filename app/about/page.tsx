@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
 import { Container } from "@/components/common/container";
 import { Section } from "@/components/common/section";
@@ -140,7 +141,7 @@ export default function AboutPage() {
 
           <div className="mt-12">
             <Button asChild size="lg">
-              <a href="/new-in">Explore The Collection</a>
+              <Link href="/new-in">Explore The Collection</Link>
             </Button>
           </div>
         </Container>
