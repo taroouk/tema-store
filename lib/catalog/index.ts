@@ -1,5 +1,6 @@
 import "server-only";
 
+import { sortSizes } from "@/lib/size-price";
 import type { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 
@@ -58,11 +59,12 @@ function toProduct(row: ProductRow): Product {
     name: row.name,
     description: row.description,
     price: Number(row.price),
+    priceLarge: row.priceLarge ? Number(row.priceLarge) : undefined,
     compareAtPrice: row.compareAtPrice ? Number(row.compareAtPrice) : undefined,
     category: row.category.slug as Product["category"],
     images: row.images.map((img) => ({ id: img.id, src: img.url, alt: img.alt || row.name })),
     colors: [...colors.values()],
-    sizes: [...sizes],
+    sizes: sortSizes([...sizes]),
     stock,
     variants: row.variants.map((v) => ({
       colorId: colorId(v.colorName),
@@ -131,7 +133,7 @@ export const getCollections = unstable_cache(
       slug: c.slug,
       title: c.title,
       description: c.description,
-      coverImage: c.coverImage ?? "/images/hero.jpg",
+      coverImage: c.coverImage ?? "/images/hero-1.png",
       productSlugs: c.productCollections.map((pc) => pc.product.slug),
     }));
   },

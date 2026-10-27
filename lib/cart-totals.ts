@@ -1,3 +1,4 @@
+import { priceForSize } from "@/lib/size-price";
 import type { Product } from "@/types/product";
 import type { CartItem } from "@/stores/cart-store";
 
@@ -30,7 +31,7 @@ export function getCartTotals(items: CartItem[], allProducts: Product[], pricing
       return {
         ...item,
         name: product.name,
-        price: product.price,
+        price: priceForSize(product, item.size),
         image: product.images[0]?.src ?? "",
         colorName,
       };

@@ -91,8 +91,13 @@ export default async function ProductPage({
       name: siteConfig.name,
     },
     offers: {
-      "@type": "Offer",
-      price: product.price,
+      ...(product.priceLarge != null && product.priceLarge !== product.price
+        ? {
+            "@type": "AggregateOffer",
+            lowPrice: Math.min(product.price, product.priceLarge),
+            highPrice: Math.max(product.price, product.priceLarge),
+          }
+        : { "@type": "Offer", price: product.price }),
       priceCurrency: "EGP",
       priceValidUntil: validUntil.toISOString().slice(0, 10),
       itemCondition: "https://schema.org/NewCondition",

@@ -88,6 +88,8 @@ model Product {
   material           String?
   careInstructions   String?
   price              Decimal             @db.Decimal(10, 2)
+  /// Price for 3XL, 4XL and 5XL. Null = same as `price`.
+  priceLarge         Decimal?            @db.Decimal(10, 2)
   compareAtPrice     Decimal?            @db.Decimal(10, 2)
   costPrice          Decimal?            @db.Decimal(10, 2)
   currency           String              @default("EGP")

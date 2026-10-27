@@ -1,5 +1,6 @@
 "use client";
 
+import { priceForSize } from "@/lib/size-price";
 import Image from "next/image";
 import { Minus, Plus, Trash2 } from "lucide-react";
 
@@ -58,7 +59,7 @@ export function CartItem({
           </p>
 
           <p className="mt-4 text-lg font-semibold">
-            EGP {product.price}
+            EGP {priceForSize(product, item.size)}
           </p>
         </div>
 

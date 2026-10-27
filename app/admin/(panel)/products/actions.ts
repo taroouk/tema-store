@@ -1,5 +1,6 @@
 "use server";
 
+import { sortSizes } from "@/lib/size-price";
 import { Prisma } from "@prisma/client";
 import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
@@ -27,6 +28,7 @@ const ProductInput = z.object({
   metaTitle: z.string().trim().max(70).optional(),
   metaDescription: z.string().trim().max(170).optional(),
   price: z.coerce.number().min(0).max(10_000_000),
+  priceLarge: money,
   compareAtPrice: money,
   costPrice: money,
   status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
@@ -50,6 +52,7 @@ function parseForm(formData: FormData) {
     metaTitle: get("metaTitle") || undefined,
     metaDescription: get("metaDescription") || undefined,
     price: get("price"),
+    priceLarge: get("priceLarge"),
     compareAtPrice: get("compareAtPrice"),
     costPrice: get("costPrice"),
     status: get("status"),
@@ -104,6 +107,7 @@ function parseForm(formData: FormData) {
       ...data,
       slug: slugify(data.slug || data.name),
       badge: data.badge || null,
+      priceLarge: data.priceLarge ?? null,
       // Empty fields must clear the stored value, not be skipped.
       material: data.material ?? null,
       careInstructions: data.careInstructions ?? null,
@@ -112,7 +116,7 @@ function parseForm(formData: FormData) {
     },
     images,
     colors: colors as { name: string; hex: string }[],
-    sizes,
+    sizes: sortSizes(sizes),
     initialStock: Math.max(0, Number(get("initialStock") ?? 0) || 0),
   };
 }
@@ -343,6 +347,7 @@ export async function duplicateProduct(id: string) {
       metaTitle: src.metaTitle,
       metaDescription: src.metaDescription,
       price: src.price,
+      priceLarge: src.priceLarge,
       compareAtPrice: src.compareAtPrice,
       costPrice: src.costPrice,
       currency: src.currency,

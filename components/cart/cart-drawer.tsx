@@ -1,5 +1,6 @@
 "use client";
 
+import { priceForSize } from "@/lib/size-price";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import Image from "next/image";
@@ -39,7 +40,7 @@ export function CartDrawer() {
     })
     .filter((l): l is NonNullable<typeof l> => l !== null);
 
-  const subtotal = lines.reduce((n, l) => n + l.product.price * l.item.quantity, 0);
+  const subtotal = lines.reduce((n, l) => n + priceForSize(l.product, l.item.size) * l.item.quantity, 0);
   const count = lines.reduce((n, l) => n + l.item.quantity, 0);
   const remaining = Math.max(0, freeShippingThreshold - subtotal);
   const progress = Math.min(100, (subtotal / freeShippingThreshold) * 100);
@@ -121,7 +122,7 @@ export function CartDrawer() {
                                 {color?.name ?? item.colorId} · {item.size}
                               </p>
                             </div>
-                            <p className="text-sm font-medium">EGP {(product.price * item.quantity).toLocaleString("en-US")}</p>
+                            <p className="text-sm font-medium">EGP {(priceForSize(product, item.size) * item.quantity).toLocaleString("en-US")}</p>
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center rounded-full border border-neutral-300">

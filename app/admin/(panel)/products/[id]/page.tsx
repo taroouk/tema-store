@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { sortSizes } from "@/lib/size-price";
 import { ConfirmButton, SubmitButton, TypedConfirmButton } from "@/components/admin/form-controls";
 import { z } from "zod";
 
@@ -50,6 +51,7 @@ export default async function EditProductPage({
     metaTitle: product.metaTitle ?? "",
     metaDescription: product.metaDescription ?? "",
     price: Number(product.price),
+    priceLarge: product.priceLarge ? Number(product.priceLarge) : "",
     compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : "",
     costPrice: product.costPrice ? Number(product.costPrice) : "",
     status: product.status,
@@ -62,7 +64,7 @@ export default async function EditProductPage({
     colors: [...new Map(product.variants.map((v) => [v.colorName, v.colorHex])).entries()].map(
       ([name, hex]) => ({ name, hex })
     ),
-    sizes: [...new Set(product.variants.map((v) => v.size))],
+    sizes: sortSizes([...new Set(product.variants.map((v) => v.size))]),
   };
 
   return (

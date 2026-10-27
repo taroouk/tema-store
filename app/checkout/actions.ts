@@ -8,6 +8,7 @@ import { z } from "zod";
 import { GOVERNORATES, normalizeEgyptianPhone } from "@/lib/egypt";
 import { notifyNewOrder } from "@/lib/notify";
 import { publishAdminEvent } from "@/lib/realtime";
+import { priceForSize } from "@/lib/size-price";
 import { signToken } from "@/lib/tokens";
 
 import { CATALOG_TAG } from "@/lib/catalog";
@@ -154,7 +155,10 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
           );
         }
 
-        const price = Number(product.price);
+        const price = priceForSize(
+          { price: Number(product.price), priceLarge: product.priceLarge ? Number(product.priceLarge) : null },
+          variant.size
+        );
         subtotal += price * line.qty;
         orderItems.push({
           product: { connect: { id: product.id } },

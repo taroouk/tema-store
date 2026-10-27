@@ -33,6 +33,9 @@ export interface Product {
 
   price: number;
 
+  /** Price for 3XL–5XL when it differs from `price`. */
+  priceLarge?: number;
+
   compareAtPrice?: number;
 
   category: "men" | "women" | "accessories";

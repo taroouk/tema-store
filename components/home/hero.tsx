@@ -2,22 +2,41 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
+// Add, remove or reorder slides here (files live in public/images).
+const SLIDES = [1, 2, 3, 4, 5].map((n) => `/images/hero-${n}.png`);
+const SLIDE_MS = 2000;
+
 export function Hero() {
+  const [active, setActive] = useState(0);
+
+  // Endless loop: advance every 2 seconds and wrap back to the first slide.
+  useEffect(() => {
+    const id = setInterval(() => setActive((i) => (i + 1) % SLIDES.length), SLIDE_MS);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <section className="relative h-[calc(100vh-112px)] min-h-[720px] w-full overflow-hidden">
-      {/* Background Image */}
-      <Image
-        src="/images/hero.jpg"
-        alt="Tema Label Summer Collection"
-        fill
-        sizes="100vw"
-        priority
-        fetchPriority="high"
-        className="object-cover object-center"
-      />
+      {/* Background slideshow */}
+      {SLIDES.map((src, i) => (
+        <Image
+          key={src}
+          src={src}
+          alt={i === 0 ? "Tema Label Summer Collection" : ""}
+          aria-hidden={i === active ? undefined : true}
+          fill
+          sizes="100vw"
+          priority={i === 0}
+          fetchPriority={i === 0 ? "high" : "auto"}
+          className={`object-cover object-center transition-opacity duration-700 motion-reduce:transition-none ${
+            i === active ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      ))}
 
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/35" />

@@ -7,6 +7,7 @@ import { useUiStore } from "@/stores/ui-store";
 import type { Product } from "@/types/product";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
+import { priceForSize } from "@/lib/size-price";
 import { SizeGuide } from "@/components/product/size-guide";
 
 interface ProductInfoProps {
@@ -91,10 +92,10 @@ export function ProductInfo({
 
       <div className="mt-8 flex items-center gap-4">
         <span className="text-3xl font-semibold">
-          EGP {product.price}
+          EGP {priceForSize(product, selectedSize)}
         </span>
 
-        {product.compareAtPrice && (
+        {product.compareAtPrice && priceForSize(product, selectedSize) === product.price && (
           <span className="text-xl text-neutral-500 line-through">
             EGP {product.compareAtPrice}
           </span>

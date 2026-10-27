@@ -1,5 +1,6 @@
 "use client";
 
+import { sortSizes } from "@/lib/size-price";
 import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -19,6 +20,7 @@ export interface ProductFormValues {
   metaTitle: string;
   metaDescription: string;
   price: number | "";
+  priceLarge: number | "";
   compareAtPrice: number | "";
   costPrice: number | "";
   status: "DRAFT" | "ACTIVE" | "ARCHIVED";
@@ -39,6 +41,7 @@ const EMPTY: ProductFormValues = {
   metaTitle: "",
   metaDescription: "",
   price: "",
+  priceLarge: "",
   compareAtPrice: "",
   costPrice: "",
   status: "DRAFT",
@@ -47,7 +50,7 @@ const EMPTY: ProductFormValues = {
   categoryId: "",
   images: [],
   colors: [{ name: "Black", hex: "#000000" }],
-  sizes: ["S", "M", "L", "XL"],
+  sizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"],
 };
 
 const COLOR_PRESETS = [
@@ -58,7 +61,7 @@ const COLOR_PRESETS = [
   { name: "Olive", hex: "#6B6B3A" },
   { name: "Grey", hex: "#8A8A8A" },
 ];
-const SIZE_PRESETS = ["XS", "S", "M", "L", "XL", "XXL", "ONE SIZE"];
+const SIZE_PRESETS = ["S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL", "ONE SIZE"];
 
 const slugify = (s: string) =>
   s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -140,7 +143,7 @@ export function ProductForm({
       {/* Serialized structured fields (parsed by the server action) */}
       <input type="hidden" name="images" value={v.images.map((i) => (i.alt ? `${i.url} | ${i.alt}` : i.url)).join("\n")} />
       <input type="hidden" name="colors" value={v.colors.filter((c) => c.name.trim()).map((c) => `${c.name.trim()} ${c.hex}`).join("\n")} />
-      <input type="hidden" name="sizes" value={v.sizes.join(", ")} />
+      <input type="hidden" name="sizes" value={sortSizes(v.sizes).join(", ")} />
 
       <div className="space-y-6 lg:col-span-2">
         <Card title="General">
@@ -375,8 +378,11 @@ export function ProductForm({
 
         <Card title="Pricing (EGP)">
           <div className="space-y-4">
-            <Field label="Price">
+            <Field label="Price — sizes S to 2XL" hint="One price for S, M, L, XL and 2XL">
               <input name="price" type="number" step="0.01" min={0} required value={v.price} onChange={(e) => set("price", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
+            </Field>
+            <Field label="Price — sizes 3XL, 4XL, 5XL" hint="Leave empty to use the same price as above">
+              <input name="priceLarge" type="number" step="0.01" min={0} value={v.priceLarge} onChange={(e) => set("priceLarge", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
             </Field>
             <Field label="Compare-at price" hint={discount ? `Shown as ${discount}% off` : "Original price, shown crossed out"}>
               <input name="compareAtPrice" type="number" step="0.01" min={0} value={v.compareAtPrice} onChange={(e) => set("compareAtPrice", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />

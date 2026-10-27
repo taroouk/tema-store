@@ -1,5 +1,6 @@
 "use client";
 
+import { priceForSize } from "@/lib/size-price";
 import Link from "next/link";
 
 import { shippingFee } from "@/lib/pricing";
@@ -18,7 +19,7 @@ export function CartSummary() {
 
     if (!product) return total;
 
-    return total + product.price * item.quantity;
+    return total + priceForSize(product, item.size) * item.quantity;
   }, 0);
 
   const shipping = subtotal === 0 ? 0 : shippingFee(subtotal, "standard", pricing);
