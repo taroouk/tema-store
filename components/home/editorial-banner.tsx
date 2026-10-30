@@ -13,7 +13,7 @@ export function EditorialBanner() {
           <div className="order-2 flex flex-col justify-center p-8 md:p-12 xl:p-16 lg:order-1">
             <div className="mb-6 flex items-center gap-4">
               <span className="h-px w-10 bg-neutral-400" />
-              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Summer 2026</span>
+              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Winter 2026</span>
             </div>
 
             <h2
@@ -43,7 +43,7 @@ export function EditorialBanner() {
           <div className="relative order-1 aspect-[4/3] lg:order-2 lg:aspect-auto lg:min-h-[560px]">
             <Image
               src="/images/editorial/homepage-1.png"
-              alt="Tema Label summer campaign"
+              alt="Tema Label winter campaign"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover object-[center_22%]"

@@ -60,7 +60,7 @@ export const women: Product[] = [
     name: "Women Essential Tee",
 
     description:
-      "Clean minimal silhouette in premium breathable cotton.",
+      "Clean minimal silhouette in premium cotton.",
 
     price: 459,
 

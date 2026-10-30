@@ -32,7 +32,7 @@ export function Hero() {
         <Image
           key={src}
           src={src}
-          alt={i === 0 ? "Tema Label Summer 2026" : ""}
+          alt={i === 0 ? "Tema Label Winter 2026" : ""}
           aria-hidden={i === active ? undefined : true}
           fill
           sizes="100vw"
@@ -54,7 +54,7 @@ export function Hero() {
           <div className="animate-hero-in max-w-[520px] text-left text-white">
             <div className="mb-6 flex items-center gap-4">
               <span className="h-px w-10 bg-white/70" />
-              <span className="text-xs font-medium uppercase tracking-[0.35em] text-white/90">Summer 2026</span>
+              <span className="text-xs font-medium uppercase tracking-[0.35em] text-white/90">Winter 2026</span>
             </div>
 
             <h1
