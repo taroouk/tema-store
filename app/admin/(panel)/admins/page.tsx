@@ -77,7 +77,7 @@ export default async function AdminsPage() {
         <ul className="space-y-1 text-sm text-neutral-700">
           <li><b>Super admin</b> — everything, including managing admins</li>
           <li><b>Admin</b> — catalog, orders, customers, activity log</li>
-          <li><b>Editor</b> — products, inventory, collections</li>
+          <li><b>Editor</b> — products, inventory, categories</li>
           <li><b>Support</b> — orders and customers</li>
         </ul>
       </Card>

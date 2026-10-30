@@ -93,7 +93,7 @@ export default async function EditProductPage({
               ) : (
                 <TypedConfirmButton
                   title={`Permanently delete “${product.name}”?`}
-                  message="This cannot be undone. Its variants, photos and collection links are removed. Past orders keep their own copy of the item."
+                  message="This cannot be undone. Its variants, photos are removed. Past orders keep their own copy of the item."
                   formAction={deleteProductPermanently.bind(null, id)}
                 >
                   Delete permanently

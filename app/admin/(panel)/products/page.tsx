@@ -144,7 +144,7 @@ export default async function ProductsPage({
           {canDelete && (isArchive || tab === "DRAFT") && (
             <TypedConfirmButton
               title="Permanently delete the selected products?"
-              message="This cannot be undone. Their variants, photos and collection links are removed; past orders keep their own copy of the item. Live products are skipped — archive them first."
+              message="This cannot be undone. Their variants, photos are removed; past orders keep their own copy of the item. Live products are skipped — archive them first."
               formAction={bulkDeleteProducts}
             >
               Delete permanently

@@ -31,10 +31,10 @@ export function EditorialBanner() {
             </p>
 
             <Link
-              href="/collections"
+              href="/new-in"
               className="mt-8 inline-flex w-fit items-center gap-3 rounded-full bg-foreground px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-background transition-all hover:gap-5 hover:opacity-90"
             >
-              Discover collection
+              Shop new arrivals
               <ArrowRight size={16} />
             </Link>
           </div>

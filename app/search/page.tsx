@@ -31,7 +31,7 @@ export default async function SearchPage({
       <section className="py-16">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">Search</span>
         <h1 className="text-4xl md:text-5xl" style={{ fontFamily: "var(--font-heading)" }}>
-          {q ? <>Results for “{q}”</> : "Search the collection"}
+          {q ? <>Results for “{q}”</> : "Search the store"}
         </h1>
         <p className="mt-3 text-neutral-500" aria-live="polite">
           {q ? `${results.length} ${results.length === 1 ? "product" : "products"} found` : "Use the search icon in the header to look for products, categories or colors."}

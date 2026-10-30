@@ -34,7 +34,6 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       { href: "/admin/products", label: "Products", icon: "products", section: "Catalog" },
       { href: "/admin/categories", label: "Categories", icon: "categories", section: "Catalog" },
       { href: "/admin/inventory", label: "Inventory", icon: "inventory", section: "Catalog" },
-      { href: "/admin/collections", label: "Collections", icon: "collections", section: "Catalog" },
       { href: "/admin/pages", label: "Policy pages", icon: "pages", section: "Content" },
       { href: "/admin/faq", label: "FAQ", icon: "faq", section: "Content" }
     );

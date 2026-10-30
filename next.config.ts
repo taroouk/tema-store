@@ -46,6 +46,10 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/account", destination: "/track", permanent: true },
+      // Collections were retired in favour of categories; keep old links and search results working.
+      { source: "/collections", destination: "/", permanent: true },
+      { source: "/collections/:slug*", destination: "/", permanent: true },
+      { source: "/admin/collections", destination: "/admin/categories", permanent: true },
       // One canonical host: www -> apex
       {
         source: "/:path*",

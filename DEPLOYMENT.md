@@ -37,7 +37,7 @@ npm run db:seed:admins                       # creates the admin accounts
 ```bash
 npm run db:seed:content   # loads the default Privacy / Terms / Shipping / Returns text and the FAQ so you can edit them in Admin → Policy pages / FAQ (never overwrites your edits)
 ```
-To start with an empty store: `npm run db:clear-demo` (dry run) then `npm run db:clear-demo -- --yes` archives the 16 demo products and deletes the 4 demo collections.
+To start with an empty store: `npm run db:clear-demo` (dry run) then `npm run db:clear-demo -- --yes` archives the 16 demo products.
 
 Do **not** run `npm run db:seed` on production unless you want the demo catalog; add real products from *Admin → Products*.
 
@@ -76,7 +76,7 @@ Nobody can guarantee a #1 position (especially for the single word "tema", which
 1. **Google Search Console** → add `https://temalabel.com` (Domain property) → verify (DNS TXT, or paste the HTML-tag code in *Admin → Settings → Search engines*) → submit `https://temalabel.com/sitemap.xml` → "Request indexing" for the home page. Do the same in **Bing Webmaster Tools** (can import from Search Console).
 2. **Google Business Profile** and an **Instagram / Facebook / TikTok** page named "Tema Label" with a link to the site. Put the same links in `siteConfig.links` (`constants/site.ts`) — they are exposed to Google as `sameAs`.
 3. Get the brand mentioned and linked by other sites (press, influencers, directories). A brand search ranks first mostly because many sites say "Tema Label → temalabel.com".
-4. Keep the name consistent everywhere ("Tema Label"), use real photos with descriptive names, and keep adding products/collections.
+4. Keep the name consistent everywhere ("Tema Label"), use real photos with descriptive names, and keep adding products.
 5. Indexing a new domain takes days to weeks; brand-name results usually appear first, generic words later.
 
 ## Realtime admin updates

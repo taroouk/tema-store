@@ -3,7 +3,7 @@
 const R=require("path").resolve(__dirname,"../..")+"/";
 const {JSDOM}=require(R+"node_modules/jsdom");const axeSrc=require("fs").readFileSync(R+"node_modules/axe-core/axe.min.js","utf8");
 const BASE=process.env.QA_BASE||"http://localhost:3000";
-const pages=["/","/men","/women","/accessories","/new-in","/collections","/collections/summer","/products/canvas-tote","/products/essential-oversized-tee","/cart","/checkout","/contact","/faq","/track","/privacy","/terms","/shipping","/returns","/about","/search?q=tee","/unsubscribe","/nope-404","/admin/login"];
+const pages=["/","/men","/women","/accessories","/new-in","/products/canvas-tote","/products/essential-oversized-tee","/cart","/checkout","/contact","/faq","/track","/privacy","/terms","/shipping","/returns","/about","/search?q=tee","/unsubscribe","/nope-404","/admin/login"];
 function inlineStreamed(html){
  // put streamed Suspense content in place of its fallback (what a browser does once the stream finishes)
  return html.replace(/<!--\$\?--><template id="B:(\d+)"><\/template>([\s\S]*?)<!--\/\$-->/g,(m,n)=>{const re=new RegExp(`<div hidden id="S:${n}">([\\s\\S]*?)</div><script>`);const c=html.match(re);return c?c[1]:m});

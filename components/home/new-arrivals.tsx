@@ -16,7 +16,7 @@ export async function NewArrivals() {
         <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
-              Latest Collection
+              Just In
             </span>
 
             <h2 className="text-4xl font-semibold tracking-tight md:text-5xl">

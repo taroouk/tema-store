@@ -15,7 +15,6 @@ const supportLinks = [
 
 const companyLinks = [
   { label: "About", href: "/about" },
-  { label: "Collections", href: "/collections" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms & Conditions", href: "/terms" },
 ];

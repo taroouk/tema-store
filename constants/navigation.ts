@@ -14,10 +14,6 @@ export const navigation: NavigationItem[] = [
     href: "/shop",
   },
   {
-    title: "Collections",
-    href: "/collections",
-  },
-  {
     title: "Essentials",
     href: "/essentials",
   },

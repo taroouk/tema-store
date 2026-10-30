@@ -14,7 +14,7 @@ export function EmptyCart() {
 
       <p className="mt-5 max-w-md leading-8 text-neutral-500">
         Looks like you haven&apos;t added anything yet.
-        Discover our latest collection and find your next favorite piece.
+        Discover our latest pieces and find your next favorite piece.
       </p>
 
       <Link

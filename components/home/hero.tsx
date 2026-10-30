@@ -24,7 +24,7 @@ export function Hero() {
   return (
     <section
       aria-roledescription="carousel"
-      aria-label="Featured collection"
+      aria-label="Featured"
       className="relative h-[calc(100svh-88px)] min-h-[520px] w-full overflow-hidden bg-neutral-900 md:max-h-[860px]"
     >
       {/* Background slideshow */}
@@ -32,7 +32,7 @@ export function Hero() {
         <Image
           key={src}
           src={src}
-          alt={i === 0 ? "Tema Label Summer Collection" : ""}
+          alt={i === 0 ? "Tema Label Summer 2026" : ""}
           aria-hidden={i === active ? undefined : true}
           fill
           sizes="100vw"

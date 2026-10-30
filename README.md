@@ -24,7 +24,7 @@ Storefront: `http://localhost:3000` · Admin: `http://localhost:3000/admin`
 | `npm run dev` / `build` / `start` | Next.js |
 | `npm run typecheck` / `lint` / `test` | TypeScript / ESLint / Vitest unit tests |
 | `npm run db:migrate` | `prisma migrate deploy` |
-| `npm run db:seed` | Seed categories, products, collections |
+| `npm run db:seed` | Seed categories, products |
 | `npm run db:seed:admins` | Create/update admins from `admins.local.json` |
 | `npm run db:studio` | Prisma Studio |
 

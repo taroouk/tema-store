@@ -4,7 +4,6 @@ import type { Permission } from "./permissions";
 const RULES: [string, Permission][] = [
   ["/admin/products", "catalog:write"],
   ["/admin/inventory", "catalog:write"],
-  ["/admin/collections", "catalog:write"],
   ["/admin/categories", "catalog:write"],
   ["/admin/pages", "catalog:write"],
   ["/admin/faq", "catalog:write"],

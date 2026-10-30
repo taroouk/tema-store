@@ -6,7 +6,6 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, ProductBadge } from "@prisma/client";
 
 import { allProducts } from "../constants/all-products";
-import { collections } from "../constants/collections";
 
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
@@ -75,35 +74,6 @@ async function main() {
       },
     });
     console.log("product", product.slug);
-  }
-
-  for (const [i, col] of collections.entries()) {
-    const collection = await prisma.collection.upsert({
-      where: { slug: col.slug },
-      update: {},
-      create: {
-        slug: col.slug,
-        title: col.title,
-        description: col.description,
-        coverImage: col.coverImage,
-        position: i,
-      },
-    });
-    for (const [pos, slug] of col.productSlugs.entries()) {
-      const product = await prisma.product.findUnique({ where: { slug } });
-      if (!product) continue;
-      await prisma.productCollection.upsert({
-        where: {
-          productId_collectionId: {
-            productId: product.id,
-            collectionId: collection.id,
-          },
-        },
-        update: {},
-        create: { productId: product.id, collectionId: collection.id, position: pos },
-      });
-    }
-    console.log("collection", col.slug);
   }
 }
 

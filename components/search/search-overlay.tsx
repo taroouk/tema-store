@@ -211,7 +211,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                 </div>
               ) : (
                 <p className="py-16 text-center text-neutral-500">
-                  Start typing to search our collection.
+                  Start typing to search the store.
                 </p>
               )
             ) : results.length > 0 ? (

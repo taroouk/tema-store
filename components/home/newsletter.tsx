@@ -21,7 +21,7 @@ export function Newsletter() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-neutral-600">
-            Subscribe to receive exclusive collections, early access,
+            Subscribe to receive new drops, early access,
             premium offers and the latest releases from Tema Label.
           </p>
 

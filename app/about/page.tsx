@@ -141,7 +141,7 @@ export default function AboutPage() {
 
           <div className="mt-12">
             <Button asChild size="lg">
-              <Link href="/new-in">Explore The Collection</Link>
+              <Link href="/new-in">Shop New Arrivals</Link>
             </Button>
           </div>
         </Container>

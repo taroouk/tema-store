@@ -46,16 +46,6 @@ export function Navbar() {
               {products.length > 0 && (
                 <li>
                   <Link
-                    href="/collections"
-                    className="whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.16em] transition-colors hover:text-neutral-500"
-                  >
-                    Collections
-                  </Link>
-                </li>
-              )}
-              {products.length > 0 && (
-                <li>
-                  <Link
                     href="/new-in"
                     className="whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.16em] transition-colors hover:text-neutral-500"
                   >

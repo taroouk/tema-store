@@ -10,14 +10,6 @@ import type { Product, ProductBadge } from "@/types/product";
 export const CATALOG_TAG = "catalog";
 const REVALIDATE_SECONDS = 300;
 
-export interface Collection {
-  slug: string;
-  title: string;
-  description: string;
-  coverImage: string;
-  productSlugs: string[];
-}
-
 const BADGES: Record<string, ProductBadge> = {
   NEW: "NEW",
   BEST_SELLER: "BEST SELLER",
@@ -124,38 +116,4 @@ export async function getRelatedProducts(product: Product, limit = 4) {
   const all = (await getProducts()).filter((p) => p.id !== product.id);
   const same = all.filter((p) => p.category === product.category);
   return [...same, ...all.filter((p) => p.category !== product.category)].slice(0, limit);
-}
-
-export const getCollections = unstable_cache(
-  async (): Promise<Collection[]> => {
-    const rows = await prisma.collection.findMany({
-      where: { isActive: true },
-      orderBy: { position: "asc" },
-      include: {
-        productCollections: {
-          orderBy: { position: "asc" },
-          where: { product: visible },
-          include: { product: { select: { slug: true } } },
-        },
-      },
-    });
-    return rows.map((c) => ({
-      slug: c.slug,
-      title: c.title,
-      description: c.description,
-      coverImage: c.coverImage ?? "/images/hero-1.png",
-      productSlugs: c.productCollections.map((pc) => pc.product.slug),
-    }));
-  },
-  ["catalog-collections"],
-  { tags: [CATALOG_TAG], revalidate: REVALIDATE_SECONDS }
-);
-
-export async function getCollectionBySlug(slug: string) {
-  return (await getCollections()).find((c) => c.slug === slug);
-}
-
-export async function getCollectionProducts(slugs: string[]) {
-  const lookup = new Map((await getProducts()).map((p) => [p.slug, p]));
-  return slugs.map((s) => lookup.get(s)).filter((p): p is Product => Boolean(p));
 }

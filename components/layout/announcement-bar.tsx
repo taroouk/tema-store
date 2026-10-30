@@ -10,7 +10,7 @@ export function AnnouncementBar() {
   const announcement = useAnnouncement();
   const messages = [
     `FREE SHIPPING ON ORDERS OVER ${freeShippingThreshold} EGP`,
-    announcement || "SUMMER '26 COLLECTION NOW LIVE",
+    announcement || "NEW ARRIVALS ARE LIVE",
     "EASY RETURNS WITHIN 14 DAYS",
   ];
 

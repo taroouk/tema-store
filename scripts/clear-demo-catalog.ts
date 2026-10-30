@@ -1,7 +1,7 @@
 /**
  * Removes the demo catalog that `npm run db:seed` created, so you can start with your real products:
  * the 16 demo products are ARCHIVED (kept in the database, hidden from the store, still referenced by any
- * past orders) and the 4 demo collections are deleted.
+ * past orders).
  *
  *   npm run db:clear-demo            # dry run: shows what would change
  *   npm run db:clear-demo -- --yes   # actually do it
@@ -14,7 +14,6 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 import { allProducts } from "../constants/all-products";
-import { collections } from "../constants/collections";
 
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 const apply = process.argv.includes("--yes");
@@ -22,14 +21,11 @@ const apply = process.argv.includes("--yes");
 async function main() {
   const slugs = allProducts.map((p) => p.slug);
   const products = await prisma.product.findMany({ where: { slug: { in: slugs }, deletedAt: null }, select: { name: true } });
-  const cols = await prisma.collection.findMany({ where: { slug: { in: collections.map((c) => c.slug) } }, select: { title: true } });
 
   console.log(`${products.length} demo products to archive:`, products.map((p) => p.name).join(", ") || "-");
-  console.log(`${cols.length} demo collections to delete:`, cols.map((c) => c.title).join(", ") || "-");
   if (!apply) return console.log("\nDry run. Re-run with  -- --yes  to apply.");
 
   await prisma.product.updateMany({ where: { slug: { in: slugs }, deletedAt: null }, data: { status: "ARCHIVED", deletedAt: new Date() } });
-  await prisma.collection.deleteMany({ where: { slug: { in: collections.map((c) => c.slug) } } });
   console.log("\nDone. Remember: the storefront refreshes within 5 minutes (or right after any admin edit).");
 }
 
