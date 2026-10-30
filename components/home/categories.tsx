@@ -7,9 +7,9 @@ import { Section } from "@/components/common/section";
 import { CategoryBanner } from "./category-banner";
 
 const PHOTOS: Record<string, string> = {
-  men: "/images/categories/men.jpg",
-  women: "/images/categories/women.jpg",
-  accessories: "/images/categories/accessories.jpg",
+  men: "/images/categories/men.png",
+  women: "/images/categories/women.png",
+  accessories: "/images/categories/accessories.png",
 };
 
 /** One banner per category that exists in Admin → Categories. */

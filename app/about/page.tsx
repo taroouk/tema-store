@@ -76,7 +76,7 @@ export default function AboutPage() {
         <Container>
           <div className="relative aspect-[16/9] overflow-hidden rounded-[32px] bg-neutral-100">
             <Image
-              src="/images/editorial/editorial.webp"
+              src="/images/editorial/homepage-1.png"
               alt="Tema Label editorial"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
