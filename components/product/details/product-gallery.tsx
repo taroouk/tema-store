@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { Search, ZoomOut } from "lucide-react";
 import Image from "next/image";
 
 import type { Product } from "@/types/product";
@@ -28,10 +29,9 @@ export function ProductGallery({ product }: ProductGalleryProps) {
     setPosition({ x, y });
   };
 
-  const handleTap = () => {
-    if (window.matchMedia("(hover: none)").matches) {
-      setZoom((prev) => !prev);
-    }
+  const toggleZoom = (event?: React.MouseEvent<HTMLDivElement>) => {
+    if (event) handleMove(event);
+    setZoom((z) => !z);
   };
 
   return (
@@ -48,7 +48,7 @@ export function ProductGallery({ product }: ProductGalleryProps) {
               setZoom(false);
             }}
             className={cn(
-              "relative aspect-[3/4] overflow-hidden rounded-xl border transition-all",
+              "relative aspect-[4/5] overflow-hidden rounded-xl border bg-neutral-100 transition-all",
               selectedImage.id === image.id
                 ? "border-foreground"
                 : "border-neutral-200 hover:border-neutral-400"
@@ -58,22 +58,27 @@ export function ProductGallery({ product }: ProductGalleryProps) {
               src={image.src}
               alt={image.alt}
               fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover"
+              sizes="96px"
+              className="object-contain"
             />
           </button>
         ))}
       </div>
 
-      {/* Main Image */}
+      {/* Main Image: shown whole (never cropped); click to zoom in, click again to zoom out */}
 
       <div
         ref={mainRef}
-        onMouseEnter={() => setZoom(true)}
-        onMouseLeave={() => setZoom(false)}
-        onMouseMove={handleMove}
-        onClick={handleTap}
-        className="relative aspect-[3/4] cursor-zoom-in overflow-hidden rounded-3xl bg-neutral-100"
+        onClick={(e) => toggleZoom(e)}
+        onMouseMove={zoom ? handleMove : undefined}
+        role="button"
+        tabIndex={0}
+        aria-label={zoom ? "Zoom out" : "Zoom in"}
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), toggleZoom())}
+        className={cn(
+          "relative aspect-[4/5] overflow-hidden rounded-3xl bg-neutral-100",
+          zoom ? "cursor-zoom-out" : "cursor-zoom-in"
+        )}
       >
         <Image
           key={selectedImage.id}
@@ -82,24 +87,12 @@ export function ProductGallery({ product }: ProductGalleryProps) {
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 50vw"
-          className={cn(
-            "object-cover transition-all duration-500",
-            zoom &&
-              "scale-150 md:[background-size:200%]"
-          )}
-          style={
-            zoom
-              ? {
-                  transformOrigin: `${position.x}% ${position.y}%`,
-                }
-              : undefined
-          }
+          className={cn("object-contain transition-transform duration-300", zoom && "scale-[2]")}
+          style={zoom ? { transformOrigin: `${position.x}% ${position.y}%` } : undefined}
         />
 
-        {/* Mobile zoom hint */}
-
-        <span className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white lg:hidden">
-          Tap to zoom
+        <span className="pointer-events-none absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white">
+          {zoom ? <ZoomOut size={18} /> : <Search size={18} />}
         </span>
       </div>
     </div>
