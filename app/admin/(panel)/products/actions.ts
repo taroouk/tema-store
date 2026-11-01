@@ -282,6 +282,31 @@ export async function updateStock(id: string, formData: FormData) {
   redirect(withMessage(back, "ok", "Stock updated"));
 }
 
+/** Removes one color/size combination. Past orders keep their own copy of the line item. */
+export async function deleteVariant(productId: string, variantId: string) {
+  const admin = await requireAdmin("catalog:write");
+  const back = `/admin/products/${productId}`;
+
+  const variants = await prisma.productVariant.findMany({ where: { productId }, select: { id: true, colorName: true, size: true } });
+  const target = variants.find((v) => v.id === variantId);
+  if (!target) redirect(withMessage(back, "error", "That size no longer exists"));
+  if (variants.length === 1) {
+    redirect(withMessage(back, "error", "A product needs at least one size. Archive the product instead."));
+  }
+
+  await prisma.productVariant.delete({ where: { id: variantId } });
+  await audit(admin, {
+    action: "delete",
+    entity: "Product",
+    entityId: productId,
+    summary: `Removed ${target.colorName} / ${target.size}`,
+  });
+
+  updateTag(CATALOG_TAG);
+  revalidatePath("/admin/inventory");
+  redirect(withMessage(back, "ok", `Removed ${target.colorName} / ${target.size}`));
+}
+
 // ───────────────────────── Archive / restore / duplicate / delete ─────────────────────────
 
 const LIST = "/admin/products";

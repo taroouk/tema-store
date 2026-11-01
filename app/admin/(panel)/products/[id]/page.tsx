@@ -17,7 +17,7 @@ import { can } from "@/lib/auth/permissions";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
 
-import { archiveProduct, deleteProductPermanently, duplicateProduct, restoreProduct, updateProduct, updateStock } from "../actions";
+import { archiveProduct, deleteProductPermanently, deleteVariant, duplicateProduct, restoreProduct, updateProduct, updateStock } from "../actions";
 import { ProductForm, type ProductFormValues } from "../product-form";
 
 export const metadata = { title: "Edit product" };
@@ -115,6 +115,7 @@ export default async function EditProductPage({
                   <th className={th}>Size</th>
                   <th className={th}>Stock</th>
                   <th className={th}>Status</th>
+                  <th className={th}></th>
                 </tr>
               </thead>
               <tbody>
@@ -146,6 +147,17 @@ export default async function EditProductPage({
                       ) : (
                         <Badge tone="green">In stock</Badge>
                       )}
+                    </td>
+                    <td className={`${td} text-right`}>
+                      <ConfirmButton
+                        title={`Remove ${v.colorName} / ${v.size}?`}
+                        message="This size is deleted from the product and disappears from the store. Past orders keep their own copy. Unsaved stock changes in this table are not saved."
+                        confirmLabel="Remove"
+                        formAction={deleteVariant.bind(null, id, v.id)}
+                        className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+                      >
+                        Remove
+                      </ConfirmButton>
                     </td>
                   </tr>
                 ))}
