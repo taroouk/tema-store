@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,10 @@ const SIZE_TABLES: Record<string, { size: string; chest: string; length: string 
     { size: "M", chest: "100–104", length: "70" },
     { size: "L", chest: "104–110", length: "72" },
     { size: "XL", chest: "110–116", length: "74" },
-    { size: "XXL", chest: "116–122", length: "76" },
+    { size: "2XL", chest: "116–122", length: "76" },
+    { size: "3XL", chest: "122–128", length: "78" },
+    { size: "4XL", chest: "128–134", length: "80" },
+    { size: "5XL", chest: "134–140", length: "82" },
   ],
   women: [
     { size: "XS", chest: "80–84", length: "58" },
@@ -23,18 +27,13 @@ const SIZE_TABLES: Record<string, { size: string; chest: string; length: string 
     { size: "M", chest: "88–94", length: "62" },
     { size: "L", chest: "94–100", length: "64" },
   ],
-  accessories: [
-    { size: "ONE SIZE", chest: "—", length: "—" },
-    { size: "S", chest: "—", length: "—" },
-    { size: "M", chest: "—", length: "—" },
-    { size: "L", chest: "—", length: "—" },
-  ],
 };
 
 export function SizeGuide({ category = "men" }: SizeGuideProps) {
   const [open, setOpen] = useState(false);
 
-  const rows = SIZE_TABLES[category] ?? SIZE_TABLES.men;
+  // Only categories with real measurements get a guide (no chest/length table for socks, caps, etc.).
+  const rows = SIZE_TABLES[category];
 
   useEffect(() => {
     if (!open) return;
@@ -52,6 +51,8 @@ export function SizeGuide({ category = "men" }: SizeGuideProps) {
     };
   }, [open]);
 
+  if (!rows) return null;
+
   return (
     <>
       <button
@@ -62,7 +63,8 @@ export function SizeGuide({ category = "men" }: SizeGuideProps) {
         Size Guide
       </button>
 
-      {open && (
+      {open &&
+        createPortal(
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           role="dialog"
@@ -134,7 +136,8 @@ export function SizeGuide({ category = "men" }: SizeGuideProps) {
               Close
             </Button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
