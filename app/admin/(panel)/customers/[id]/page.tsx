@@ -1,3 +1,4 @@
+import { ConfirmButton } from "@/components/admin/form-controls";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
@@ -9,7 +10,7 @@ import { whatsappLink } from "@/lib/egypt";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
 
-import { saveCustomerNotes } from "./actions";
+import { deleteCustomer, saveCustomerNotes } from "./actions";
 
 export const metadata = { title: "Customer" };
 
@@ -29,7 +30,21 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
 
   return (
     <>
-      <PageHeader title={customer.name} description={`Customer since ${dateTime(customer.createdAt)}`} />
+      <PageHeader
+        title={customer.name}
+        description={`Customer since ${dateTime(customer.createdAt)}`}
+        actions={
+          <form action={deleteCustomer.bind(null, customer.id)}>
+            <ConfirmButton
+              title={`Delete ${customer.name}?`}
+              message="The customer record is removed permanently. Their orders stay in Orders with the name, phone and address they were placed with."
+              confirmLabel="Delete"
+            >
+              Delete customer
+            </ConfirmButton>
+          </form>
+        }
+      />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <div className="grid gap-4 sm:grid-cols-3">

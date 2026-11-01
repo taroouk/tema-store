@@ -17,3 +17,11 @@ export async function setMessageStatus(id: string, status: "NEW" | "READ" | "ARC
   revalidatePath("/admin/messages");
   redirect(withMessage("/admin/messages", "ok", `Marked as ${parsed.toLowerCase()}`));
 }
+
+export async function deleteMessage(id: string) {
+  const admin = await requireAdmin("customers:view");
+  const m = await prisma.contactMessage.delete({ where: { id } });
+  await audit(admin, { action: "delete", entity: "Message", entityId: id, summary: `Deleted message from ${m.email ?? m.phone ?? m.name}` });
+  revalidatePath("/admin/messages");
+  redirect(withMessage("/admin/messages", "ok", "Message deleted"));
+}

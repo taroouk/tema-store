@@ -1,7 +1,10 @@
+import { ConfirmButton } from "@/components/admin/form-controls";
 import { ExportLink, PageHeader, Pagination, Table, td, th, Badge } from "@/components/admin/ui";
 import { dateTime } from "@/lib/admin/format";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
+
+import { deleteSubscriber } from "./actions";
 
 export const metadata = { title: "Subscribers" };
 const PAGE_SIZE = 50;
@@ -19,7 +22,7 @@ export default async function SubscribersPage({ searchParams }: { searchParams: 
       <PageHeader title="Subscribers" description={`${total} newsletter subscribers`} actions={<ExportLink kind="subscribers" />} />
       <Table>
         <thead>
-          <tr><th className={th}>Email</th><th className={th}>Source</th><th className={th}>Status</th><th className={th}>Subscribed</th></tr>
+          <tr><th className={th}>Email</th><th className={th}>Source</th><th className={th}>Status</th><th className={th}>Subscribed</th><th className={th}></th></tr>
         </thead>
         <tbody>
           {subs.map((s) => (
@@ -28,9 +31,21 @@ export default async function SubscribersPage({ searchParams }: { searchParams: 
               <td className={td}>{s.source}</td>
               <td className={td}><Badge tone={s.isActive ? "green" : "gray"}>{s.isActive ? "active" : "unsubscribed"}</Badge></td>
               <td className={td}>{dateTime(s.createdAt)}</td>
+              <td className={`${td} text-right`}>
+                <form action={deleteSubscriber.bind(null, s.id)}>
+                  <ConfirmButton
+                    title={`Delete ${s.email}?`}
+                    message="The address is removed permanently."
+                    confirmLabel="Delete"
+                    className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+                  >
+                    Delete
+                  </ConfirmButton>
+                </form>
+              </td>
             </tr>
           ))}
-          {subs.length === 0 && <tr><td className={`${td} py-8 text-center text-neutral-500`} colSpan={4}>No subscribers yet.</td></tr>}
+          {subs.length === 0 && <tr><td className={`${td} py-8 text-center text-neutral-500`} colSpan={5}>No subscribers yet.</td></tr>}
         </tbody>
       </Table>
       <Pagination base="/admin/subscribers" page={page} pages={Math.ceil(total / PAGE_SIZE)} />

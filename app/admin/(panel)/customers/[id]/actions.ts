@@ -20,3 +20,12 @@ export async function saveCustomerNotes(id: string, formData: FormData) {
   revalidatePath(back);
   redirect(withMessage(back, "ok", "Notes saved"));
 }
+
+/** Removes the customer record. Their orders stay (they keep their own name, phone and address). */
+export async function deleteCustomer(id: string) {
+  const admin = await requireAdmin("customers:view");
+  const c = await prisma.customer.delete({ where: { id } });
+  await audit(admin, { action: "delete", entity: "Customer", entityId: id, summary: `Deleted customer ${c.email ?? c.phone ?? c.name}` });
+  revalidatePath("/admin/customers");
+  redirect(withMessage("/admin/customers", "ok", "Customer deleted"));
+}

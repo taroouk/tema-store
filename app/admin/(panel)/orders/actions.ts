@@ -98,3 +98,18 @@ export async function rejectPayment(id: string) {
   revalidatePath("/admin/orders");
   redirect(withMessage(`/admin/orders/${id}`, "ok", "Payment marked as not received"));
 }
+
+/** Deletes an order for good. Stock is given back first unless the order was already cancelled/refunded. */
+export async function deleteOrder(id: string) {
+  const admin = await requireAdmin("orders:manage");
+  const number = await prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUniqueOrThrow({ where: { id }, include: { items: true } });
+    if (!["CANCELLED", "REFUNDED"].includes(order.status)) await releaseOrderStock(tx, order);
+    await tx.order.delete({ where: { id } });
+    return order.number;
+  });
+  await audit(admin, { action: "delete", entity: "Order", entityId: id, summary: `Deleted order #${number}` });
+  updateTag(CATALOG_TAG);
+  revalidatePath("/admin/orders");
+  redirect(withMessage("/admin/orders", "ok", `Order #${number} deleted`));
+}

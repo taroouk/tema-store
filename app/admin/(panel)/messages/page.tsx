@@ -1,13 +1,13 @@
 import Link from "next/link";
 
-import { SubmitButton } from "@/components/admin/form-controls";
+import { ConfirmButton, SubmitButton } from "@/components/admin/form-controls";
 import { Badge, btnGhostCls, PageHeader, Pagination } from "@/components/admin/ui";
 import { dateTime } from "@/lib/admin/format";
 import { whatsappLink } from "@/lib/egypt";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
 
-import { setMessageStatus } from "./actions";
+import { deleteMessage, setMessageStatus } from "./actions";
 
 export const metadata = { title: "Messages" };
 const PAGE_SIZE = 20;
@@ -82,6 +82,9 @@ export default async function MessagesPage({
               {m.status !== "ARCHIVED" && (
                 <form action={setMessageStatus.bind(null, m.id, "ARCHIVED")}><SubmitButton className={btnGhostCls}>Archive</SubmitButton></form>
               )}
+              <form action={deleteMessage.bind(null, m.id)}>
+                <ConfirmButton title="Delete this message?" message="It is removed permanently and cannot be recovered." confirmLabel="Delete">Delete</ConfirmButton>
+              </form>
             </div>
           </article>
         ))}

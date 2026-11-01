@@ -22,7 +22,7 @@ import { prisma } from "@/lib/prisma/client";
 import { PrintButton } from "@/components/admin/print-button";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { confirmPayment, rejectPayment, updateOrder } from "../actions";
+import { confirmPayment, deleteOrder, rejectPayment, updateOrder } from "../actions";
 
 export const metadata = { title: "Order" };
 
@@ -59,6 +59,15 @@ export default async function OrderPage({
           <>
             <Badge tone={orderTone[order.status]}>{order.status.toLowerCase()}</Badge>
             <PrintButton />
+            <form action={deleteOrder.bind(null, order.id)}>
+              <ConfirmButton
+                title={`Delete order #${order.number}?`}
+                message="The order is removed permanently. Stock is returned to the shelf if the order was still open."
+                confirmLabel="Delete"
+              >
+                Delete
+              </ConfirmButton>
+            </form>
           </>
         }
       />
