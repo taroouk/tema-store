@@ -1,6 +1,7 @@
-import { MoreHorizontal } from "lucide-react";
+import { Archive, Copy, Pencil, RotateCcw, Trash2 } from "lucide-react";
 import Link from "next/link";
 
+import { RowMenu } from "@/components/admin/row-menu";
 import { BulkToolbar } from "@/components/admin/bulk-toolbar";
 import { ConfirmButton, SubmitButton, TypedConfirmButton } from "@/components/admin/form-controls";
 import {
@@ -40,7 +41,8 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "ARCHIVED", label: "Archived" },
 ];
 
-const menuItem = "flex w-full items-center px-3 py-2 text-left text-sm hover:bg-neutral-100";
+const menuItem = "flex w-full items-center px-3.5 py-2 text-left text-sm text-neutral-800 transition hover:bg-neutral-100";
+const menuIcon = "mr-2.5 shrink-0 text-neutral-500";
 
 export default async function ProductsPage({
   searchParams,
@@ -192,38 +194,42 @@ export default async function ProductsPage({
                     <Badge tone={p.status === "ACTIVE" ? "green" : p.status === "DRAFT" ? "amber" : "gray"}>{p.status.toLowerCase()}</Badge>
                   </td>
                   <td className={`${td} relative`}>
-                    <details className="group relative">
-                      <summary className="flex h-8 w-8 cursor-pointer list-none items-center justify-center rounded-md hover:bg-neutral-100" aria-label={`Actions for ${p.name}`}>
-                        <MoreHorizontal size={16} />
-                      </summary>
-                      <div className="absolute right-0 z-30 mt-1 w-48 overflow-hidden rounded-md border border-neutral-200 bg-white py-1 shadow-lg">
-                        <Link href={`/admin/products/${p.id}`} className={menuItem}>Edit</Link>
-                        <button type="submit" formAction={duplicateProduct.bind(null, p.id)} className={menuItem}>Duplicate</button>
-                        {canDelete && (
+                    <RowMenu label={`Actions for ${p.name}`}>
+                      <Link href={`/admin/products/${p.id}`} className={menuItem}>
+                        <Pencil size={15} className={menuIcon} /> Edit
+                      </Link>
+                      <button type="submit" formAction={duplicateProduct.bind(null, p.id)} className={menuItem}>
+                        <Copy size={15} className={menuIcon} /> Duplicate
+                      </button>
+                      {archivedRow ? (
+                        <button type="submit" formAction={restoreProduct.bind(null, p.id)} className={menuItem}>
+                          <RotateCcw size={15} className={menuIcon} /> Restore
+                        </button>
+                      ) : (
+                        <ConfirmButton
+                          title={`Archive “${p.name}”?`}
+                          message="It will be hidden from the store and can be restored any time."
+                          confirmLabel="Archive"
+                          className={menuItem}
+                          formAction={archiveProduct.bind(null, p.id)}
+                        >
+                          <Archive size={15} className={menuIcon} /> Archive
+                        </ConfirmButton>
+                      )}
+                      {canDelete && (
+                        <>
+                          <div className="my-1 border-t border-neutral-200" />
                           <TypedConfirmButton
                             title={`Permanently delete “${p.name}”?`}
                             message="This cannot be undone. Its sizes and photos are removed from the database. Past orders keep their own copy of the item."
                             formAction={deleteProductPermanently.bind(null, p.id)}
-                            className={`${menuItem} text-red-700`}
+                            className={`${menuItem} text-red-600 hover:bg-red-50`}
                           >
-                            Delete permanently
+                            <Trash2 size={15} className="mr-2.5 shrink-0" /> Delete permanently
                           </TypedConfirmButton>
-                        )}
-                        {archivedRow ? (
-                          <button type="submit" formAction={restoreProduct.bind(null, p.id)} className={menuItem}>Restore</button>
-                        ) : (
-                          <ConfirmButton
-                            title={`Archive “${p.name}”?`}
-                            message="It will be hidden from the store and can be restored any time."
-                            confirmLabel="Archive"
-                            className={`${menuItem} text-red-700`}
-                            formAction={archiveProduct.bind(null, p.id)}
-                          >
-                            Archive
-                          </ConfirmButton>
-                        )}
-                      </div>
-                    </details>
+                        </>
+                      )}
+                    </RowMenu>
                   </td>
                 </tr>
               );
