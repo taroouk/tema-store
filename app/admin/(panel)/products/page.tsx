@@ -23,6 +23,7 @@ import { prisma } from "@/lib/prisma/client";
 import {
   archiveProduct,
   bulkDeleteProducts,
+  deleteProductPermanently,
   bulkProducts,
   duplicateProduct,
   restoreProduct,
@@ -141,10 +142,10 @@ export default async function ProductsPage({
               </ConfirmButton>
             </>
           )}
-          {canDelete && (isArchive || tab === "DRAFT") && (
+          {canDelete && (
             <TypedConfirmButton
               title="Permanently delete the selected products?"
-              message="This cannot be undone. Their variants, photos are removed; past orders keep their own copy of the item. Live products are skipped — archive them first."
+              message="This cannot be undone. Their sizes and photos are removed from the database; past orders keep their own copy of the item."
               formAction={bulkDeleteProducts}
             >
               Delete permanently
@@ -198,6 +199,16 @@ export default async function ProductsPage({
                       <div className="absolute right-0 z-30 mt-1 w-48 overflow-hidden rounded-md border border-neutral-200 bg-white py-1 shadow-lg">
                         <Link href={`/admin/products/${p.id}`} className={menuItem}>Edit</Link>
                         <button type="submit" formAction={duplicateProduct.bind(null, p.id)} className={menuItem}>Duplicate</button>
+                        {canDelete && (
+                          <TypedConfirmButton
+                            title={`Permanently delete “${p.name}”?`}
+                            message="This cannot be undone. Its sizes and photos are removed from the database. Past orders keep their own copy of the item."
+                            formAction={deleteProductPermanently.bind(null, p.id)}
+                            className={`${menuItem} text-red-700`}
+                          >
+                            Delete permanently
+                          </TypedConfirmButton>
+                        )}
                         {archivedRow ? (
                           <button type="submit" formAction={restoreProduct.bind(null, p.id)} className={menuItem}>Restore</button>
                         ) : (

@@ -87,18 +87,15 @@ export default async function EditProductPage({
                 Archive
               </ConfirmButton>
             )}
-            {canDelete &&
-              (product.status === "ACTIVE" ? (
-                <span className="text-xs text-neutral-500" title="Archive it first to enable permanent deletion">Archive to enable delete</span>
-              ) : (
-                <TypedConfirmButton
-                  title={`Permanently delete “${product.name}”?`}
-                  message="This cannot be undone. Its variants, photos are removed. Past orders keep their own copy of the item."
-                  formAction={deleteProductPermanently.bind(null, id)}
-                >
-                  Delete permanently
-                </TypedConfirmButton>
-              ))}
+            {canDelete && (
+              <TypedConfirmButton
+                title={`Permanently delete “${product.name}”?`}
+                message="This cannot be undone. Its sizes and photos are removed from the database. Past orders keep their own copy of the item."
+                formAction={deleteProductPermanently.bind(null, id)}
+              >
+                Delete permanently
+              </TypedConfirmButton>
+            )}
           </form>
         }
       />

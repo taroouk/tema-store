@@ -448,24 +448,21 @@ async function deleteProducts(ids: string[]) {
     where: { id: { in: ids } },
     select: { id: true, name: true, status: true, images: { select: { url: true } } },
   });
-  // Live products must be archived first, so a live item can't vanish with a single click.
-  const deletable = rows.filter((p) => p.status !== "ACTIVE");
-  const blocked = rows.length - deletable.length;
+  const deletable = rows;
 
   const urls = deletable.flatMap((p) => p.images.map((i) => i.url));
   // Past orders keep their own copy of name/price/image; only the live link is cleared.
   await prisma.product.deleteMany({ where: { id: { in: deletable.map((p) => p.id) } } });
   await removeUnusedImages(urls);
-  return { deleted: deletable, blocked };
+  return { deleted: deletable };
 }
 
 export async function deleteProductPermanently(id: string, formData: FormData) {
   const admin = await requireAdmin("catalog:delete");
   const back = `${LIST}/${id}`;
-  if (formData.get("confirm") !== "DELETE") redirect(withMessage(back, "error", "Type DELETE to confirm"));
+  if (!formData.getAll("confirm").includes("DELETE")) redirect(withMessage(back, "error", "Type DELETE to confirm"));
 
-  const { deleted, blocked } = await deleteProducts([id]);
-  if (blocked) redirect(withMessage(back, "error", "Archive this product first, then delete it."));
+  const { deleted } = await deleteProducts([id]);
   await audit(admin, { action: "delete", entity: "Product", entityId: id, summary: `Permanently deleted product "${deleted[0]?.name}"` });
   done(LIST, `"${deleted[0]?.name}" permanently deleted`);
 }
@@ -473,11 +470,10 @@ export async function deleteProductPermanently(id: string, formData: FormData) {
 export async function bulkDeleteProducts(formData: FormData) {
   const admin = await requireAdmin("catalog:delete");
   const back = safeBack(formData.get("back"));
-  if (formData.get("confirm") !== "DELETE") redirect(withMessage(back, "error", "Type DELETE to confirm"));
+  if (!formData.getAll("confirm").includes("DELETE")) redirect(withMessage(back, "error", "Type DELETE to confirm"));
   const ids = selectedIds(formData, back);
 
-  const { deleted, blocked } = await deleteProducts(ids);
+  const { deleted } = await deleteProducts(ids);
   await audit(admin, { action: "delete", entity: "Product", summary: `Permanently deleted ${deleted.length} product(s): ${deleted.map((p) => p.name).join(", ")}`.slice(0, 480) });
-  if (deleted.length === 0) redirect(withMessage(back, "error", "Live products must be archived before they can be deleted."));
-  done(back, `${deleted.length} permanently deleted${blocked ? ` · ${blocked} live product${blocked === 1 ? "" : "s"} skipped (archive first)` : ""}`);
+  done(back, `${deleted.length} product${deleted.length === 1 ? "" : "s"} permanently deleted`);
 }
