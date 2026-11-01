@@ -1,4 +1,4 @@
-import { Archive, ArrowDown, ArrowUp, ArrowUpDown, Copy, Pencil, RotateCcw, Trash2 } from "lucide-react";
+import { Archive, ArrowDown, ArrowUp, ArrowUpDown, ChevronsUp, Copy, Pencil, RotateCcw, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 import { RowMenu } from "@/components/admin/row-menu";
@@ -26,6 +26,7 @@ import {
   bulkDeleteProducts,
   deleteProductPermanently,
   bulkProducts,
+  moveProduct,
   duplicateProduct,
   restoreProduct,
 } from "./actions";
@@ -67,10 +68,10 @@ export default async function ProductsPage({
   const page = Math.max(1, Number(sp.page) || 1);
   const tab: Tab = TABS.find((t) => t.key === sp.status)?.key ?? "all";
 
-  const SORTS = ["created", "name", "category", "price", "stock", "status"] as const;
+  const SORTS = ["order", "created", "name", "category", "price", "stock", "status"] as const;
   type Sort = (typeof SORTS)[number];
   const sort: Sort = SORTS.find((x) => x === sp.sort) ?? "created";
-  const dir: "asc" | "desc" = sp.dir === "asc" ? "asc" : sp.dir === "desc" ? "desc" : sort === "created" || sort === "stock" ? "desc" : "asc";
+  const dir: "asc" | "desc" = sort === "order" ? "asc" : sp.dir === "asc" ? "asc" : sp.dir === "desc" ? "desc" : sort === "created" || sort === "stock" ? "desc" : "asc";
   const categories = await prisma.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true, slug: true } });
   const category = categories.find((c) => c.slug === sp.category);
 
@@ -84,7 +85,8 @@ export default async function ProductsPage({
     ...(category ? { categoryId: category.id } : {}),
   };
   const dbOrder =
-    sort === "name" ? { name: dir }
+    sort === "order" ? [{ position: "asc" as const }, { createdAt: "desc" as const }]
+    : sort === "name" ? { name: dir }
     : sort === "category" ? { category: { name: dir } }
     : sort === "price" ? { price: dir }
     : sort === "status" ? { status: dir }
@@ -128,6 +130,8 @@ export default async function ProductsPage({
   };
   const link = (t: Tab) => hrefFor({ status: t === "all" ? undefined : t });
   const sortHref = (key: Sort) => hrefFor({ sort: key, dir: sort === key ? (dir === "asc" ? "desc" : "asc") : key === "created" || key === "stock" ? "desc" : "asc" });
+  // Arrows only make sense when the whole catalog is shown in store order.
+  const reorder = sort === "order" && tab === "all" && !sp.q && !category;
 
   return (
     <>
@@ -166,6 +170,7 @@ export default async function ProductsPage({
         </select>
         <select name="sort" defaultValue={sp.sort ? sort : ""} aria-label="Sort by" className={`${inputCls} max-w-[12rem]`}>
           <option value="">Sort: Newest</option>
+          <option value="order">Sort: Store order</option>
           <option value="name">Sort: Name</option>
           <option value="category">Sort: Category</option>
           <option value="price">Sort: Price</option>
@@ -212,6 +217,7 @@ export default async function ProductsPage({
           <thead>
             <tr>
               <th className={`${th} w-10`}></th>
+              {reorder && <th className={`${th} w-28`}>Order</th>}
               <SortTh label="Product" href={sortHref("name")} active={sort === "name"} dir={dir} />
               <SortTh label="Category" href={sortHref("category")} active={sort === "category"} dir={dir} />
               <SortTh label="Price" href={sortHref("price")} active={sort === "price"} dir={dir} />
@@ -221,7 +227,7 @@ export default async function ProductsPage({
             </tr>
           </thead>
           <tbody>
-            {products.map((p) => {
+            {products.map((p, idx) => {
               const stock = totalStock(p);
               const archivedRow = p.status === "ARCHIVED";
               return (
@@ -229,6 +235,16 @@ export default async function ProductsPage({
                   <td className={td}>
                     <input type="checkbox" name="ids" value={p.id} aria-label={`Select ${p.name}`} />
                   </td>
+                  {reorder && (
+                    <td className={td}>
+                      <div className="flex items-center gap-0.5">
+                        <span className="mr-1.5 w-6 text-right text-xs tabular-nums text-neutral-500">{(page - 1) * PAGE_SIZE + idx + 1}</span>
+                        <button type="submit" formAction={moveProduct.bind(null, p.id, "top")} disabled={page === 1 && idx === 0} aria-label={`Move ${p.name} to the front`} title="Move to front" className="rounded p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-25"><ChevronsUp size={15} /></button>
+                        <button type="submit" formAction={moveProduct.bind(null, p.id, "up")} disabled={page === 1 && idx === 0} aria-label={`Move ${p.name} up`} title="Move up" className="rounded p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-25"><ArrowUp size={15} /></button>
+                        <button type="submit" formAction={moveProduct.bind(null, p.id, "down")} disabled={(page - 1) * PAGE_SIZE + idx + 1 >= total} aria-label={`Move ${p.name} down`} title="Move down" className="rounded p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-25"><ArrowDown size={15} /></button>
+                      </div>
+                    </td>
+                  )}
                   <td className={td}>
                     <Link href={`/admin/products/${p.id}`} className="flex items-center gap-3 font-medium hover:underline">
                       {p.images[0] ? (
@@ -289,7 +305,7 @@ export default async function ProductsPage({
             })}
             {products.length === 0 && (
               <tr>
-                <td className={`${td} py-12 text-center text-neutral-500`} colSpan={7}>
+                <td className={`${td} py-12 text-center text-neutral-500`} colSpan={8}>
                   {sp.q ? "No products match your search." : isArchive ? "Nothing archived." : "No products yet — add your first one."}
                 </td>
               </tr>

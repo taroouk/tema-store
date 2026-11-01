@@ -82,7 +82,7 @@ export const getProducts = unstable_cache(
     const rows = await prisma.product.findMany({
       where: visible,
       include: productInclude,
-      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+      orderBy: [{ position: "asc" }, { createdAt: "desc" }],
     });
     return rows.map(toProduct);
   },

@@ -98,6 +98,8 @@ model Product {
   status             ProductStatus       @default(DRAFT)
   badge              ProductBadge?
   featured           Boolean             @default(false)
+  /// Manual store order (lower = earlier). Managed from Admin → Products → "Store order".
+  position           Int                 @default(0)
   publishedAt        DateTime?
   metaTitle          String?
   metaDescription    String?
@@ -109,6 +111,7 @@ model Product {
   @@index([status, deletedAt])
   @@index([categoryId])
   @@index([featured])
+  @@index([position])
   @@index([createdAt])
 }
 

@@ -121,6 +121,12 @@ function parseForm(formData: FormData) {
   };
 }
 
+/** A position ahead of every existing product, so new products show first in the store. */
+async function frontPosition() {
+  const first = await prisma.product.aggregate({ _min: { position: true } });
+  return (first._min.position ?? 0) - 1;
+}
+
 const skuFor = (slug: string, color: string, size: string) =>
   `${slug}-${color}-${size}`.toUpperCase().replace(/[^A-Z0-9]+/g, "-");
 
@@ -142,6 +148,7 @@ export async function createProduct(formData: FormData) {
     const product = await prisma.product.create({
       data: {
         ...data,
+        position: await frontPosition(),
         publishedAt: data.status === "ACTIVE" ? new Date() : null,
         images: { create: images.map((img, i) => ({ ...img, sortOrder: i })) },
         variants: {
@@ -379,6 +386,7 @@ export async function duplicateProduct(id: string) {
       categoryId: src.categoryId,
       status: "DRAFT",
       featured: false,
+      position: await frontPosition(),
       images: { create: src.images.map((i) => ({ url: i.url, alt: i.alt, sortOrder: i.sortOrder })) },
       variants: {
         create: src.variants.map((v) => ({
@@ -476,4 +484,33 @@ export async function bulkDeleteProducts(formData: FormData) {
   const { deleted } = await deleteProducts(ids);
   await audit(admin, { action: "delete", entity: "Product", summary: `Permanently deleted ${deleted.length} product(s): ${deleted.map((p) => p.name).join(", ")}`.slice(0, 480) });
   done(back, `${deleted.length} product${deleted.length === 1 ? "" : "s"} permanently deleted`);
+}
+
+/** Moves a product one step earlier/later in the store, or to the very front. */
+export async function moveProduct(id: string, where: "up" | "down" | "top", formData: FormData) {
+  await requireAdmin("catalog:write");
+  const back = safeBack(formData.get("back"));
+
+  const list = await prisma.product.findMany({
+    where: { deletedAt: null },
+    orderBy: [{ position: "asc" }, { createdAt: "desc" }],
+    select: { id: true },
+  });
+  const ids = list.map((p) => p.id);
+  const i = ids.indexOf(id);
+  if (i === -1) redirect(back);
+
+  if (where === "top") ids.unshift(...ids.splice(i, 1));
+  else {
+    const j = where === "up" ? i - 1 : i + 1;
+    if (j < 0 || j >= ids.length) redirect(back);
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+
+  // Re-number everything so positions stay unique and gap-free.
+  await prisma.$transaction(ids.map((pid, n) => prisma.product.update({ where: { id: pid }, data: { position: n } })));
+
+  updateTag(CATALOG_TAG);
+  revalidatePath(LIST);
+  redirect(back);
 }
