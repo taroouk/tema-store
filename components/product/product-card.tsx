@@ -50,7 +50,7 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
   return (
     <article className="group">
       <Link href={`/products/${product.slug}`} className="block">
-        <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-neutral-100">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-neutral-100">
           {primaryImage ? (
             <>
               <SmartImage
@@ -61,7 +61,7 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
                 priority={eager}
                 fetchPriority={eager ? "high" : undefined}
                 wrapperClassName="absolute inset-0"
-                className={`object-cover transition-all duration-700 ${
+                className={`object-contain transition-all duration-700 ${
                   hoverImage ? "group-hover:opacity-0" : "group-hover:scale-105"
                 } ${soldOut ? "opacity-60" : ""}`}
               />
@@ -72,7 +72,7 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
                   alt={hoverImage.alt || product.name}
                   fill
                   wrapperClassName="absolute inset-0"
-                  className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+                  className="object-contain opacity-0 transition-opacity duration-700 group-hover:opacity-100"
                 />
               )}
             </>
@@ -90,7 +90,7 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
             ) : (
               <>
                 {product.badge && (
-                  <span className="max-w-[calc(100%-1rem)] truncate rounded-full bg-surface px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] shadow-sm">
+                  <span className="whitespace-nowrap rounded-full bg-surface px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] shadow-sm">
                     {product.badge}
                   </span>
                 )}
