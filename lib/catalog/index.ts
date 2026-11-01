@@ -91,8 +91,8 @@ export const getProducts = unstable_cache(
 );
 
 export const getCategories = unstable_cache(
-  async (): Promise<{ slug: string; name: string }[]> => {
-    const rows = await prisma.category.findMany({ select: { slug: true, name: true } });
+  async (): Promise<{ slug: string; name: string; image: string | null }[]> => {
+    const rows = await prisma.category.findMany({ select: { slug: true, name: true, image: true } });
     return rows;
   },
   ["catalog-categories"],

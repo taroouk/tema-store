@@ -64,6 +64,7 @@ export function useProduct(id: string) {
 export interface NavCategory {
   slug: string;
   name: string;
+  image?: string | null;
 }
 
 const CATEGORY_ORDER = ["men", "women", "accessories"];

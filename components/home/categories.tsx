@@ -9,7 +9,7 @@ import { CategoryBanner } from "./category-banner";
 const PHOTOS: Record<string, string> = {
   men: "/images/categories/men.png",
   women: "/images/categories/women.png",
-  accessories: "/images/categories/accessories.png",
+  socks: "/images/categories/socks.png",
 };
 
 /** One banner per category that exists in Admin → Categories. */
@@ -33,7 +33,7 @@ export function Categories() {
         <div className={`grid grid-cols-1 gap-5 ${layout}`}>
           {categories.map((c) => {
             const image =
-              PHOTOS[c.slug] ?? products.find((p) => p.category === c.slug)?.images[0]?.src ?? "/images/hero-1.png";
+              c.image || PHOTOS[c.slug] || (products.find((p) => p.category === c.slug)?.images[0]?.src ?? "/images/hero-1.png");
             return <CategoryBanner key={c.slug} title={c.name} href={`/${c.slug}`} image={image} />;
           })}
         </div>

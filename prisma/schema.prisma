@@ -72,6 +72,8 @@ model Category {
   updatedAt DateTime  @updatedAt
   name      String
   slug      String    @unique
+  /// Banner photo for the home page and category page (public URL or /path).
+  image     String?
   products  Product[]
 }
 

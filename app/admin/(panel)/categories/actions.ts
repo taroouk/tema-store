@@ -12,12 +12,14 @@ import { CATALOG_TAG } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma/client";
 
 const BACK = "/admin/categories";
-const Input = z.object({ name: z.string().trim().min(2).max(60), slug: z.string().trim().max(60).optional() });
+const Input = z.object({ name: z.string().trim().min(2).max(60), slug: z.string().trim().max(60).optional(),
+  image: z.string().trim().max(500).refine((v) => v === "" || /^(https:\/\/|\/)/.test(v), "Invalid image").optional(),
+});
 
 function parse(formData: FormData) {
-  const r = Input.safeParse({ name: formData.get("name"), slug: formData.get("slug") || undefined });
+  const r = Input.safeParse({ name: formData.get("name"), slug: formData.get("slug") || undefined, image: formData.get("image") ?? "" });
   if (!r.success) redirect(withMessage(BACK, "error", r.error.issues[0].message));
-  return { name: r.data.name, slug: slugify(r.data.slug || r.data.name) };
+  return { name: r.data.name, slug: slugify(r.data.slug || r.data.name), image: r.data.image || null };
 }
 
 export async function createCategory(formData: FormData) {

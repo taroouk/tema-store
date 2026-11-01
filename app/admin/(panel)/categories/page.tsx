@@ -1,5 +1,6 @@
 import { ConfirmButton, SubmitButton } from "@/components/admin/form-controls";
 import { Card, Field, inputCls, PageHeader, Table, td, th } from "@/components/admin/ui";
+import { ImageField } from "@/components/admin/image-field";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
 
@@ -22,6 +23,7 @@ export default async function CategoriesPage() {
           <Table>
             <thead>
               <tr>
+                <th className={th}>Photo</th>
                 <th className={th}>Name</th>
                 <th className={th}>Slug</th>
                 <th className={th}>Products</th>
@@ -33,6 +35,9 @@ export default async function CategoriesPage() {
                 <tr key={c.id}>
                   <td className={td}>
                     <form id={`c-${c.id}`} action={updateCategory.bind(null, c.id)} />
+                    <ImageField name="image" form={`c-${c.id}`} defaultValue={c.image ?? ""} />
+                  </td>
+                  <td className={td}>
                     <input form={`c-${c.id}`} name="name" defaultValue={c.name} required className={inputCls} aria-label="Name" />
                   </td>
                   <td className={td}>
@@ -65,6 +70,7 @@ export default async function CategoriesPage() {
           <form action={createCategory} className="space-y-4">
             <Field label="Name"><input name="name" required className={inputCls} /></Field>
             <Field label="Slug" hint="Optional — generated from the name"><input name="slug" className={inputCls} /></Field>
+            <Field label="Photo" hint="Shown on the home page banner. JPG, PNG or WebP, up to 5 MB."><ImageField name="image" /></Field>
             <SubmitButton>Create category</SubmitButton>
           </form>
         </Card>
