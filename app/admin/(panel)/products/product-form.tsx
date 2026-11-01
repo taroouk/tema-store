@@ -50,7 +50,7 @@ const EMPTY: ProductFormValues = {
   categoryId: "",
   images: [],
   colors: [{ name: "Black", hex: "#000000" }],
-  sizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"],
+  sizes: [],
 };
 
 const COLOR_PRESETS = [
@@ -289,7 +289,7 @@ export function ProductForm({
             </div>
 
             <div>
-              <p className="mb-2 text-sm font-medium text-neutral-700">Sizes</p>
+              <p className="mb-2 text-sm font-medium text-neutral-700">Sizes <span className="font-normal text-neutral-500">— tap the sizes this product comes in</span></p>
               <div className="flex flex-wrap gap-2">
                 {[...new Set([...SIZE_PRESETS, ...v.sizes])].map((s) => {
                   const on = v.sizes.includes(s);
