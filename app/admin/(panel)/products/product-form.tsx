@@ -81,6 +81,7 @@ export function ProductForm({
   );
   const [slugTouched, setSlugTouched] = useState(editing);
   const [uploading, setUploading] = useState(0);
+  const [fresh, setFresh] = useState<string[]>([]);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const set = <K extends keyof ProductFormValues>(k: K, value: ProductFormValues[K]) =>
@@ -115,6 +116,8 @@ export function ProductForm({
           ...prev,
           images: [...prev.images, { url: ticket.publicUrl, alt: prev.name }],
         }));
+        setFresh((f) => [...f, ticket.publicUrl]);
+        toast.success(`${file.name} uploaded — save the product to keep it`);
       } finally {
         setUploading((n) => n - 1);
       }
@@ -203,6 +206,11 @@ export function ProductForm({
                 {i === 0 && (
                   <span className="absolute left-2 top-2 rounded bg-neutral-900 px-1.5 py-0.5 text-[10px] font-medium text-white">
                     Main
+                  </span>
+                )}
+                {fresh.includes(img.url) && (
+                  <span className="absolute right-2 top-2 rounded bg-green-600 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                    Uploaded · save
                   </span>
                 )}
                 <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/60 px-1 py-1 opacity-100 sm:opacity-0 sm:transition sm:group-hover:opacity-100">
