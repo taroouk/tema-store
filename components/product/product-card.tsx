@@ -118,15 +118,15 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
 
           {/* Desktop quick add: pick a size without leaving the grid */}
           {!soldOut && product.sizes.length > 0 && (
-            <div className="absolute inset-x-3 bottom-3 hidden translate-y-3 gap-1.5 rounded-xl bg-surface/90 p-2 opacity-0 shadow-lg backdrop-blur transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 lg:flex">
-              {product.sizes.slice(0, 6).map((size) => (
+            <div className="absolute inset-x-3 bottom-3 hidden translate-y-3 flex-wrap gap-1.5 rounded-xl bg-surface/90 p-2 opacity-0 shadow-lg backdrop-blur transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 lg:flex">
+              {product.sizes.map((size) => (
                 <button
                   key={size}
                   type="button"
                   disabled={!available(size)}
                   onClick={(event) => quickAdd(event, size)}
                   aria-label={`Add size ${size} to bag`}
-                  className="flex h-9 flex-1 items-center justify-center rounded-lg text-xs font-medium transition hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:text-neutral-400 disabled:line-through disabled:hover:bg-transparent disabled:hover:text-neutral-400"
+                  className="flex h-9 min-w-[3rem] flex-1 items-center justify-center rounded-lg text-xs font-medium transition hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:text-neutral-400 disabled:line-through disabled:hover:bg-transparent disabled:hover:text-neutral-400"
                 >
                   {size}
                 </button>
@@ -144,8 +144,8 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
             </div>
           </div>
 
-          {/* Touch devices have no hover: a plain add button */}
-          {!soldOut && firstAvailable && defaultColor && (
+          {/* Touch devices have no hover: one-tap add only when there is a single size to choose; otherwise the card opens the product page to pick one */}
+          {!soldOut && product.sizes.length === 1 && firstAvailable && defaultColor && (
             <button
               type="button"
               onClick={(event) => quickAdd(event, firstAvailable)}
