@@ -108,7 +108,6 @@ export default async function EditProductPage({
               <thead>
                 <tr>
                   <th className={th}>SKU</th>
-                  <th className={th}>Color</th>
                   <th className={th}>Size</th>
                   <th className={th}>Stock</th>
                   <th className={th}>Status</th>
@@ -119,13 +118,6 @@ export default async function EditProductPage({
                 {product.variants.map((v) => (
                   <tr key={v.id}>
                     <td className={`${td} font-mono text-xs`}>{v.sku}</td>
-                    <td className={td}>
-                      <span
-                        className="mr-2 inline-block h-3 w-3 rounded-full border border-neutral-300 align-middle"
-                        style={{ backgroundColor: v.colorHex }}
-                      />
-                      {v.colorName}
-                    </td>
                     <td className={td}>{v.size}</td>
                     <td className={td}>
                       <input
@@ -147,7 +139,7 @@ export default async function EditProductPage({
                     </td>
                     <td className={`${td} text-right`}>
                       <ConfirmButton
-                        title={`Remove ${v.colorName} / ${v.size}?`}
+                        title={`Remove size ${v.size}?`}
                         message="This size is deleted from the product and disappears from the store. Past orders keep their own copy. Unsaved stock changes in this table are not saved."
                         confirmLabel="Remove"
                         formAction={deleteVariant.bind(null, id, v.id)}

@@ -1,7 +1,7 @@
 "use client";
 
 import { sortSizes } from "@/lib/size-price";
-import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ImagePlus, Loader2, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -53,14 +53,6 @@ const EMPTY: ProductFormValues = {
   sizes: [],
 };
 
-const COLOR_PRESETS = [
-  { name: "Black", hex: "#000000" },
-  { name: "White", hex: "#FFFFFF" },
-  { name: "Beige", hex: "#D9C8B4" },
-  { name: "Navy", hex: "#1F2A44" },
-  { name: "Olive", hex: "#6B6B3A" },
-  { name: "Grey", hex: "#8A8A8A" },
-];
 const SIZE_PRESETS = ["S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL", "ONE SIZE"];
 
 const slugify = (s: string) =>
@@ -139,13 +131,11 @@ export function ProductForm({
     if (size && !v.sizes.includes(size)) set("sizes", [...v.sizes, size]);
   };
 
-  const combos = v.colors.length * v.sizes.length;
 
   return (
     <form action={action} className="grid gap-6 lg:grid-cols-3">
       {/* Serialized structured fields (parsed by the server action) */}
       <input type="hidden" name="images" value={v.images.map((i) => (i.alt ? `${i.url} | ${i.alt}` : i.url)).join("\n")} />
-      <input type="hidden" name="colors" value={v.colors.filter((c) => c.name.trim()).map((c) => `${c.name.trim()} ${c.hex}`).join("\n")} />
       <input type="hidden" name="sizes" value={sortSizes(v.sizes).join(", ")} />
 
       <div className="space-y-6 lg:col-span-2">
@@ -257,45 +247,8 @@ export function ProductForm({
           </div>
         </Card>
 
-        <Card title="Variants">
+        <Card title="Sizes">
           <div className="space-y-6">
-            <div>
-              <p className="mb-2 text-sm font-medium text-neutral-700">Colors</p>
-              <div className="space-y-2">
-                {v.colors.map((c, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={c.hex}
-                      aria-label="Color"
-                      onChange={(e) => set("colors", v.colors.map((x, n) => (n === i ? { ...x, hex: e.target.value.toUpperCase() } : x)))}
-                      className="h-9 w-12 cursor-pointer rounded border border-neutral-300 bg-white p-0.5"
-                    />
-                    <input
-                      value={c.name}
-                      placeholder="Color name"
-                      onChange={(e) => set("colors", v.colors.map((x, n) => (n === i ? { ...x, name: e.target.value } : x)))}
-                      className={inputCls}
-                    />
-                    <button type="button" onClick={() => set("colors", v.colors.filter((_, n) => n !== i))} disabled={v.colors.length === 1} className="p-2 text-neutral-500 hover:text-red-600 disabled:opacity-30" aria-label="Remove color">
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                {COLOR_PRESETS.filter((p) => !v.colors.some((c) => c.name === p.name)).map((p) => (
-                  <button key={p.name} type="button" onClick={() => set("colors", [...v.colors, p])} className="flex items-center gap-1.5 rounded-full border border-neutral-300 px-2.5 py-1 text-xs hover:bg-neutral-100">
-                    <span className="h-3 w-3 rounded-full border border-neutral-300" style={{ background: p.hex }} />
-                    {p.name}
-                  </button>
-                ))}
-                <button type="button" onClick={() => set("colors", [...v.colors, { name: "", hex: "#888888" }])} className="flex items-center gap-1 rounded-full border border-dashed border-neutral-400 px-2.5 py-1 text-xs hover:bg-neutral-100">
-                  <Plus size={12} /> Custom
-                </button>
-              </div>
-            </div>
-
             <div>
               <p className="mb-2 text-sm font-medium text-neutral-700">Sizes <span className="font-normal text-neutral-500">— tap the sizes this product comes in</span></p>
               <div className="flex flex-wrap gap-2">
@@ -327,10 +280,9 @@ export function ProductForm({
             </div>
 
             <p className="rounded-md bg-neutral-50 px-3 py-2 text-xs text-neutral-600">
-              {combos} variant{combos === 1 ? "" : "s"} ({v.colors.length} color{v.colors.length === 1 ? "" : "s"} × {v.sizes.length} size
-              {v.sizes.length === 1 ? "" : "s"}).{" "}
+              {v.sizes.length} size{v.sizes.length === 1 ? "" : "s"} selected.{" "}
               {editing
-                ? "Stock of existing combinations is kept; removed combinations are deleted. Edit quantities in Inventory below."
+                ? "Stock of existing sizes is kept; sizes you untick are deleted. Edit quantities in Inventory below."
                 : "Set the starting quantity below."}
             </p>
             {!editing && (

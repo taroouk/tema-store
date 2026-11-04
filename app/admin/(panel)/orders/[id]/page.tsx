@@ -89,7 +89,7 @@ export default async function OrderPage({
                   <tr key={i.id}>
                     <td className={td}>{i.name}</td>
                     <td className={td}>
-                      {i.color} / {i.size}
+                      {i.size}
                     </td>
                     <td className={td}>{money(i.unitPrice, order.currency)}</td>
                     <td className={td}>{i.quantity}</td>

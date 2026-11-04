@@ -66,15 +66,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
     return allProducts.filter((product) => {
       const category = product.category.toLowerCase();
       const name = product.name.toLowerCase();
-      const colors = product.colors
-        .map((color) => color.name.toLowerCase())
-        .join(" ");
-
-      return (
-        name.includes(q) ||
-        category.includes(q) ||
-        colors.includes(q)
-      );
+      return name.includes(q) || category.includes(q);
     });
   }, [query, allProducts]);
 
@@ -166,7 +158,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                 type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search products, categories, colors..."
+                placeholder="Search products and categories..."
                 className="w-full bg-transparent text-lg outline-none placeholder:text-neutral-500 md:text-2xl"
                 tabIndex={open ? 0 : -1}
                 aria-label="Search query"

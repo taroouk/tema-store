@@ -108,7 +108,7 @@ Open the **Track Order** page and enter your order number and the email you used
 
 ## Exchange policy
 
-Exchanges are accepted within 14 days of delivery for a different size or color, subject to availability. Contact us at {{supportEmail}} to start an exchange.
+Exchanges are accepted within 14 days of delivery for a different size, subject to availability. Contact us at {{supportEmail}} to start an exchange.
 
 ## Refund process
 

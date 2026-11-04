@@ -17,7 +17,8 @@ interface ProductInfoProps {
 export function ProductInfo({
   product,
 }: ProductInfoProps) {
-  const [selectedColor, setSelectedColor] = useState(
+  // Colors are no longer offered: every product has a single (hidden) color.
+  const [selectedColor] = useState(
     product.colors[0]
   );
 
@@ -40,19 +41,8 @@ export function ProductInfo({
   const variantStock = (colorId: string, size: string) =>
     product.variants?.find((v) => v.colorId === colorId && v.size === size)?.stock ?? (inStock ? 99 : 0);
   const sizeAvailable = (size: string) => variantStock(selectedColor.id, size) > 0;
-  const colorAvailable = (colorId: string) => product.sizes.some((s) => variantStock(colorId, s) > 0);
   const selectedStock = variantStock(selectedColor.id, selectedSize);
   const canBuy = inStock && selectedStock > 0;
-
-  // Keep the selection valid when a color has no stock for the chosen size.
-  const pickColor = (color: (typeof product.colors)[number]) => {
-    setSelectedColor(color);
-    if (variantStock(color.id, selectedSize) <= 0) {
-      const next = product.sizes.find((s) => variantStock(color.id, s) > 0);
-      if (next) setSelectedSize(next);
-    }
-    setQuantity(1);
-  };
 
   const handleAddToCart = () => {
     if (!canBuy) return;
@@ -107,38 +97,6 @@ export function ProductInfo({
       <p className="mt-8 max-w-xl leading-8 text-neutral-600">
         {product.description}
       </p>
-
-      {/* Colors */}
-
-      <div className="mt-10">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em]">
-          Color
-        </p>
-
-        <div className="flex gap-3">
-          {product.colors.map((color) => (
-            <button
-              key={color.id}
-              type="button"
-              title={color.name}
-              onClick={() => pickColor(color)}
-              aria-pressed={selectedColor.id === color.id}
-              className={`flex h-11 w-11 items-center justify-center rounded-full border-2 transition ${
-                selectedColor.id === color.id
-                  ? "border-foreground"
-                  : "border-neutral-300"
-              } ${colorAvailable(color.id) ? "" : "opacity-40"}`}
-            >
-              <span
-                className="h-7 w-7 rounded-full"
-                style={{
-                  backgroundColor: color.value,
-                }}
-              />
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Sizes */}
 

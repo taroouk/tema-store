@@ -142,17 +142,6 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
               <span className={`text-sm font-semibold ${onSale ? "text-red-600" : ""}`}>{money(product.price)}</span>
               {onSale && <span className="text-xs text-neutral-500 line-through">{money(product.compareAtPrice!)}</span>}
             </div>
-            <div className="mt-3 flex gap-1.5">
-              {product.colors.slice(0, 5).map((color) => (
-                <span
-                  key={color.id}
-                  title={color.name}
-                  className="h-3.5 w-3.5 rounded-full border border-neutral-300"
-                  style={{ backgroundColor: color.value }}
-                />
-              ))}
-              {product.colors.length > 5 && <span className="text-xs text-neutral-500">+{product.colors.length - 5}</span>}
-            </div>
           </div>
 
           {/* Touch devices have no hover: a plain add button */}

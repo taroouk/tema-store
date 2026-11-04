@@ -283,7 +283,7 @@ export default function CheckoutPage() {
                       <div>
                         <p className="text-sm font-medium">{item.name}</p>
                         <p className="text-xs text-neutral-500">
-                          {item.colorName} · {item.size}
+                          Size {item.size}
                         </p>
                       </div>
 

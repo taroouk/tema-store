@@ -54,9 +54,6 @@ export function CartItem({
             Size: {item.size}
           </p>
 
-          <p className="text-neutral-500">
-            Color: {product.colors.find((color) => color.id === item.colorId)?.name ?? item.colorId}
-          </p>
 
           <p className="mt-4 text-lg font-semibold">
             EGP {priceForSize(product, item.size)}

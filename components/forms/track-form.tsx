@@ -86,7 +86,7 @@ export function TrackForm() {
             {order.items.map((i, n) => (
               <li key={n} className="flex justify-between py-3">
                 <span>
-                  {i.name} <span className="text-neutral-500">· {i.color} / {i.size}</span>
+                  {i.name} <span className="text-neutral-500">· Size {i.size}</span>
                 </span>
                 <span>× {i.quantity}</span>
               </li>

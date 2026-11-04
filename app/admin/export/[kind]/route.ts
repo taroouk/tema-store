@@ -35,8 +35,8 @@ const KINDS: Record<string, { permission: Permission; build: () => Promise<strin
         take: 20_000,
       });
       return toCsv(
-        ["Product", "Category", "Status", "SKU", "Color", "Size", "Price", "Stock"],
-        variants.map((v) => [v.product.name, v.product.category.name, v.product.status, v.sku, v.colorName, v.size, v.product.price, v.stock])
+        ["Product", "Category", "Status", "SKU", "Size", "Price", "Stock"],
+        variants.map((v) => [v.product.name, v.product.category.name, v.product.status, v.sku, v.size, v.product.price, v.stock])
       );
     },
   },

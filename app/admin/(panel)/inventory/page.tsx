@@ -42,7 +42,7 @@ export default async function InventoryPage() {
                 </Link>
               </td>
               <td className={`${td} font-mono text-xs`}>{v.sku}</td>
-              <td className={td}>{v.colorName} / {v.size}</td>
+              <td className={td}>{v.size}</td>
               <td className={td}>{v.stock}</td>
               <td className={td}>
                 {v.stock === 0 ? <Badge tone="red">Out</Badge> : v.stock <= v.lowStockAt ? <Badge tone="amber">Low</Badge> : <Badge tone="green">OK</Badge>}

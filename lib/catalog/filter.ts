@@ -15,7 +15,6 @@ export type SortValue = (typeof SORTS)[number]["value"];
 export interface ShopQuery {
   sort: SortValue;
   sizes: string[];
-  colors: string[];
   min?: number;
   max?: number;
   page: number;
@@ -38,12 +37,11 @@ const num = (v: string | string[] | undefined) => {
 export function parseShopQuery(params: RawParams): ShopQuery {
   const sort = SORTS.find((s) => s.value === first(params.sort))?.value ?? "featured";
   const page = Math.max(1, Math.min(500, Math.floor(Number(first(params.page))) || 1));
-  return { sort, sizes: list(params.size), colors: list(params.color), min: num(params.min), max: num(params.max), page };
+  return { sort, sizes: list(params.size), min: num(params.min), max: num(params.max), page };
 }
 
 export interface Facets {
   sizes: string[];
-  colors: { name: string; value: string }[];
   priceMin: number;
   priceMax: number;
 }
@@ -53,10 +51,8 @@ const SIZE_ORDER = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 /** Facets are built from the unfiltered list so options never disappear while filtering. */
 export function buildFacets(products: Product[]): Facets {
   const sizes = new Set<string>();
-  const colors = new Map<string, { name: string; value: string }>();
   for (const p of products) {
     p.sizes.forEach((s) => sizes.add(s));
-    p.colors.forEach((c) => colors.set(c.name.toLowerCase(), { name: c.name, value: c.value }));
   }
   const prices = products.map((p) => p.price);
   return {
@@ -65,7 +61,6 @@ export function buildFacets(products: Product[]): Facets {
       const ib = SIZE_ORDER.indexOf(b);
       return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b);
     }),
-    colors: [...colors.values()],
     priceMin: prices.length ? Math.floor(Math.min(...prices)) : 0,
     priceMax: prices.length ? Math.ceil(Math.max(...prices)) : 0,
   };
@@ -73,11 +68,9 @@ export function buildFacets(products: Product[]): Facets {
 
 export function applyShopQuery(products: Product[], q: ShopQuery) {
   const sizes = q.sizes.map((s) => s.toLowerCase());
-  const colors = q.colors.map((c) => c.toLowerCase());
 
   const filtered = products.filter((p) => {
     if (sizes.length && !p.sizes.some((s) => sizes.includes(s.toLowerCase()))) return false;
-    if (colors.length && !p.colors.some((c) => colors.includes(c.name.toLowerCase()))) return false;
     if (q.min !== undefined && p.price < q.min) return false;
     if (q.max !== undefined && p.price > q.max) return false;
     return true;
@@ -96,5 +89,5 @@ export function applyShopQuery(products: Product[], q: ShopQuery) {
 }
 
 export function hasActiveFilters(q: ShopQuery) {
-  return q.sizes.length > 0 || q.colors.length > 0 || q.min !== undefined || q.max !== undefined;
+  return q.sizes.length > 0 || q.min !== undefined || q.max !== undefined;
 }

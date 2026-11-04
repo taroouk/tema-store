@@ -22,7 +22,7 @@ export default async function SearchPage({
 
   const products = terms.length ? await getProducts() : [];
   const results = products.filter((p) => {
-    const hay = norm([p.name, p.category, p.description, ...p.colors.map((c) => c.name)].join(" "));
+    const hay = norm([p.name, p.category, p.description].join(" "));
     return terms.every((t) => hay.includes(t));
   });
 
@@ -34,7 +34,7 @@ export default async function SearchPage({
           {q ? <>Results for “{q}”</> : "Search the store"}
         </h1>
         <p className="mt-3 text-neutral-500" aria-live="polite">
-          {q ? `${results.length} ${results.length === 1 ? "product" : "products"} found` : "Use the search icon in the header to look for products, categories or colors."}
+          {q ? `${results.length} ${results.length === 1 ? "product" : "products"} found` : "Use the search icon in the header to look for products or categories."}
         </p>
 
         <div className="mt-12">

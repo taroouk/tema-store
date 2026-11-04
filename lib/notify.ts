@@ -117,7 +117,7 @@ export async function notifyNewOrder(o: OrderForEmail, ownerEmail: string | null
     `🛍️ New order #${o.number} — ${egp(o.total)}`,
     `${o.customerName} · ${o.phone}${o.email ? ` · ${o.email}` : ""}`,
     `${METHOD[o.paymentMethod]}${transfer ? ` · ref ${o.paymentReference ?? "n/a"} → confirm payment in the dashboard` : ""}`,
-    ...o.items.map((i) => `• ${i.name} (${i.color}/${i.size}) ×${i.quantity}`),
+    ...o.items.map((i) => `• ${i.name} (${i.size}) ×${i.quantity}`),
     `${siteConfig.url}/admin/orders`,
   ];
 

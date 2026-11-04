@@ -32,7 +32,6 @@ export function FiltersSidebar({ facets }: { facets: Facets }) {
     });
 
   const sizes = selected("size").map((s) => s.toLowerCase());
-  const colors = selected("color").map((c) => c.toLowerCase());
 
   return (
     <div className={`space-y-10 ${pending ? "opacity-60" : ""}`} aria-busy={pending}>
@@ -54,31 +53,6 @@ export function FiltersSidebar({ facets }: { facets: Facets }) {
                 >
                   {size}
                 </button>
-              );
-            })}
-          </div>
-        </fieldset>
-      )}
-
-      {facets.colors.length > 0 && (
-        <fieldset>
-          <legend className="mb-5 text-sm font-semibold uppercase tracking-[0.2em]">Color</legend>
-          <div className="flex flex-wrap gap-4">
-            {facets.colors.map((c) => {
-              const on = colors.includes(c.name.toLowerCase());
-              return (
-                <button
-                  key={c.name}
-                  type="button"
-                  aria-pressed={on}
-                  aria-label={c.name}
-                  title={c.name}
-                  onClick={() => toggle("color", c.name)}
-                  className={`h-8 w-8 rounded-full border transition ${
-                    on ? "ring-2 ring-foreground ring-offset-2" : "border-neutral-300 hover:scale-110"
-                  }`}
-                  style={{ backgroundColor: c.value }}
-                />
               );
             })}
           </div>

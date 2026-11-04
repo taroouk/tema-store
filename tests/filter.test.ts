@@ -26,12 +26,12 @@ const products = [
 
 describe("parseShopQuery", () => {
   it("falls back to safe defaults for junk input", () => {
-    const q = parseShopQuery({ sort: "hack", page: "-5", min: "abc", size: ",,", color: undefined });
-    expect(q).toEqual({ sort: "featured", sizes: [], colors: [], min: undefined, max: undefined, page: 1 });
+    const q = parseShopQuery({ sort: "hack", page: "-5", min: "abc", size: ",,", color: "Red" });
+    expect(q).toEqual({ sort: "featured", sizes: [], min: undefined, max: undefined, page: 1 });
   });
   it("parses lists and numbers", () => {
-    const q = parseShopQuery({ sort: "price-asc", size: "S,M", color: "Red", min: "50", max: "500", page: "2" });
-    expect(q).toMatchObject({ sort: "price-asc", sizes: ["S", "M"], colors: ["Red"], min: 50, max: 500, page: 2 });
+    const q = parseShopQuery({ sort: "price-asc", size: "S,M", min: "50", max: "500", page: "2" });
+    expect(q).toMatchObject({ sort: "price-asc", sizes: ["S", "M"], min: 50, max: 500, page: 2 });
   });
 });
 
@@ -40,8 +40,8 @@ describe("applyShopQuery", () => {
   it("filters by size (case-insensitive)", () => {
     expect(applyShopQuery(products, { ...base, sizes: ["l"] }).items.map((p) => p.id)).toEqual(["2"]);
   });
-  it("filters by color and price range", () => {
-    expect(applyShopQuery(products, { ...base, colors: ["red"] }).items.map((p) => p.id)).toEqual(["1"]);
+  it("ignores a color parameter (color filtering was removed) and filters by price range", () => {
+    expect(parseShopQuery({ color: "red" })).not.toHaveProperty("colors");
     expect(applyShopQuery(products, { ...base, min: 120, max: 200 }).items.map((p) => p.id)).toEqual(["3", "2"]);
   });
   it("sorts by price", () => {
@@ -61,10 +61,9 @@ describe("applyShopQuery", () => {
 });
 
 describe("buildFacets", () => {
-  it("collects sizes, colors and the price range", () => {
+  it("collects sizes and the price range", () => {
     const f = buildFacets(products);
     expect(f.sizes).toEqual(["S", "M", "L"]);
-    expect(f.colors.map((c) => c.name).sort()).toEqual(["Black", "Red"]);
     expect([f.priceMin, f.priceMax]).toEqual([110, 999]);
   });
 });

@@ -98,7 +98,7 @@ export default async function OrderPage({
           {order.items.map((i) => (
             <li key={i.id} className="flex justify-between gap-4 py-3">
               <span>
-                {i.name} <span className="text-neutral-500">· {i.color} / {i.size} × {i.quantity}</span>
+                {i.name} <span className="text-neutral-500">· Size {i.size} × {i.quantity}</span>
               </span>
               <span>EGP {(Number(i.unitPrice) * i.quantity).toLocaleString("en-US")}</span>
             </li>

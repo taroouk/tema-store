@@ -105,7 +105,6 @@ export function CartDrawer() {
 
                 <ul className="flex-1 divide-y divide-neutral-200 overflow-y-auto px-6">
                   {lines.map(({ item, product }) => {
-                    const color = product.colors.find((c) => c.id === item.colorId);
                     const image = product.images[0];
                     return (
                       <li key={`${item.productId}-${item.colorId}-${item.size}`} className="flex gap-4 py-5">
@@ -119,7 +118,7 @@ export function CartDrawer() {
                                 {product.name}
                               </Link>
                               <p className="mt-1 text-xs text-neutral-500">
-                                {color?.name ?? item.colorId} · {item.size}
+                                Size {item.size}
                               </p>
                             </div>
                             <p className="text-sm font-medium">EGP {(priceForSize(product, item.size) * item.quantity).toLocaleString("en-US")}</p>

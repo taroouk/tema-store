@@ -73,17 +73,8 @@ function parseForm(formData: FormData) {
     return { error: "Each image must be a URL or a /path, one per line" };
   }
 
-  const colors = (get("colors") ?? "")
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const m = line.match(/^(.*?)\s*(#[0-9a-fA-F]{3,8})$/);
-      return m ? { name: m[1].trim(), hex: m[2] } : null;
-    });
-  if (colors.length === 0 || colors.includes(null)) {
-    return { error: "Colors: one per line as  Name #hex  (e.g. Black #000000)" };
-  }
+  // Colors are not offered any more: every product has one hidden color (existing products keep theirs).
+  const colors = [{ name: "Default", hex: "#000000" }];
 
   const sizes = [
     ...new Set(
@@ -115,7 +106,7 @@ function parseForm(formData: FormData) {
       metaDescription: data.metaDescription ?? null,
     },
     images,
-    colors: colors as { name: string; hex: string }[],
+    colors,
     sizes: sortSizes(sizes),
     initialStock: Math.max(0, Number(get("initialStock") ?? 0) || 0),
   };
@@ -128,7 +119,7 @@ async function frontPosition() {
 }
 
 const skuFor = (slug: string, color: string, size: string) =>
-  `${slug}-${color}-${size}`.toUpperCase().replace(/[^A-Z0-9]+/g, "-");
+  (color === "Default" ? `${slug}-${size}` : `${slug}-${color}-${size}`).toUpperCase().replace(/[^A-Z0-9]+/g, "-");
 
 function dbError(e: unknown, back: string): never {
   if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
@@ -209,8 +200,10 @@ export async function updateProduct(id: string, formData: FormData) {
         data: images.map((img, i) => ({ ...img, sortOrder: i, productId: id })),
       });
 
-      // Sync variants with colors × sizes: keep existing stock, add new combos, drop removed.
-      const wanted = colors.flatMap((c) => sizes.map((s) => ({ c, s })));
+      // Sync variants with sizes: keep existing stock, add new sizes, drop removed ones. A product keeps
+      // the color(s) it already has (none are shown any more), so editing never loses stock.
+      const kept = [...new Map(existing.variants.map((v) => [v.colorName, { name: v.colorName, hex: v.colorHex }])).values()];
+      const wanted = (kept.length ? kept : colors).flatMap((c) => sizes.map((s) => ({ c, s })));
       const key = (color: string, size: string) => `${color}__${size}`;
       const wantedKeys = new Set(wanted.map(({ c, s }) => key(c.name, s)));
       const have = new Map(existing.variants.map((v) => [key(v.colorName, v.size), v]));
@@ -306,12 +299,12 @@ export async function deleteVariant(productId: string, variantId: string) {
     action: "delete",
     entity: "Product",
     entityId: productId,
-    summary: `Removed ${target.colorName} / ${target.size}`,
+    summary: `Removed size ${target.size}`,
   });
 
   updateTag(CATALOG_TAG);
   revalidatePath("/admin/inventory");
-  redirect(withMessage(back, "ok", `Removed ${target.colorName} / ${target.size}`));
+  redirect(withMessage(back, "ok", `Removed size ${target.size}`));
 }
 
 // ───────────────────────── Archive / restore / duplicate / delete ─────────────────────────

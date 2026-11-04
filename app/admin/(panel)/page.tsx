@@ -266,7 +266,7 @@ export default async function DashboardPage({
                 {lowStock.map((v) => (
                   <tr key={v.id}>
                     <td className={td}><Link className="hover:underline" href={`/admin/products/${v.product.id}`}>{v.product.name}</Link></td>
-                    <td className={td}>{v.colorName} / {v.size}</td>
+                    <td className={td}>{v.size}</td>
                     <td className={td}><Badge tone={v.stock === 0 ? "red" : "amber"}>{v.stock}</Badge></td>
                   </tr>
                 ))}
