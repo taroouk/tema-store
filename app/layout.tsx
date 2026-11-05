@@ -9,6 +9,7 @@ import { CatalogProvider } from "@/components/catalog/catalog-provider";
 import { getCategories, getProducts } from "@/lib/catalog";
 import { getSettings } from "@/lib/settings";
 import { Footer } from "@/components/layout/footer";
+import { SocialDock } from "@/components/layout/social-dock";
 import { SiteChrome } from "@/components/layout/site-chrome";
 import { MetaPixelPageView } from "@/components/analytics/meta-pixel-pageview";
 import { META_PIXEL_ID, META_PIXEL_SCRIPT } from "@/lib/meta-pixel";
@@ -90,7 +91,7 @@ export default async function RootLayout({
   <img height="1" width="1" style={{ display: "none" }} alt="" src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`} />
 </noscript>
 <CatalogProvider products={products} categories={categories} pricing={settings} announcement={settings.announcement} payments={settings.payments}>
-  <SiteChrome footer={<Footer />}>{children}</SiteChrome>
+  <SiteChrome footer={<Footer />} dock={<SocialDock links={settings.links} email={settings.supportEmail || undefined} />}>{children}</SiteChrome>
 </CatalogProvider>
 </body>
     </html>

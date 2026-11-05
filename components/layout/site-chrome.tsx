@@ -12,7 +12,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { PageTransition } from "@/components/ux/page-transition";
 
 /** Storefront header/footer, hidden inside the admin panel. */
-export function SiteChrome({ children, footer }: { children: React.ReactNode; footer: React.ReactNode }) {
+export function SiteChrome({ children, footer, dock }: { children: React.ReactNode; footer: React.ReactNode; dock?: React.ReactNode }) {
   const pathname = usePathname();
 
   // The cart is persisted in localStorage; rehydrate after mount to avoid SSR mismatches.
@@ -34,6 +34,7 @@ export function SiteChrome({ children, footer }: { children: React.ReactNode; fo
       <Navbar />
       <PageTransition>{children}</PageTransition>
       {footer}
+      {dock}
       <LazyCartDrawer />
       <ThemedToaster />
     </>

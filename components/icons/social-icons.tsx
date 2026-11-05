@@ -41,3 +41,10 @@ export const SOCIAL_LABELS = {
 } as const;
 
 export type SocialKey = keyof typeof SOCIAL_ICONS;
+
+export const MailIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2.5" />
+    <path d="m4 7 8 6 8-6" />
+  </svg>
+);
