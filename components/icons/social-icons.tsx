@@ -40,6 +40,16 @@ export const SOCIAL_LABELS = {
   whatsapp: "WhatsApp",
 } as const;
 
+/** Official brand colors; X/TikTok are black marks, so they follow the theme text color. */
+export const SOCIAL_COLORS: Record<SocialKey, string> = {
+  instagram: "#E4405F",
+  facebook: "#1877F2",
+  tiktok: "var(--foreground)",
+  x: "var(--foreground)",
+  pinterest: "#E60023",
+  whatsapp: "#25D366",
+};
+
 export type SocialKey = keyof typeof SOCIAL_ICONS;
 
 export const MailIcon = (p: P) => (

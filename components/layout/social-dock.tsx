@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { MailIcon, SOCIAL_ICONS, SOCIAL_LABELS, type SocialKey } from "@/components/icons/social-icons";
-
-const BRAND: Partial<Record<SocialKey | "mail", string>> = { whatsapp: "#25D366" };
+import { MailIcon, SOCIAL_COLORS, SOCIAL_ICONS, SOCIAL_LABELS, type SocialKey } from "@/components/icons/social-icons";
 
 /** Floating side dock: social links + email, follows the page while scrolling. */
 export function SocialDock({ links, email }: { links: Partial<Record<SocialKey, string>>; email?: string }) {
@@ -40,8 +38,8 @@ export function SocialDock({ links, email }: { links: Partial<Record<SocialKey, 
               {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
               aria-label={label}
               title={label}
-              style={{ ["--brand" as string]: BRAND[key] ?? "var(--foreground)" }}
-              className="group relative flex h-10 w-10 items-center justify-center rounded-full text-neutral-600 transition hover:bg-[var(--brand)] hover:text-white sm:h-11 sm:w-11"
+              style={{ color: key === "mail" ? "var(--foreground)" : SOCIAL_COLORS[key] }}
+              className="group relative flex h-10 w-10 items-center justify-center rounded-full transition hover:scale-110 hover:bg-neutral-500/15 sm:h-11 sm:w-11"
             >
               <Icon className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
               <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-full bg-foreground px-3 py-1 text-xs font-medium text-background opacity-0 transition group-hover:opacity-100 sm:block">

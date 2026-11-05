@@ -1,4 +1,4 @@
-import { SOCIAL_ICONS, SOCIAL_LABELS, type SocialKey } from "@/components/icons/social-icons";
+import { SOCIAL_COLORS, SOCIAL_ICONS, SOCIAL_LABELS, type SocialKey } from "@/components/icons/social-icons";
 
 /** Round icon buttons for every configured social link (WhatsApp included). */
 export function SocialLinks({ links, className = "" }: { links: Partial<Record<SocialKey, string>>; className?: string }) {
@@ -16,9 +16,8 @@ export function SocialLinks({ links, className = "" }: { links: Partial<Record<S
               rel="noopener noreferrer"
               aria-label={SOCIAL_LABELS[key]}
               title={SOCIAL_LABELS[key]}
-              className={`flex h-11 w-11 items-center justify-center rounded-full border border-neutral-300 text-neutral-600 transition hover:-translate-y-0.5 hover:border-foreground hover:bg-foreground hover:text-background ${
-                key === "whatsapp" ? "hover:!border-[#25D366] hover:!bg-[#25D366] hover:!text-white" : ""
-              }`}
+              style={{ color: SOCIAL_COLORS[key] }}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-300 transition hover:-translate-y-0.5 hover:scale-105 hover:bg-neutral-500/10"
             >
               <Icon className="h-5 w-5" />
             </a>
