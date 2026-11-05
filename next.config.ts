@@ -7,11 +7,11 @@ const isProd = process.env.NODE_ENV === "production";
 // Next.js needs inline scripts/styles for hydration, so script/style allow 'unsafe-inline'.
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
+  `script-src 'self' 'unsafe-inline' https://connect.facebook.net${isProd ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.supabase.co",
+  "img-src 'self' data: blob: https://*.supabase.co https://www.facebook.com https://*.facebook.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.facebook.com https://connect.facebook.net",
   "media-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",

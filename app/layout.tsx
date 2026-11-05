@@ -10,6 +10,8 @@ import { getCategories, getProducts } from "@/lib/catalog";
 import { getSettings } from "@/lib/settings";
 import { Footer } from "@/components/layout/footer";
 import { SiteChrome } from "@/components/layout/site-chrome";
+import { MetaPixelPageView } from "@/components/analytics/meta-pixel-pageview";
+import { META_PIXEL_ID, META_PIXEL_SCRIPT } from "@/lib/meta-pixel";
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
 
@@ -71,6 +73,8 @@ export default async function RootLayout({
       <head>
         {/* Applies the saved/OS theme before first paint to avoid a flash */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {/* Meta Pixel base code (init only; PageView is sent by MetaPixelPageView) */}
+        <script dangerouslySetInnerHTML={{ __html: META_PIXEL_SCRIPT }} />
       </head>
 <body
   className={cn(
@@ -80,6 +84,11 @@ export default async function RootLayout({
   )}
 >
 <ThemeSync />
+<MetaPixelPageView />
+<noscript>
+  {/* eslint-disable-next-line @next/next/no-img-element */}
+  <img height="1" width="1" style={{ display: "none" }} alt="" src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`} />
+</noscript>
 <CatalogProvider products={products} categories={categories} pricing={settings} announcement={settings.announcement} payments={settings.payments}>
   <SiteChrome footer={<Footer />}>{children}</SiteChrome>
 </CatalogProvider>
