@@ -8,6 +8,7 @@ import type { Product } from "@/types/product";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { priceForSize } from "@/lib/size-price";
+import { trackAddToCart } from "@/lib/meta-events";
 import { SizeGuide } from "@/components/product/size-guide";
 
 interface ProductInfoProps {
@@ -53,6 +54,7 @@ export function ProductInfo({
       selectedSize,
       quantity
     );
+    trackAddToCart({ id: product.id, quantity, value: priceForSize(product, selectedSize) * quantity });
 
     openCart();
   };

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/common/container";
 
 import { ProductGallery } from "@/components/product/details/product-gallery";
+import { ViewContent } from "@/components/analytics/view-content";
 import { ProductInfo } from "@/components/product/details/product-info";
 import { ProductAccordion } from "@/components/product/details/product-accordion";
 import { RelatedProducts } from "@/components/product/details/related-products";
@@ -132,6 +133,7 @@ export default async function ProductPage({
         <section className="grid gap-16 py-16 lg:grid-cols-2">
           <ProductGallery product={product} />
 
+          <ViewContent id={product.id} name={product.name} value={product.price} />
           <ProductInfo product={product} />
         </section>
 

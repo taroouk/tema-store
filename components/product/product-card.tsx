@@ -7,6 +7,8 @@ import type { Product } from "@/types/product";
 import { useCartStore } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
+import { priceForSize } from "@/lib/size-price";
+import { trackAddToCart } from "@/lib/meta-events";
 import { SmartImage } from "@/components/ux/smart-image";
 
 interface ProductCardProps {
@@ -42,6 +44,7 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
     event.stopPropagation();
     if (!defaultColor || !available(size)) return;
     addItem(product.id, defaultColor.id, size, 1);
+    trackAddToCart({ id: product.id, quantity: 1, value: priceForSize(product, size) });
     openCart();
   };
 

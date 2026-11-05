@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Tag, Check } from "lucide-react";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/stores/cart-store";
 import { useCatalog, usePayments, usePricing } from "@/components/catalog/catalog-provider";
+import { trackInitiateCheckout, trackPurchase } from "@/lib/meta-events";
 import { getCartTotals } from "@/lib/cart-totals";
 import { couponDiscount, enabledPaymentMethods, getShippingMethods, shippingFee, type PaymentMethodId, type ShippingMethodId } from "@/lib/pricing";
 import { GOVERNORATES } from "@/lib/egypt";
@@ -50,6 +51,22 @@ export default function CheckoutPage() {
   } | null>(null);
 
   const { items: detailed, subtotal, count } = getCartTotals(items, catalog, pricing);
+
+  // InitiateCheckout once per checkout attempt. An attempt lasts until the order is placed or
+  // 30 min pass; quantity/item changes, refreshes and re-renders inside it never re-fire.
+  const hasItems = detailed.length > 0;
+  useEffect(() => {
+    if (!hasItems) return;
+    try {
+      const prev = JSON.parse(sessionStorage.getItem("tema_ic") ?? "null");
+      if (prev && Date.now() - prev.at < 30 * 60_000) return;
+      sessionStorage.setItem("tema_ic", JSON.stringify({ at: Date.now() }));
+    } catch {
+      /* storage unavailable: fall through and send once per mount */
+    }
+    trackInitiateCheckout(detailed.map((i) => ({ id: i.productId, quantity: i.quantity })), subtotal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasItems]);
 
   if (items.length === 0) {
     return (
@@ -124,6 +141,9 @@ export default function CheckoutPage() {
       });
 
       if (result.ok) {
+        // Placed order (not confirmed payment). Value = authoritative server total.
+        trackPurchase(detailed.map((i) => ({ id: i.productId, quantity: i.quantity })), result.total, result.orderNumber);
+        try { sessionStorage.removeItem("tema_ic"); } catch { /* ignore */ }
         clearCart();
         setRedirecting(true);
         router.push(result.confirmUrl);
