@@ -6,7 +6,6 @@ import { BestSellers } from "@/components/home/best-sellers";
 import { Newsletter } from "@/components/home/newsletter";
 import { BrandStory } from "@/components/home/brand-story";
 import { WhyChooseUs } from "@/components/home/why-choose-us";
-import { InstagramGallery } from "@/components/home/instagram-gallery";
 import { Reveal } from "@/components/ux/reveal";
 import { JsonLd } from "@/components/seo/json-ld";
 import { siteConfig } from "@/constants/site";
@@ -67,9 +66,6 @@ export default async function HomePage() {
       </Reveal>
       <Reveal>
         <WhyChooseUs />
-      </Reveal>
-      <Reveal>
-        <InstagramGallery />
       </Reveal>
       <Reveal>
         <Newsletter />
