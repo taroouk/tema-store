@@ -74,12 +74,12 @@ export default function AboutPage() {
 
       <Section className="py-8">
         <Container>
-          <div className="relative aspect-[16/9] overflow-hidden rounded-[32px] bg-neutral-100">
+          <div className="relative mx-auto aspect-[2/3] w-full max-w-md overflow-hidden rounded-[32px] bg-neutral-100 md:max-w-lg">
             <Image
               src="/images/editorial/homepage-1.png"
               alt="Tema Label editorial"
               fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
+              sizes="(min-width: 768px) 512px, 100vw"
               className="object-cover"
             />
           </div>
