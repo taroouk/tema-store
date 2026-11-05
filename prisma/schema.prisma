@@ -305,6 +305,7 @@ model StoreSettings {
   tiktokUrl             String?
   xUrl                  String?
   pinterestUrl          String?
+  whatsappNumber        String?
 }
 
 // ───────────────────────── Audience ─────────────────────────

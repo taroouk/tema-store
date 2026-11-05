@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Container } from "@/components/common/container";
+import { SocialLinks } from "@/components/common/social-links";
 import { Logo } from "@/components/icons/logo";
 import { getCategories } from "@/lib/catalog";
 import { getSettings } from "@/lib/settings";
@@ -19,23 +20,12 @@ const companyLinks = [
   { label: "Terms & Conditions", href: "/terms" },
 ];
 
-const socialLabels = {
-  instagram: "Instagram",
-  tiktok: "TikTok",
-  pinterest: "Pinterest",
-  facebook: "Facebook",
-  x: "X",
-} as const;
-
 export async function Footer() {
   const [settings, categories] = await Promise.all([getSettings(), getCategories()]);
   const shopLinks = [
     ...categories.map((c) => ({ label: c.name, href: `/${c.slug}` })),
     { label: "New Arrivals", href: "/new-in" },
   ];
-  const socialLinks = Object.entries(settings.links)
-    .filter(([, href]) => href)
-    .map(([key, href]) => ({ href, label: socialLabels[key as keyof typeof socialLabels] }));
   const legal = [
     settings.commercialRegister && `Commercial Register: ${settings.commercialRegister}`,
     settings.taxCardNumber && `Tax Card: ${settings.taxCardNumber}`,
@@ -60,19 +50,7 @@ export async function Footer() {
               craftsmanship, clean aesthetics and modern simplicity.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-6">
-              {socialLinks.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm uppercase tracking-[0.18em] text-neutral-500 transition hover:text-foreground"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+            <SocialLinks links={settings.links} className="mt-8" />
           </div>
 
           {/* Shop */}

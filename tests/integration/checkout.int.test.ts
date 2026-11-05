@@ -114,13 +114,6 @@ describe.skipIf(!run)("checkout (real database)", { timeout: 60_000 }, () => {
     expect(o.phone).toBe("01012345678");
   });
 
-  it("express shipping is never free", async () => {
-    const r = await actions.placeOrder(input({ email: email("express"), shippingMethod: "express", items: [{ productId: ids.cheap, colorId: "black", size: "M", quantity: 1 }] }));
-    expect(r.ok).toBe(true);
-    const o = await prisma.order.findFirstOrThrow({ where: { email: email("express") } });
-    expect(Number(o.shippingFee)).toBeGreaterThan(0);
-  });
-
   it("a limited coupon can only be redeemed once, and a losing order leaves stock untouched", async () => {
     const c = await prisma.coupon.create({ data: { code: "QAINTONE", type: "FIXED", value: 50, maxUses: 1 } });
     ids.coupons.push(c.id);

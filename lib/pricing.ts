@@ -1,17 +1,15 @@
 /** Pricing rules shared by the checkout UI and the server (the server is the source of truth). */
 export interface PricingSettings {
   standardShippingFee: number;
-  expressShippingFee: number;
   freeShippingThreshold: number;
 }
 
 export const DEFAULT_PRICING: PricingSettings = {
   standardShippingFee: 80,
-  expressShippingFee: 150,
   freeShippingThreshold: 1500,
 };
 
-export type ShippingMethodId = "standard" | "express";
+export type ShippingMethodId = "standard";
 
 /** Payment options the storefront may offer, as configured in Admin → Settings. */
 export type PaymentMethodId = "cod" | "instapay" | "wallet";
@@ -42,13 +40,11 @@ export function enabledPaymentMethods(p: PaymentConfig): PaymentMethodId[] {
 export function getShippingMethods(s: PricingSettings) {
   return [
     { id: "standard" as const, label: "Standard Delivery", detail: "2–4 business days", price: s.standardShippingFee },
-    { id: "express" as const, label: "Express Delivery", detail: "Next day", price: s.expressShippingFee },
   ];
 }
 
-export function shippingFee(subtotal: number, method: ShippingMethodId, s: PricingSettings) {
-  if (method === "standard" && subtotal >= s.freeShippingThreshold) return 0;
-  return method === "express" ? s.expressShippingFee : s.standardShippingFee;
+export function shippingFee(subtotal: number, _method: ShippingMethodId, s: PricingSettings) {
+  return subtotal >= s.freeShippingThreshold ? 0 : s.standardShippingFee;
 }
 
 export interface CouponTerms {

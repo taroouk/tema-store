@@ -7,10 +7,19 @@ import { prisma } from "@/lib/prisma/client";
 
 export const SETTINGS_TAG = "settings";
 
+/** Turns a phone number (01012345678, +20 101 234 5678…) into a wa.me link; "" if invalid. */
+export function whatsappLink(raw: string | null | undefined): string {
+  let d = String(raw ?? "").replace(/\D/g, "");
+  if (d.startsWith("00")) d = d.slice(2);
+  else if (d.startsWith("0")) d = "20" + d.slice(1);
+  return d.length >= 8 && d.length <= 15 ? `https://wa.me/${d}` : "";
+}
+
 export interface StoreSettingsDTO extends PricingSettings {
   storeName: string;
   supportEmail: string;
   supportPhone: string;
+  whatsappNumber: string;
   announcement: string;
   storeHours: string;
   googleVerification: string;
@@ -20,7 +29,7 @@ export interface StoreSettingsDTO extends PricingSettings {
   commercialRegister: string;
   taxCardNumber: string;
   businessAddress: string;
-  links: { instagram: string; facebook: string; tiktok: string; x: string; pinterest: string };
+  links: { instagram: string; facebook: string; tiktok: string; x: string; pinterest: string; whatsapp: string };
 }
 
 export const getSettings = unstable_cache(
@@ -30,6 +39,7 @@ export const getSettings = unstable_cache(
       storeName: row?.storeName ?? "Tema Label",
       supportEmail: row?.supportEmail ?? "",
       supportPhone: row?.supportPhone ?? "",
+      whatsappNumber: row?.whatsappNumber ?? "",
       announcement: row?.announcement ?? "",
       storeHours: row?.storeHours ?? "",
       unpaidHoldHours: row?.unpaidHoldHours ?? 48,
@@ -42,6 +52,7 @@ export const getSettings = unstable_cache(
         tiktok: row?.tiktokUrl ?? "",
         x: row?.xUrl ?? "",
         pinterest: row?.pinterestUrl ?? "",
+        whatsapp: whatsappLink(row?.whatsappNumber),
       },
       googleVerification: row?.googleVerification ?? "",
       bingVerification: row?.bingVerification ?? "",
@@ -62,7 +73,6 @@ export const getSettings = unstable_cache(
           }
         : DEFAULT_PAYMENTS,
       standardShippingFee: row ? Number(row.standardShippingFee) : DEFAULT_PRICING.standardShippingFee,
-      expressShippingFee: row ? Number(row.expressShippingFee) : DEFAULT_PRICING.expressShippingFee,
       freeShippingThreshold: row ? Number(row.freeShippingThreshold) : DEFAULT_PRICING.freeShippingThreshold,
     };
   },

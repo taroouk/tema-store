@@ -65,7 +65,7 @@ const OrderInput = z.object({
   postal: z.string().trim().max(20).optional(),
   address: text(250),
   notes: z.string().trim().max(500).optional(),
-  shippingMethod: z.enum(["standard", "express"]),
+  shippingMethod: z.enum(["standard"]),
   coupon: z.string().trim().max(40).optional(),
   paymentMethod: z.enum(["cod", "instapay", "wallet"]),
   paymentSender: z.string().trim().max(60).optional(),

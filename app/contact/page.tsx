@@ -1,3 +1,4 @@
+import { SocialLinks } from "@/components/common/social-links";
 import type { Metadata } from "next";
 import { Mail, MapPin, Phone } from "lucide-react";
 
@@ -22,13 +23,9 @@ export const metadata: Metadata = {
   },
 };
 
-const SOCIAL_LABELS = { instagram: "Instagram", tiktok: "TikTok", facebook: "Facebook", x: "X", pinterest: "Pinterest" } as const;
-
 export default async function ContactPage() {
   const settings = await getSettings();
-  const socials = Object.entries(settings.links)
-    .filter(([, href]) => href)
-    .map(([key, href]) => ({ label: SOCIAL_LABELS[key as keyof typeof SOCIAL_LABELS], href }));
+  const hasSocials = Object.values(settings.links).some(Boolean);
 
   return (
     <Section className="py-16">
@@ -111,24 +108,12 @@ export default async function ContactPage() {
               </div>
             )}
 
-            {socials.length > 0 && (
+            {hasSocials && (
             <div>
               <h2 className="text-sm font-semibold uppercase tracking-[0.18em]">
                 Social
               </h2>
-              <div className="mt-3 flex flex-wrap gap-6">
-                {socials.map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm uppercase tracking-[0.18em] text-neutral-500 transition hover:text-foreground"
-                  >
-                    {social.label}
-                  </a>
-                ))}
-              </div>
+              <SocialLinks links={settings.links} className="mt-3" />
             </div>
             )}
           </div>

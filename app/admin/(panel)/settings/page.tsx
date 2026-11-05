@@ -43,6 +43,7 @@ export default async function SettingsPage() {
             <Field label="TikTok"><input name="tiktokUrl" placeholder="https://tiktok.com/@…" defaultValue={s.links.tiktok} className={inputCls} /></Field>
             <Field label="X (Twitter)"><input name="xUrl" placeholder="https://x.com/…" defaultValue={s.links.x} className={inputCls} /></Field>
             <Field label="Pinterest"><input name="pinterestUrl" placeholder="https://pinterest.com/…" defaultValue={s.links.pinterest} className={inputCls} /></Field>
+            <Field label="WhatsApp number" hint="Shown with the social links and opens a chat, e.g. 01012345678"><input name="whatsappNumber" inputMode="tel" placeholder="01012345678" defaultValue={s.whatsappNumber} className={inputCls} /></Field>
           </div>
         </Card>
         <Card title="Opening hours">
@@ -61,9 +62,8 @@ export default async function SettingsPage() {
           </div>
         </Card>
         <Card title="Shipping (EGP)">
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Standard delivery fee"><input name="standardShippingFee" type="number" min={0} step="1" required defaultValue={s.standardShippingFee} className={inputCls} /></Field>
-            <Field label="Express delivery fee"><input name="expressShippingFee" type="number" min={0} step="1" required defaultValue={s.expressShippingFee} className={inputCls} /></Field>
             <Field label="Free standard shipping from" hint="Order subtotal"><input name="freeShippingThreshold" type="number" min={0} step="1" required defaultValue={s.freeShippingThreshold} className={inputCls} /></Field>
           </div>
         </Card>

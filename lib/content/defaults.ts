@@ -2,7 +2,7 @@
  * Built-in content. It seeds the database (`npm run db:seed:content`) and is the fallback if a row
  * is missing, so a page can never be blank. Everything here is editable from Admin → Content.
  *
- * Placeholders replaced at render time: {{storeName}} {{standardFee}} {{expressFee}}
+ * Placeholders replaced at render time: {{storeName}} {{standardFee}}
  * {{freeThreshold}} {{supportEmail}} {{supportPhone}}
  */
 export interface DefaultPage {
@@ -90,7 +90,7 @@ These terms are governed by the laws of the Arab Republic of Egypt.`,
 
 ## Shipping cost
 
-A flat rate of {{standardFee}} applies to standard delivery. Orders of {{freeThreshold}} or more ship free. Express delivery (next day) is available at checkout for {{expressFee}}.
+A flat rate of {{standardFee}} applies to standard delivery. Orders of {{freeThreshold}} or more ship free.
 
 ## Processing
 
@@ -129,7 +129,7 @@ export interface DefaultFaq {
 }
 
 export const DEFAULT_FAQ: DefaultFaq[] = [
-  { question: "How long does delivery take?", answer: "Orders are processed within 24 hours and delivered within 2–4 business days across Egypt. Express delivery is available at checkout." },
+  { question: "How long does delivery take?", answer: "Orders are processed within 24 hours and delivered within 2–4 business days across Egypt." },
   { question: "How do I track my order?", answer: "Open the Track Order page and enter your order number and the email you used at checkout. You will see the current status of your order, and you can upload a payment screenshot there if you paid by transfer." },
   { question: "What is your return policy?", answer: "Returns and exchanges are accepted within 14 days, provided the item remains unworn and in its original condition with tags attached." },
   { question: "When will I receive my refund?", answer: "Refunds are processed within 5–7 business days after we receive and inspect your return. We refund through the same method you paid with, or by InstaPay / wallet transfer." },

@@ -46,7 +46,6 @@ describe("applyPlaceholders", () => {
   const s = {
     storeName: "Tema Label",
     standardShippingFee: 80,
-    expressShippingFee: 150,
     freeShippingThreshold: 1500,
     supportEmail: "",
     supportPhone: "",
