@@ -2,6 +2,48 @@
 export interface PricingSettings {
   standardShippingFee: number;
   freeShippingThreshold: number;
+  bundle?: BundleOffer;
+}
+
+/** "Buy 2 save X%, buy 3+ save Y%" — editable in Admin → Settings. */
+export interface BundleOffer {
+  enabled: boolean;
+  percent2: number;
+  percent3: number;
+  textEn: string;
+  textAr: string;
+}
+
+export const DEFAULT_BUNDLE: BundleOffer = { enabled: true, percent2: 5, percent3: 10, textEn: "", textAr: "" };
+
+/** Percent off for a cart with `count` pieces (0 when the offer is off or not reached). */
+export function bundlePercent(count: number, offer: BundleOffer | undefined): number {
+  if (!offer || !offer.enabled) return 0;
+  if (count >= 3) return offer.percent3;
+  if (count === 2) return offer.percent2;
+  return 0;
+}
+
+export function bundleDiscount(subtotal: number, count: number, offer: BundleOffer | undefined) {
+  return Math.round((subtotal * bundlePercent(count, offer)) / 100);
+}
+
+/** Offer lines shown to shoppers: admin's custom text if set, otherwise generated from the percentages. */
+export function bundleLines(offer: BundleOffer | undefined): { en: string[]; ar: string[] } {
+  if (!offer || !offer.enabled || (offer.percent2 <= 0 && offer.percent3 <= 0)) return { en: [], ar: [] };
+  const custom = (t: string) => t.split("\n").map((l) => l.trim()).filter(Boolean);
+  const en = custom(offer.textEn);
+  const ar = custom(offer.textAr);
+  return {
+    en: en.length ? en : [
+      ...(offer.percent2 > 0 ? [`🎁 ${offer.percent2}% off when you buy 2 pieces.`] : []),
+      ...(offer.percent3 > 0 ? [`🎁 ${offer.percent3}% off when you buy 3 pieces.`] : []),
+    ],
+    ar: ar.length ? ar : [
+      ...(offer.percent2 > 0 ? [`🎁 خصم ${offer.percent2}% عند شراء قطعتين.`] : []),
+      ...(offer.percent3 > 0 ? [`🎁 خصم ${offer.percent3}% عند شراء 3 قطع.`] : []),
+    ],
+  };
 }
 
 export const DEFAULT_PRICING: PricingSettings = {

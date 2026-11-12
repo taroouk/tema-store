@@ -2,7 +2,7 @@ import "server-only";
 
 import { unstable_cache } from "next/cache";
 
-import { DEFAULT_PAYMENTS, DEFAULT_PRICING, type PaymentConfig, type PricingSettings } from "@/lib/pricing";
+import { DEFAULT_BUNDLE, DEFAULT_PAYMENTS, DEFAULT_PRICING, type PaymentConfig, type PricingSettings } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma/client";
 
 export const SETTINGS_TAG = "settings";
@@ -74,6 +74,15 @@ export const getSettings = unstable_cache(
         : DEFAULT_PAYMENTS,
       standardShippingFee: row ? Number(row.standardShippingFee) : DEFAULT_PRICING.standardShippingFee,
       freeShippingThreshold: row ? Number(row.freeShippingThreshold) : DEFAULT_PRICING.freeShippingThreshold,
+      bundle: row
+        ? {
+            enabled: row.bundleEnabled,
+            percent2: row.bundle2Percent,
+            percent3: row.bundle3Percent,
+            textEn: row.bundleTextEn ?? "",
+            textAr: row.bundleTextAr ?? "",
+          }
+        : DEFAULT_BUNDLE,
     };
   },
   ["store-settings"],

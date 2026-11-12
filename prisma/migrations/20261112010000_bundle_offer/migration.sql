@@ -1,0 +1,6 @@
+ALTER TABLE "StoreSettings"
+  ADD COLUMN "bundleEnabled" BOOLEAN NOT NULL DEFAULT true,
+  ADD COLUMN "bundle2Percent" INTEGER NOT NULL DEFAULT 5,
+  ADD COLUMN "bundle3Percent" INTEGER NOT NULL DEFAULT 10,
+  ADD COLUMN "bundleTextEn" TEXT,
+  ADD COLUMN "bundleTextAr" TEXT;

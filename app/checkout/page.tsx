@@ -14,7 +14,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { useCatalog, usePayments, usePricing } from "@/components/catalog/catalog-provider";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/meta-events";
 import { getCartTotals } from "@/lib/cart-totals";
-import { couponDiscount, enabledPaymentMethods, getShippingMethods, shippingFee, type PaymentMethodId, type ShippingMethodId } from "@/lib/pricing";
+import { bundleDiscount, couponDiscount, enabledPaymentMethods, getShippingMethods, shippingFee, type PaymentMethodId, type ShippingMethodId } from "@/lib/pricing";
 import { GOVERNORATES } from "@/lib/egypt";
 import { PaymentInstructions } from "@/components/checkout/payment-instructions";
 import { placeOrder as placeOrderAction, validateCoupon } from "./actions";
@@ -98,7 +98,8 @@ export default function CheckoutPage() {
 
   const shippingCost = shippingFee(subtotal, shippingMethod, pricing);
 
-  const discount = appliedCoupon ? couponDiscount(subtotal, appliedCoupon) : 0;
+  const bundle = bundleDiscount(subtotal, count, pricing.bundle);
+  const discount = bundle + (appliedCoupon ? couponDiscount(subtotal - bundle, appliedCoupon) : 0);
 
   const total = subtotal - discount + shippingCost;
 

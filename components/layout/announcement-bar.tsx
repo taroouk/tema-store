@@ -2,13 +2,18 @@
 
 import { useEffect, useState } from "react";
 
+import { bundleLines } from "@/lib/pricing";
 import { useAnnouncement, usePricing } from "@/components/catalog/catalog-provider";
 
 export function AnnouncementBar() {
   const [current, setCurrent] = useState(0);
   const { freeShippingThreshold } = usePricing();
   const announcement = useAnnouncement();
+  const pricing = usePricing();
+  const offer = bundleLines(pricing.bundle);
+  const offerMessages = offer.en.map((en, i) => (offer.ar[i] ? `${en}  |  ${offer.ar[i]}` : en));
   const messages = [
+    ...offerMessages,
     `FREE SHIPPING ON ORDERS OVER ${freeShippingThreshold} EGP`,
     announcement || "NEW ARRIVALS ARE LIVE",
     "EASY RETURNS WITHIN 14 DAYS",

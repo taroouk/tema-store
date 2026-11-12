@@ -67,6 +67,23 @@ export default async function SettingsPage() {
             <Field label="Free standard shipping from" hint="Order subtotal"><input name="freeShippingThreshold" type="number" min={0} step="1" required defaultValue={s.freeShippingThreshold} className={inputCls} /></Field>
           </div>
         </Card>
+        <Card title="Buy more, save more offer / عرض الكمية">
+          <div className="space-y-4">
+            <label className="flex items-center gap-2 text-sm font-medium">
+              <input type="checkbox" name="bundleEnabled" defaultChecked={s.bundle?.enabled ?? true} /> Offer is active / تفعيل العرض
+            </label>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Discount for 2 pieces (%) / خصم قطعتين"><input name="bundle2Percent" type="number" min={0} max={90} step="1" required defaultValue={s.bundle?.percent2 ?? 5} className={inputCls} /></Field>
+              <Field label="Discount for 3+ pieces (%) / خصم 3 قطع"><input name="bundle3Percent" type="number" min={0} max={90} step="1" required defaultValue={s.bundle?.percent3 ?? 10} className={inputCls} /></Field>
+            </div>
+            <Field label="Offer text — English" hint="Optional. One line per message. Leave empty to generate it from the percentages.">
+              <textarea name="bundleTextEn" rows={3} maxLength={300} defaultValue={s.bundle?.textEn} placeholder={"🎁 5% off when you buy 2 pieces.\n🎁 10% off when you buy 3 pieces."} className={inputCls} />
+            </Field>
+            <Field label="نص العرض — عربي" hint="اختياري. كل رسالة في سطر. اتركه فارغًا لتوليده تلقائيًا من النسب.">
+              <textarea name="bundleTextAr" rows={3} maxLength={300} dir="rtl" defaultValue={s.bundle?.textAr} placeholder={"🎁 خصم 5% عند شراء قطعتين.\n🎁 خصم 10% عند شراء 3 قطع."} className={inputCls} />
+            </Field>
+          </div>
+        </Card>
         <Card title="Payments">
           <div className="space-y-6">
             <label className="flex items-center gap-2 text-sm font-medium">

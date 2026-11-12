@@ -306,6 +306,13 @@ model StoreSettings {
   xUrl                  String?
   pinterestUrl          String?
   whatsappNumber        String?
+
+  /// "Buy more, save more" offer: percent off the subtotal for 2 pieces / 3+ pieces.
+  bundleEnabled         Boolean  @default(true)
+  bundle2Percent        Int      @default(5)
+  bundle3Percent        Int      @default(10)
+  bundleTextEn          String?
+  bundleTextAr          String?
 }
 
 // ───────────────────────── Audience ─────────────────────────

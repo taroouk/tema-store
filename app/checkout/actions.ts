@@ -12,7 +12,7 @@ import { priceForSize } from "@/lib/size-price";
 import { signToken } from "@/lib/tokens";
 
 import { CATALOG_TAG } from "@/lib/catalog";
-import { couponDiscount, enabledPaymentMethods, shippingFee } from "@/lib/pricing";
+import { bundleDiscount, couponDiscount, enabledPaymentMethods, shippingFee } from "@/lib/pricing";
 import { getSettings } from "@/lib/settings";
 import { prisma } from "@/lib/prisma/client";
 import { rateLimit } from "@/lib/rate-limit";
@@ -173,7 +173,9 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
         });
       }
 
-      let discount = 0;
+      const pieces = [...lines.values()].reduce((n, l) => n + l.qty, 0);
+      const bundle = bundleDiscount(subtotal, pieces, settings.bundle);
+      let discount = bundle;
       let couponCode: string | null = null;
       if (data.coupon) {
         const check = await checkCoupon(tx, data.coupon, subtotal);
@@ -181,7 +183,7 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
         // Atomic use-count increment so a limited coupon can't be over-redeemed.
         const used = await tx.$executeRaw`UPDATE "Coupon" SET "usedCount" = "usedCount" + 1 WHERE "id" = ${check.coupon.id}::uuid AND ("maxUses" IS NULL OR "usedCount" < "maxUses")`;
         if (used === 0) throw new CheckoutError("This coupon has been fully used");
-        discount = couponDiscount(subtotal, check.coupon);
+        discount = bundle + couponDiscount(subtotal - bundle, check.coupon);
         couponCode = check.coupon.code;
       }
       const shipping = shippingFee(subtotal, data.shippingMethod, settings);

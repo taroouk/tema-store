@@ -33,6 +33,11 @@ const Input = z.object({
   bingVerification: z.string().trim().max(120).regex(/^[\w-]*$/, "Use only the code from Bing, not the full tag"),
   standardShippingFee: fee,
   freeShippingThreshold: fee,
+  bundleEnabled: z.boolean(),
+  bundle2Percent: z.coerce.number().int().min(0).max(90),
+  bundle3Percent: z.coerce.number().int().min(0).max(90),
+  bundleTextEn: z.string().trim().max(300),
+  bundleTextAr: z.string().trim().max(300),
   codEnabled: z.boolean(),
   instapayEnabled: z.boolean(),
   instapayHandle: z.string().trim().max(80),
@@ -48,6 +53,7 @@ export async function saveSettings(formData: FormData) {
   const raw = Object.fromEntries(formData);
   const r = Input.safeParse({
     ...raw,
+    bundleEnabled: formData.get("bundleEnabled") === "on",
     codEnabled: formData.get("codEnabled") === "on",
     instapayEnabled: formData.get("instapayEnabled") === "on",
     walletEnabled: formData.get("walletEnabled") === "on",
@@ -74,6 +80,8 @@ export async function saveSettings(formData: FormData) {
     supportEmail: r.data.supportEmail || null,
     supportPhone: r.data.supportPhone || null,
     announcement: r.data.announcement || null,
+    bundleTextEn: r.data.bundleTextEn || null,
+    bundleTextAr: r.data.bundleTextAr || null,
     storeHours: r.data.storeHours || null,
     commercialRegister: r.data.commercialRegister || null,
     taxCardNumber: r.data.taxCardNumber || null,
