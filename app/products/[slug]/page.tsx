@@ -92,13 +92,16 @@ export default async function ProductPage({
       name: siteConfig.name,
     },
     offers: {
-      ...(product.priceLarge != null && product.priceLarge !== product.price
-        ? {
-            "@type": "AggregateOffer",
-            lowPrice: Math.min(product.price, product.priceLarge),
-            highPrice: Math.max(product.price, product.priceLarge),
-          }
-        : { "@type": "Offer", price: product.price }),
+      ...(() => {
+        const all = [product.price, product.priceLarge, product.priceKids7, product.priceKids10].filter(
+          (n): n is number => n != null
+        );
+        const low = Math.min(...all);
+        const high = Math.max(...all);
+        return low !== high
+          ? { "@type": "AggregateOffer", lowPrice: low, highPrice: high }
+          : { "@type": "Offer", price: product.price };
+      })(),
       priceCurrency: "EGP",
       priceValidUntil: validUntil.toISOString().slice(0, 10),
       itemCondition: "https://schema.org/NewCondition",

@@ -1,6 +1,6 @@
 "use client";
 
-import { sortSizes } from "@/lib/size-price";
+import { KIDS_SIZES, sortSizes } from "@/lib/size-price";
 import { ArrowDown, ArrowUp, ImagePlus, Loader2, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -21,6 +21,8 @@ export interface ProductFormValues {
   metaDescription: string;
   price: number | "";
   priceLarge: number | "";
+  priceKids7: number | "";
+  priceKids10: number | "";
   compareAtPrice: number | "";
   costPrice: number | "";
   status: "DRAFT" | "ACTIVE" | "ARCHIVED";
@@ -42,6 +44,8 @@ const EMPTY: ProductFormValues = {
   metaDescription: "",
   price: "",
   priceLarge: "",
+  priceKids7: "",
+  priceKids10: "",
   compareAtPrice: "",
   costPrice: "",
   status: "DRAFT",
@@ -58,13 +62,16 @@ const SIZE_PRESETS = ["S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL", "ONE SIZE
 const slugify = (s: string) =>
   s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
+const isKidsCategory = (c?: { name: string; slug?: string }) =>
+  /^kids?$/i.test(c?.slug ?? "") || /^kids?$/i.test(c?.name ?? "") || /أطفال|اطفال/.test(c?.name ?? "");
+
 export function ProductForm({
   action,
   categories,
   initial,
 }: {
   action: (formData: FormData) => Promise<void>;
-  categories: { id: string; name: string }[];
+  categories: { id: string; name: string; slug?: string }[];
   initial?: ProductFormValues;
 }) {
   const editing = Boolean(initial);
@@ -78,6 +85,8 @@ export function ProductForm({
 
   const set = <K extends keyof ProductFormValues>(k: K, value: ProductFormValues[K]) =>
     setV((prev) => ({ ...prev, [k]: value }));
+
+  const kids = isKidsCategory(categories.find((c) => c.id === v.categoryId));
 
   const discount =
     v.price && v.compareAtPrice && Number(v.compareAtPrice) > Number(v.price)
@@ -252,7 +261,7 @@ export function ProductForm({
             <div>
               <p className="mb-2 text-sm font-medium text-neutral-700">Sizes <span className="font-normal text-neutral-500">— tap the sizes this product comes in</span></p>
               <div className="flex flex-wrap gap-2">
-                {[...new Set([...SIZE_PRESETS, ...v.sizes])].map((s) => {
+                {[...new Set([...(kids ? KIDS_SIZES : SIZE_PRESETS), ...v.sizes])].map((s) => {
                   const on = v.sizes.includes(s);
                   return (
                     <button
@@ -338,12 +347,28 @@ export function ProductForm({
 
         <Card title="Pricing (EGP)">
           <div className="space-y-4">
-            <Field label="Price — sizes S to 2XL" hint="One price for S, M, L, XL and 2XL">
-              <input name="price" type="number" step="0.01" min={0} required value={v.price} onChange={(e) => set("price", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
-            </Field>
-            <Field label="Price — sizes 3XL, 4XL, 5XL" hint="Leave empty to use the same price as above">
-              <input name="priceLarge" type="number" step="0.01" min={0} value={v.priceLarge} onChange={(e) => set("priceLarge", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
-            </Field>
+            {kids ? (
+              <>
+                <Field label="Price — ages 2 to 6" hint="Kids section · sizes 2-6Y">
+                  <input name="price" type="number" step="0.01" min={0} required value={v.price} onChange={(e) => set("price", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
+                </Field>
+                <Field label="Price — ages 7 to 9" hint="Sizes 7-9Y · leave empty to use the 2–6 price">
+                  <input name="priceKids7" type="number" step="0.01" min={0} value={v.priceKids7} onChange={(e) => set("priceKids7", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
+                </Field>
+                <Field label="Price — ages 10 to 14" hint="Sizes 10-14Y · leave empty to use the 2–6 price">
+                  <input name="priceKids10" type="number" step="0.01" min={0} value={v.priceKids10} onChange={(e) => set("priceKids10", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
+                </Field>
+              </>
+            ) : (
+              <>
+                <Field label="Price — sizes S to 2XL" hint="One price for S, M, L, XL and 2XL">
+                  <input name="price" type="number" step="0.01" min={0} required value={v.price} onChange={(e) => set("price", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
+                </Field>
+                <Field label="Price — sizes 3XL, 4XL, 5XL" hint="Leave empty to use the same price as above">
+                  <input name="priceLarge" type="number" step="0.01" min={0} value={v.priceLarge} onChange={(e) => set("priceLarge", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
+                </Field>
+              </>
+            )}
             <Field label="Compare-at price" hint={discount ? `Shown as ${discount}% off` : "Original price, shown crossed out"}>
               <input name="compareAtPrice" type="number" step="0.01" min={0} value={v.compareAtPrice} onChange={(e) => set("compareAtPrice", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
             </Field>

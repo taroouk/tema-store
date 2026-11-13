@@ -52,6 +52,8 @@ function toProduct(row: ProductRow): Product {
     description: row.description,
     price: Number(row.price),
     priceLarge: row.priceLarge ? Number(row.priceLarge) : undefined,
+    priceKids7: row.priceKids7 ? Number(row.priceKids7) : undefined,
+    priceKids10: row.priceKids10 ? Number(row.priceKids10) : undefined,
     compareAtPrice: row.compareAtPrice ? Number(row.compareAtPrice) : undefined,
     category: row.category.slug,
     categoryName: row.category.name,

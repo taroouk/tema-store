@@ -92,6 +92,9 @@ model Product {
   price              Decimal             @db.Decimal(10, 2)
   /// Price for 3XL, 4XL and 5XL. Null = same as `price`.
   priceLarge         Decimal?            @db.Decimal(10, 2)
+  /// Kids only: price for ages 7-9 / 10-14 (`price` is 2-6). Null = same as `price`.
+  priceKids7         Decimal?            @db.Decimal(10, 2)
+  priceKids10        Decimal?            @db.Decimal(10, 2)
   compareAtPrice     Decimal?            @db.Decimal(10, 2)
   costPrice          Decimal?            @db.Decimal(10, 2)
   currency           String              @default("EGP")

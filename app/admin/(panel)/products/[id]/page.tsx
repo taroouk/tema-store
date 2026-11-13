@@ -52,6 +52,8 @@ export default async function EditProductPage({
     metaDescription: product.metaDescription ?? "",
     price: Number(product.price),
     priceLarge: product.priceLarge ? Number(product.priceLarge) : "",
+    priceKids7: product.priceKids7 ? Number(product.priceKids7) : "",
+    priceKids10: product.priceKids10 ? Number(product.priceKids10) : "",
     compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : "",
     costPrice: product.costPrice ? Number(product.costPrice) : "",
     status: product.status,

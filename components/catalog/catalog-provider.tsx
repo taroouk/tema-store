@@ -67,7 +67,7 @@ export interface NavCategory {
   image?: string | null;
 }
 
-const CATEGORY_ORDER = ["men", "women", "accessories"];
+const CATEGORY_ORDER = ["men", "women", "kids", "accessories"];
 
 /** Every category created in Admin → Categories (men, women, accessories first, then A–Z). */
 export function useCategories(): NavCategory[] {

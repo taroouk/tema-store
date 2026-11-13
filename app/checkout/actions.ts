@@ -156,7 +156,12 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
         }
 
         const price = priceForSize(
-          { price: Number(product.price), priceLarge: product.priceLarge ? Number(product.priceLarge) : null },
+          {
+            price: Number(product.price),
+            priceLarge: product.priceLarge ? Number(product.priceLarge) : null,
+            priceKids7: product.priceKids7 ? Number(product.priceKids7) : null,
+            priceKids10: product.priceKids10 ? Number(product.priceKids10) : null,
+          },
           variant.size
         );
         subtotal += price * line.qty;

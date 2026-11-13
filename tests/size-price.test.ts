@@ -25,4 +25,17 @@ describe("size price tiers", () => {
   it("sorts S to 5XL", () => {
     expect(sortSizes(["5XL", "S", "3XL", "XL", "M", "2XL", "4XL", "L"])).toEqual(["S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"]);
   });
+
+  it("kids age ranges have three prices", () => {
+    const k = { price: 300, priceKids7: 400, priceKids10: 500 };
+    expect(priceForSize(k, "2-6Y")).toBe(300);
+    expect(priceForSize(k, "7-9Y")).toBe(400);
+    expect(priceForSize(k, "10-14Y")).toBe(500);
+    expect(priceForSize({ price: 300 }, "10-14Y")).toBe(300);
+    expect(priceForSize({ price: 500, priceLarge: 600 }, "2XL")).toBe(500);
+  });
+
+  it("sorts kids ages youngest to oldest", () => {
+    expect(sortSizes(["10-14Y", "2-6Y", "7-9Y"])).toEqual(["2-6Y", "7-9Y", "10-14Y"]);
+  });
 });

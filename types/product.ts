@@ -36,6 +36,12 @@ export interface Product {
   /** Price for 3XL–5XL when it differs from `price`. */
   priceLarge?: number;
 
+  /** Kids: price for ages 7–9 (2–6 uses `price`). */
+  priceKids7?: number;
+
+  /** Kids: price for ages 10–14. */
+  priceKids10?: number;
+
   compareAtPrice?: number;
 
   /** Category slug (from Admin → Categories). */
