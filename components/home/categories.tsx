@@ -25,7 +25,7 @@ export function Categories() {
       ? "mx-auto max-w-xl"
       : categories.length === 2
         ? "mx-auto max-w-4xl md:grid-cols-2"
-        : "md:grid-cols-2 lg:grid-cols-3";
+        : "md:grid-cols-2 lg:grid-cols-4";
 
   return (
     <Section className="pt-8 pb-6">

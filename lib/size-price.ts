@@ -4,13 +4,13 @@ export function isLargeSize(size: string): boolean {
   return /^([3-9])XL$/.test(s) || /^X{3,}L$/.test(s);
 }
 
-/** Kids age-range sizes: "2-6Y", "7-9Y", "10-14Y". Returns the first age of the range, or null. */
+/** Kids age-range sizes: "2Y"…"14Y" or ranges like "2-6Y". Returns the first age of the range, or null. */
 export function kidsAgeStart(size: string): number | null {
-  const m = size.trim().match(/^(\d{1,2})\s*[-–]\s*\d{1,2}\s*Y?$/i);
+  const m = size.trim().match(/^(\d{1,2})(?:\s*[-–]\s*\d{1,2})?\s*Y?$/i);
   return m ? Number(m[1]) : null;
 }
 
-export const KIDS_SIZES = ["2-6Y", "7-9Y", "10-14Y"];
+export const KIDS_SIZES = Array.from({ length: 13 }, (_, i) => `${i + 2}Y`); // 2Y … 14Y
 
 type Priced = {
   price: number;

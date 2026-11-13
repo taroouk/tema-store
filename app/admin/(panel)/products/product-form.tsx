@@ -2,7 +2,7 @@
 
 import { KIDS_SIZES, sortSizes } from "@/lib/size-price";
 import { ArrowDown, ArrowUp, ImagePlus, Loader2, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { SubmitButton } from "@/components/admin/form-controls";
@@ -65,6 +65,9 @@ const slugify = (s: string) =>
 const isKidsCategory = (c?: { name: string; slug?: string }) =>
   /^kids?$/i.test(c?.slug ?? "") || /^kids?$/i.test(c?.name ?? "") || /أطفال|اطفال/.test(c?.name ?? "");
 
+const isSocksCategory = (c?: { name: string; slug?: string }) =>
+  /^socks?$/i.test(c?.slug ?? "") || /^socks?$/i.test(c?.name ?? "") || /شراب/.test(c?.name ?? "");
+
 export function ProductForm({
   action,
   categories,
@@ -87,6 +90,12 @@ export function ProductForm({
     setV((prev) => ({ ...prev, [k]: value }));
 
   const kids = isKidsCategory(categories.find((c) => c.id === v.categoryId));
+  const socks = isSocksCategory(categories.find((c) => c.id === v.categoryId));
+
+  // Socks are one size: pick it automatically on new products.
+  useEffect(() => {
+    if (socks && !editing) setV((prev) => (prev.sizes.length === 1 && prev.sizes[0] === "ONE SIZE" ? prev : { ...prev, sizes: ["ONE SIZE"] }));
+  }, [socks, editing]);
 
   const discount =
     v.price && v.compareAtPrice && Number(v.compareAtPrice) > Number(v.price)
@@ -261,7 +270,7 @@ export function ProductForm({
             <div>
               <p className="mb-2 text-sm font-medium text-neutral-700">Sizes <span className="font-normal text-neutral-500">— tap the sizes this product comes in</span></p>
               <div className="flex flex-wrap gap-2">
-                {[...new Set([...(kids ? KIDS_SIZES : SIZE_PRESETS), ...v.sizes])].map((s) => {
+                {[...new Set([...(kids ? KIDS_SIZES : socks ? ["ONE SIZE"] : SIZE_PRESETS), ...v.sizes])].map((s) => {
                   const on = v.sizes.includes(s);
                   return (
                     <button
@@ -347,15 +356,19 @@ export function ProductForm({
 
         <Card title="Pricing (EGP)">
           <div className="space-y-4">
-            {kids ? (
+            {socks ? (
+              <Field label="Price" hint="One price · one size">
+                <input name="price" type="number" step="0.01" min={0} required value={v.price} onChange={(e) => set("price", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
+              </Field>
+            ) : kids ? (
               <>
-                <Field label="Price — ages 2 to 6" hint="Kids section · sizes 2-6Y">
+                <Field label="Price — ages 2 to 6" hint="Kids section · sizes 2Y to 6Y">
                   <input name="price" type="number" step="0.01" min={0} required value={v.price} onChange={(e) => set("price", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
                 </Field>
-                <Field label="Price — ages 7 to 9" hint="Sizes 7-9Y · leave empty to use the 2–6 price">
+                <Field label="Price — ages 7 to 9" hint="Sizes 7Y to 9Y · leave empty to use the 2–6 price">
                   <input name="priceKids7" type="number" step="0.01" min={0} value={v.priceKids7} onChange={(e) => set("priceKids7", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
                 </Field>
-                <Field label="Price — ages 10 to 14" hint="Sizes 10-14Y · leave empty to use the 2–6 price">
+                <Field label="Price — ages 10 to 14" hint="Sizes 10Y to 14Y · leave empty to use the 2–6 price">
                   <input name="priceKids10" type="number" step="0.01" min={0} value={v.priceKids10} onChange={(e) => set("priceKids10", e.target.value === "" ? "" : Number(e.target.value))} className={inputCls} />
                 </Field>
               </>

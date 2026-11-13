@@ -20,7 +20,7 @@ export function CategoryBanner({
   return (
     <article
       className={cn(
-        "group relative aspect-[4/3] overflow-hidden rounded-2xl bg-neutral-100 ring-1 ring-black/5 transition-shadow duration-500 hover:shadow-xl",
+        "group relative aspect-[4/5] overflow-hidden rounded-2xl bg-neutral-100 ring-1 ring-black/5 transition-shadow duration-500 hover:shadow-xl",
         className
       )}
     >
@@ -28,8 +28,8 @@ export function CategoryBanner({
         src={image}
         alt=""
         fill
-        sizes="(max-width:768px) 100vw, (max-width:1280px) 50vw, 33vw"
-        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        sizes="(max-width:768px) 100vw, (max-width:1024px) 50vw, 25vw"
+        className="object-cover object-[center_25%]transition-transform duration-700 ease-out group-hover:scale-105"
       />
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent transition-opacity duration-500 group-hover:from-black/50" />
