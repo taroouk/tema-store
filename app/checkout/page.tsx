@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
+import { isStorageImage } from "@/lib/utils";
 import Link from "next/link";
 import { Minus, Plus, Tag, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -297,7 +298,7 @@ export default function CheckoutPage() {
                 {detailed.map((item) => (
                   <div key={`${item.productId}-${item.size}-${item.colorId}`} className="flex gap-4">
                     <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
-                      <Image src={item.image} alt={item.name} fill sizes="64px" className="object-cover" />
+                      <Image src={item.image} unoptimized={isStorageImage(item.image)} alt={item.name} fill sizes="64px" className="object-cover" />
                     </div>
 
                     <div className="flex flex-1 flex-col justify-between">

@@ -5,7 +5,7 @@ import { Search, ZoomOut } from "lucide-react";
 import Image from "next/image";
 
 import type { Product } from "@/types/product";
-import { cn } from "@/lib/utils";
+import { cn, isStorageImage } from "@/lib/utils";
 
 interface ProductGalleryProps {
   product: Product;
@@ -56,6 +56,7 @@ export function ProductGallery({ product }: ProductGalleryProps) {
           >
             <Image
               src={image.src}
+              unoptimized={isStorageImage(image.src)}
               alt={image.alt}
               fill
               sizes="96px"
@@ -83,6 +84,7 @@ export function ProductGallery({ product }: ProductGalleryProps) {
         <Image
           key={selectedImage.id}
           src={selectedImage.src}
+          unoptimized={isStorageImage(selectedImage.src)}
           alt={selectedImage.alt}
           fill
           priority

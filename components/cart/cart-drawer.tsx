@@ -4,6 +4,7 @@ import { priceForSize } from "@/lib/size-price";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import Image from "next/image";
+import { isStorageImage } from "@/lib/utils";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -109,7 +110,7 @@ export function CartDrawer() {
                     return (
                       <li key={`${item.productId}-${item.colorId}-${item.size}`} className="flex gap-4 py-5">
                         <Link href={`/products/${product.slug}`} onClick={close} className="relative h-28 w-22 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
-                          {image && <Image src={image.src} alt={image.alt} fill sizes="88px" className="object-cover" />}
+                          {image && <Image src={image.src} unoptimized={isStorageImage(image.src)} alt={image.alt} fill sizes="88px" className="object-cover" />}
                         </Link>
                         <div className="flex flex-1 flex-col justify-between">
                           <div className="flex justify-between gap-3">

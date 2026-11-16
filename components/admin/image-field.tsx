@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { createUploadTicket } from "@/app/admin/(panel)/uploads/actions";
+import { compressImage } from "@/lib/compress-image";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -29,10 +30,11 @@ export function ImageField({
   const input = useRef<HTMLInputElement>(null);
   const unsaved = url !== defaultValue;
 
-  async function upload(file?: File) {
-    if (!file) return;
+  async function upload(picked?: File) {
+    if (!picked) return;
     setBusy(true);
     try {
+      const file = await compressImage(picked);
       const ticket = await createUploadTicket(file.type, file.size);
       if (!ticket.ok) return void toast.error(ticket.error);
       const { error } = await createClient()

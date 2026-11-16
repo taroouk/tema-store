@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn, isStorageImage } from "@/lib/utils";
 
 interface CategoryBannerProps {
   title: string;
@@ -26,6 +26,7 @@ export function CategoryBanner({
     >
       <Image
         src={image}
+        unoptimized={isStorageImage(image)}
         alt=""
         fill
         sizes="(max-width:768px) 100vw, (max-width:1024px) 50vw, 25vw"

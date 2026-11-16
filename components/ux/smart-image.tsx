@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image, { type ImageProps } from "next/image";
 
-import { cn } from "@/lib/utils";
+import { cn, isStorageImage } from "@/lib/utils";
 
 type SmartImageProps = ImageProps & {
   wrapperClassName?: string;
@@ -23,6 +23,7 @@ export function SmartImage({
     <div className={cn("ux-skeleton", loaded && "is-loaded", wrapperClassName)}>
       <Image
         {...props}
+        unoptimized={props.unoptimized ?? isStorageImage(props.src)}
         alt={alt}
         priority={priority}
         loading={priority ? undefined : "lazy"}

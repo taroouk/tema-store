@@ -2,6 +2,7 @@
 
 import { priceForSize } from "@/lib/size-price";
 import Image from "next/image";
+import { isStorageImage } from "@/lib/utils";
 import { Minus, Plus, Trash2 } from "lucide-react";
 
 import { useCartStore } from "@/stores/cart-store";
@@ -37,6 +38,7 @@ export function CartItem({
       <div className="relative h-40 w-32 overflow-hidden rounded-2xl bg-neutral-100">
         <Image
           src={product.images[0].src}
+          unoptimized={isStorageImage(product.images[0].src)}
           alt={product.images[0].alt}
           fill
           sizes="128px"

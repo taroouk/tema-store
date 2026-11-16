@@ -9,6 +9,7 @@ import { SubmitButton } from "@/components/admin/form-controls";
 import { btnCls, btnGhostCls, Card, Field, inputCls } from "@/components/admin/ui";
 import { createClient } from "@/lib/supabase/client";
 
+import { compressImage } from "@/lib/compress-image";
 import { createUploadTicket } from "../uploads/actions";
 
 export interface ProductFormValues {
@@ -107,7 +108,8 @@ export function ProductForm({
   async function upload(files: FileList | null) {
     if (!files?.length) return;
     const supabase = createClient();
-    for (const file of Array.from(files)) {
+    for (const original of Array.from(files)) {
+      const file = await compressImage(original);
       setUploading((n) => n + 1);
       try {
         const ticket = await createUploadTicket(file.type, file.size);
