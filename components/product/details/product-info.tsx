@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Minus, Plus } from "lucide-react";
+import { Heart, Minus, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useUiStore } from "@/stores/ui-store";
 
@@ -39,8 +39,13 @@ export function ProductInfo({
 
   const inStock = product.stock > 0;
 
-  const variantStock = (colorId: string, size: string) =>
-    product.variants?.find((v) => v.colorId === colorId && v.size === size)?.stock ?? (inStock ? 99 : 0);
+  const variantStock = (colorId: string, size: string) => {
+    const v = product.variants?.find((x) => x.colorId === colorId && x.size === size);
+    if (v?.closed) return 0;
+    return v?.stock ?? (inStock ? 99 : 0);
+  };
+  const isClosed = (size: string) =>
+    Boolean(product.variants?.find((v) => v.colorId === selectedColor.id && v.size === size)?.closed);
   const sizeAvailable = (size: string) => variantStock(selectedColor.id, size) > 0;
   const selectedStock = variantStock(selectedColor.id, selectedSize);
   const canBuy = inStock && selectedStock > 0;
@@ -129,6 +134,7 @@ export function ProductInfo({
               }`}
             >
               {size}
+              {isClosed(size) && <X size={14} className="ml-1.5 text-red-600" aria-label="Unavailable today" />}
             </button>
           ))}
         </div>

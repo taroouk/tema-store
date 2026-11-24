@@ -42,7 +42,7 @@ function toProduct(row: ProductRow): Product {
       colors.set(v.colorName, { id: colorId(v.colorName), name: v.colorName, value: v.colorHex });
     }
     sizes.add(v.size);
-    stock += Math.max(0, v.stock - v.reserved);
+    if (!v.closed) stock += Math.max(0, v.stock - v.reserved);
   }
 
   return {
@@ -65,6 +65,7 @@ function toProduct(row: ProductRow): Product {
       colorId: colorId(v.colorName),
       size: v.size,
       stock: Math.max(0, v.stock - v.reserved),
+      closed: v.closed,
     })),
     material: row.material ?? undefined,
     careInstructions: row.careInstructions ?? undefined,
