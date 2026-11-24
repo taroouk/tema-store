@@ -132,9 +132,6 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
           (v) => colorSlug(v.colorName) === item.colorId && v.size === item.size
         );
         if (!product || !variant) throw new CheckoutError("An item in your cart is no longer available.");
-        if (variant.closed) {
-          throw new CheckoutError(`Sorry, size ${variant.size} of "${product.name}" is not available today.`);
-        }
         const line = lines.get(variant.id) ?? { variantId: variant.id, productId: product.id, qty: 0 };
         line.qty += item.quantity;
         lines.set(variant.id, line);

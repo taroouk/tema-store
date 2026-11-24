@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, Plus, X } from "lucide-react";
+import { Heart, Plus } from "lucide-react";
 
 import type { Product } from "@/types/product";
 import { useCartStore } from "@/stores/cart-store";
@@ -36,11 +36,7 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
 
   const available = (size: string) => {
     if (!product.variants || !defaultColor) return !soldOut;
-    return product.variants.some((v) => v.colorId === defaultColor.id && v.size === size && v.stock > 0 && !v.closed);
-  };
-  const closed = (size: string) => {
-    if (!product.variants || !defaultColor) return false;
-    return product.variants.some((v) => v.colorId === defaultColor.id && v.size === size && v.closed);
+    return product.variants.some((v) => v.colorId === defaultColor.id && v.size === size && v.stock > 0);
   };
 
   const quickAdd = (event: React.MouseEvent, size: string) => {
@@ -136,7 +132,6 @@ export function ProductCard({ product, headingLevel: Heading = "h3", eager = fal
                   className="flex h-9 min-w-[3rem] flex-1 items-center justify-center rounded-lg text-xs font-medium transition hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:text-neutral-400 disabled:line-through disabled:hover:bg-transparent disabled:hover:text-neutral-400"
                 >
                   {size}
-                  {closed(size) && <X size={12} className="ml-1 text-red-600" aria-label="Unavailable today" />}
                 </button>
               ))}
             </div>

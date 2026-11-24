@@ -1,44 +1,56 @@
-import { PageHeader } from "@/components/admin/ui";
+import Link from "next/link";
+
+import { Badge, PageHeader, Table, td, th } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma/client";
-import { sortSizes } from "@/lib/size-price";
-
-import { InventoryBoard, type InvProduct } from "./inventory-board";
 
 export const metadata = { title: "Inventory" };
 
 export default async function InventoryPage() {
   await requireAdmin("catalog:write");
 
-  const rows = await prisma.product.findMany({
-    where: { deletedAt: null, status: { not: "ARCHIVED" } },
-    select: {
-      id: true,
-      name: true,
-      status: true,
-      category: { select: { name: true } },
-      images: { orderBy: { sortOrder: "asc" }, take: 1, select: { url: true } },
-      variants: { select: { id: true, size: true, sku: true, stock: true, lowStockAt: true, closed: true } },
-    },
-    orderBy: [{ position: "asc" }, { createdAt: "desc" }],
+  const variants = await prisma.productVariant.findMany({
+    where: { product: { deletedAt: null, status: { not: "ARCHIVED" } } },
+    include: { product: { select: { id: true, name: true } } },
+    orderBy: [{ stock: "asc" }, { sku: "asc" }],
+    take: 200,
   });
-
-  const products: InvProduct[] = rows.map((p) => {
-    const order = sortSizes([...new Set(p.variants.map((v) => v.size))]);
-    return {
-      id: p.id,
-      name: p.name,
-      image: p.images[0]?.url ?? null,
-      category: p.category.name,
-      published: p.status === "ACTIVE",
-      variants: [...p.variants].sort((a, b) => order.indexOf(a.size) - order.indexOf(b.size)),
-    };
-  });
+  const low = variants.filter((v) => v.stock <= v.lowStockAt);
 
   return (
     <>
-      <PageHeader title="Inventory" description="Edit the quantity of every size. Closing a size is done in Daily sizes and never changes these numbers." />
-      <InventoryBoard products={products} />
+      <PageHeader
+        title="Inventory"
+        description={`${low.length} variants are low or out of stock (showing the 200 lowest)`}
+      />
+      <Table>
+        <thead>
+          <tr>
+            <th className={th}>Product</th>
+            <th className={th}>SKU</th>
+            <th className={th}>Variant</th>
+            <th className={th}>Stock</th>
+            <th className={th}>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {variants.map((v) => (
+            <tr key={v.id}>
+              <td className={td}>
+                <Link href={`/admin/products/${v.product.id}`} className="hover:underline">
+                  {v.product.name}
+                </Link>
+              </td>
+              <td className={`${td} font-mono text-xs`}>{v.sku}</td>
+              <td className={td}>{v.size}</td>
+              <td className={td}>{v.stock}</td>
+              <td className={td}>
+                {v.stock === 0 ? <Badge tone="red">Out</Badge> : v.stock <= v.lowStockAt ? <Badge tone="amber">Low</Badge> : <Badge tone="green">OK</Badge>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </>
   );
 }

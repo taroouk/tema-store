@@ -20,8 +20,6 @@ export interface VariantStock {
   colorId: string;
   size: string;
   stock: number;
-  /** Closed in the daily size sheet: shown with an X, can't be ordered. */
-  closed?: boolean;
 }
 
 export interface Product {
