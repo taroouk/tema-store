@@ -131,6 +131,8 @@ model ProductVariant {
   stock      Int         @default(0)
   reserved   Int         @default(0)
   lowStockAt Int         @default(5)
+  /// Daily size sheet: a closed size shows an X in the store and can't be ordered. `stock` is untouched.
+  closed     Boolean     @default(false)
   position   Int         @default(0)
   orderItems OrderItem[]
 
